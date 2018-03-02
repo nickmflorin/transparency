@@ -1,0 +1,12 @@
+.manager-returns-table-container{
+	max-width: 45%;
+	min-width: 45%;
+	margin-right: 10px;
+}
+
+.manager-returns-chart-container{
+	margin-top: 20px;
+	margin-left: 10px;
+	max-width: 55%;
+	min-width: 55%;
+}

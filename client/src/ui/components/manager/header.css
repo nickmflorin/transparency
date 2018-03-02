@@ -1,0 +1,19 @@
+.manager-header-container{
+	display: flex;
+	width: 100%;
+	height: 30px;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	padding-left: 5px;
+	padding-right: 5px;
+}
+.manager-header-manager-name{
+  font-size: 16px;
+  line-height: 20px;
+  color: var(--primary-color);
+}
+.manager-header-manager-id{
+  font-size: 12px;
+  line-height: 20px;
+  color: var(--blue);
+}

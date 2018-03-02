@@ -1,0 +1,149 @@
+import React from 'react';
+import _ from 'underscore'
+
+import { BrowserRouter, Link, Route } from 'react-router-dom';
+import { DropdownButton, ButtonToolbar, Navbar, Nav, NavItem, FormGroup, NavDropdown, FormControl, Button } from 'react-bootstrap';
+import FontAwesomeIcon from '@fortawesome/react-fontawesome'
+
+import SearchBar from './search.js'
+import './menu.css'
+
+class MenuItem extends React.Component {
+	render(){
+		return (
+    	<div className='menu-bar-item'>
+    		<Link className='menu-bar-link' to={this.props.item.link} onClick={this.props.closeAll} >
+    			<span className='menu-icon'>
+    				<FontAwesomeIcon icon={this.props.item.icon}/> 
+    			</span>
+    			{this.props.item.label} 
+    		</Link>
+		</div>
+		)
+	}
+}
+
+class DropdownChild extends React.Component {
+	render(){
+		return (
+		     <li className='menu-dropdown-item'>
+			    <Link className="menu-dropdown-item-link" 
+			    	to={this.props.child.link}
+			    	onClick={this.props.onClick}
+			    >
+				{this.props.child.label} 
+			    </Link>
+			</li>
+		  )
+	}
+}
+
+class DropdownItem extends React.Component {
+	constructor(){
+		super()
+		this.state = {'show' : false}
+	}
+	render(){
+		return (
+		    <div className='menu-bar-dropdown'>
+		     	<a onClick={ (e) => this.props.toggle(e, this.props.item) } className='menu-bar-link'>
+		     		<span className='menu-icon'>
+	    				<FontAwesomeIcon icon={this.props.item.icon}/> 
+	    			</span>
+			     	{this.props.item.label} 
+			     	<span className="caret"></span>
+			    </a>
+			    {this.props.opened && 
+			     	<ul role="menu" className="menu-bar-dropdown-menu">
+				     	{this.props.item.children.map((child) => {
+					    	return <DropdownChild key={child.name} child={child} onClick={ (e) => this.props.close(e, this.props.item) }/>
+					    })}
+					</ul>
+				}
+			</div>
+		)
+	}
+}
+          
+export class MenuNavigation extends React.Component {
+	constructor(props){
+		super(props)
+
+		var opened = {}
+		_.each(props.menus, function(menu){
+			if(menu.children){
+				opened[menu.name] = false;
+			}
+		})
+
+		this.state = {
+			'opened' : opened
+		}
+	}
+	createItem(menu, i){
+		if(!menu.children){
+			return <MenuItem key={menu.name} index={i} item={menu} closeOthers={this.closeOthers}/>
+		}
+		var show = this.props.dropdown_states[menu.name] == 'opened'
+		return <DropdownItem key={menu.name} index={i} item={menu} show={show} closeOthers={this.closeOthers} />
+	}
+	// Called When Non Dropdown Item Clicked
+	closeAll(e){
+		var opened = this.state.opened
+		Object.keys(opened).forEach(function(id){
+			opened[id] = false;
+		})
+		this.setState({'opened' : opened})
+	}
+	toggle(e, item){
+		var opened = this.state.opened
+		if(opened[item.name]){
+			this.close(e, item)
+		}
+		else{
+			this.open(e, item)
+		}
+	}
+	close(e, item){
+		var opened = this.state.opened
+		opened[item.name] = false;
+		this.setState({'opened' : opened})
+	}
+	open(e, item){
+		this.closeAll(e)
+
+		var opened = this.state.opened
+		opened[item.name] = true;
+		this.setState({'opened' : opened})
+	}
+	render(){
+		return (
+	    	<div className='menu-navigation'>
+	    		{this.props.menus.map((menu, i) => {
+	    			if(!menu.children){
+	    				return(
+	    				    <MenuItem 
+	    				    	key={menu.name} 
+	    				    	index={i} 
+	    				    	item={menu} 
+	    				    	closeAll={this.closeAll.bind(this)}
+	    				    />
+	    				) 
+	    			}
+		    		return (
+		    		    <DropdownItem 
+			    			key={menu.name} 
+			    			index={i} 
+			    			item={menu} 
+			    			opened={this.state.opened[menu.name]} 
+			    			close={this.close.bind(this)} 
+			    			toggle={this.toggle.bind(this)} 
+			    		/>
+		    		)
+		    	})}
+			</div>
+		)
+	}
+}
+
+export default MenuNavigation;

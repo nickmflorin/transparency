@@ -1,0 +1,12 @@
+.loading{
+	position: absolute;
+	z-index: 10000;
+	
+    height: 100px;
+    width: 100px;
+
+    left: 50%;
+    margin-left: -50px;
+    top: 50%;
+    margin-top: -50px;
+}

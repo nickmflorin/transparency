@@ -1,0 +1,122 @@
+.btn {
+    font-weight: 400 !important;
+    font-family: var(--plain) !important;
+    font-size: 12px;
+    line-height: 12px;
+
+    padding-top: 7px;
+    padding-bottom: 7px;
+    padding-left: 12px;
+    padding-right: 12px;
+
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+
+    user-select: none;
+    text-decoration: none;
+    cursor: pointer;
+    text-shadow: none;
+
+    border: none;
+    border-radius: .2rem;
+    box-shadow: none;
+
+    position: relative;
+    display: inline-block;
+
+    text-align: center;
+    white-space: nowrap;
+    margin: 0;
+
+    -webkit-appearance: none;
+    -webkit-tap-highlight-color: transparent;
+
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
+
+    margin: auto 0;
+}
+
+.btn-default{
+  background-color: #e6e5e5 !important;
+}
+.btn-default:hover {
+    color: #333;
+    background-color: #cbc8c8 !important;
+    border-color: #adadad;
+}
+
+.btn:after {
+    position: absolute;
+    content: '';
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    border-radius: .25rem
+}
+
+a.disabled {
+  pointer-events: none;
+  cursor: default;
+}
+
+a.table-link {
+    color: var(--blue);
+    font-weight: 300 !important;
+    font-family: var(--styled) !important;
+    font-size: 12px !important; 
+    line-height: 12px !important; 
+}
+
+a.table-link:hover,
+a.table-link:focus {
+    color: var(--red) !important;
+    cursor: pointer !important;
+}
+
+a.icon-link{
+  color: var(--blue);
+  font-weight: 300 !important;
+  line-height: 12px !important; 
+}
+
+a.icon-link:hover,
+a.icon-link:focus {
+    color: var(--red) !important;
+    cursor: pointer !important;
+}
+
+a.hide-show-link {
+    color: var(--blue);
+    font-weight: 300 !important;
+    font-family: var(--styled) !important;
+    font-size: 12px !important; 
+    line-height: 12px !important; 
+}
+
+a.hide-show-link:hover,
+a.hide-show-link:focus {
+    color: var(--red) !important;
+    cursor: pointer !important;
+}
+
+.btn-okay {
+  background-color: var(--blue);
+  color: #FFF;
+}
+.btn-okay:hover, .btn-okay:focus {
+  color: #FFF !important;
+}
+
+.btn-cancel {
+  background-color: rgba(220, 220, 220, 0.7);
+  color: var(--primary-text-color);
+}
+.btn-cancel:hover, .btn-cancel:focus {
+  color: var(--primary-text-color) !important;
+}
+
+
+

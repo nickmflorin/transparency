@@ -1,0 +1,42 @@
+.nav-bar-left-container{
+  display: flex;
+  flex-direction: row;
+}
+
+.nav-bar-logo{
+  width: 225px;
+  padding-right: 20px !important;
+  padding-left: 20px !important;
+
+  text-align: center;
+  display: block;
+  color: white !important;
+
+  font-weight: 300;
+  font-family: var(--brand) !important;
+  font-size: 22px;
+  line-height: 60px;
+}
+
+.nav-bar-open-container{
+  width: 60px;
+  color: white !important;
+}
+
+.sidebar-open-button {
+  position: relative;
+  display: block;
+  font-size: 22px;
+  line-height: 24px;
+  padding-top: 18px !important;
+  padding-bottom: 18px !important;
+  background: rgba(0, 0, 0, 0.05);
+  color: white !important;
+  text-align: center;
+  z-index: 1
+}
+.sidebar-open-button:hover,
+.sidebar-open-button:active {
+  background: var(--top-bar-light);
+}
+
