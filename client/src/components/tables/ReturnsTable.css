@@ -1,0 +1,89 @@
+.returns-table {
+  padding: 0px !important;
+  width: 100% !important;
+  table-layout: fixed;
+  font-size: 10px;
+}
+.returns-table thead tr th {
+  padding-left:4px !important;
+  padding-right: 4px !important;
+  text-transform: none !important;
+  text-align: center !important;
+  border-top: none !important;
+  border-bottom: none !important;
+  padding-bottom: 6px;
+  line-height: 22px !important;
+}
+.returns-table tbody tr td {
+  border-bottom: 1px solid var(--border-color);
+  border-top: 1px solid var(--border-color);
+  border-left: 1px solid var(--border-color);
+  border-right: 1px solid var(--border-color);
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+  padding-top: 5px !important;
+  padding-bottom: 5px !important;
+}
+.returns-table tbody tr td:first-child{
+	border-left: none !important;
+	border-bottom: none !important;
+	border-top: none !important;
+  color: var(--primary-color);
+  font-weight: 400 !important;
+  text-align: center;
+  font-size: 11px;
+  line-height: 12px;
+}
+.return-table-cell-wrap{
+  overflow: hidden;
+    height: 10px;
+}
+.returns-table tbody tr td:first-child:hover ~ td {
+  background-color: var(--blue-shade) !important;
+}
+
+.returns-table tr td:nth-child(2){
+	border-left: 1px solid var(--border-color) !important;
+}
+
+.returns-table tr:nth-child(even) td.return-cell:nth-child(odd) {
+  background-color: rgba(204,204,204,0.25);
+}
+.returns-table tr:nth-child(odd) td.return-cell:nth-child(even) {
+  background-color: rgba(204,204,204,0.25);
+}
+.returns-table td.nocolor {
+  background-color: transparent !important;
+}
+
+.returns-table td:hover, .returns-table td:focus {
+  background-color: var(--blue-shade) !important;
+}
+
+.returns-table td.hovered{
+  background-color: var(--blue-shade) !important;
+}
+
+.positive_return {
+  color: #282828 !important;
+}
+.negative_return {
+  color:red !important;
+}
+.in_range_cell{
+  background-color: var(--blue-shade) !important;
+}
+.positive_outdated_return {
+  color:#B0B0B0; 
+  font-size:0.9em; 
+  font-style:italic;
+}
+
+.negative_outdated_return {
+  color:#FF9C9C; 
+  font-size:0.9em; 
+  font-style:italic;
+}

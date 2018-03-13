@@ -1,0 +1,57 @@
+.data-top-container{
+	display:flex; 
+	min-height: 50%;
+	max-height: 60%;
+	margin-top: 20px;
+}
+.data-top-container .left {
+	width: 50%;
+	margin-right: 10px;
+	display: flex;
+}
+.data-top-container .right{
+	width: 50%;
+	margin-left: 10px; 
+	display: flex;
+}
+.data-bottom-container {
+	margin-top: 10px;
+	width: 100%;
+	flex-grow: 100;
+	margin-bottom: 100px;
+}
+.query-field-container{
+	flex-grow: 100;
+	display: flex;
+	flex-direction: column;
+}
+.query-field-field-container{
+	overflow-y: hidden;
+	display: flex;
+	width: 100%;
+	flex-direction: column;
+}
+.query-detail-container{
+	height: 50px;
+}
+.ReactCodeMirror {
+  height: auto;
+  max-height: 100%;
+  display: flex;
+  flex-grow: 100;
+  width: 100%;
+}
+.CodeMirror {
+  height: auto !important;
+  max-height: 100% !important;
+  width: 100% !important;
+}
+.cm-s-material.CodeMirror {
+    background-color: rgba(38, 50, 56, 0.74);
+    color: rgba(233, 237, 237, 1);
+}
+.cm-s-material .CodeMirror-gutters {
+    background: rgba(38, 50, 56, 0.74);
+    color: rgb(83,127,126);
+    border: none;
+}

@@ -1,0 +1,16 @@
+.title-panel {
+    display: flex;
+    width: 100%;
+
+    background-color: #fff;
+    padding: 10px;
+    border-radius: 0px !important;
+    box-shadow: 0.5px 0.5px 0px 0px rgba(115, 115, 115, .6);
+    border: 1px solid #eeeeee;
+    
+    padding-top: 5px !important;
+    padding-bottom: 5px !important;
+    padding-left: 7px !important;
+    padding-right: 7px !important;
+    transition:opacity 1s linear;
+}

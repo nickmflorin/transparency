@@ -1,0 +1,82 @@
+input {
+    font-family: var(--styled) !important;
+    line-height: 14px;
+    font-size: 12px !important;
+    height: 30px !important;
+
+    padding-top: 6px;
+    padding-bottom: 6px;
+    padding-right: 10px;
+    padding-left: 10px;
+    margin: 0;
+
+    border-radius: 0px !important;
+    border: 0.1rem solid var(--border-color);
+    box-shadow: none !important;
+}
+
+input[type='text'],
+input[type='password']{
+    background: #fff;
+    width: 100%;
+    margin-bottom:0px;
+    font-weight: 300 !important;
+    line-height: 30px !important;
+    color: black !important;
+}
+
+input[type='email'] {
+    padding-left: 10px !important;
+    width: 100%;
+}
+
+input[type="file"] {
+    display: none;
+}
+
+select {
+    border: 0.1rem solid var(--border-color);
+    border-radius: 0px !important;
+    background-color: #fff;
+    color: black;
+
+    line-height: 12px;
+    font-size: 12px !important;
+    font-weight: 300 !important;
+    font-family: var(--plain);
+    text-shadow: none !important;
+    
+    height: 30px;
+    margin: 0;
+    padding-left: 10px !important;
+    width: 100%;
+
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    -moz-appearance: none;
+}
+
+input[type='checkbox'] {
+    height: 15px !important;
+    padding-left: 5px;
+    padding-right: 5px;
+    width: 15px;
+    margin: 0;
+    position: relative;
+    top: 1px;
+}
+.checkbox-inline{
+    line-height: 15px !important;
+}
+.month-input{
+    max-width: 90px;
+    text-align: center;
+}
+.checkbox, .radio {
+    position: relative;
+    display: block;
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
+

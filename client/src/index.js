@@ -1,29 +1,59 @@
 import React from 'react';
 import ReactDom from 'react-dom';
-import { BrowserRouter, Link, Route } from 'react-router-dom';
+import { Route, Switch } from 'react-router'
+import { ConnectedRouter } from 'react-router-redux'
+import { PersistGate } from 'redux-persist/integration/react'
 
-import './ui/style/text.css'
-import './ui/style/modal.css'
-import './ui/style/input.css'
-import './ui/style/tables.css'
-import './ui/style/buttons.css'
-import './ui/style/list.css'
-import './ui/style/links.css'
-import './ui/style/toolbar.css'
+import { Provider } from 'react-redux'
 
-import './ui/style/loading.css'
-import './ui/style/CodeMirror.css'
-
-import './ui/style/utility.css'
-import './ui/style/root.css'
-
-import App from './ui/App';
 import registerServiceWorker from './registerServiceWorker';
+import createHistory from 'history/createBrowserHistory'
+import configureStore from './reducers'
+
+import App from './containers/App'
+import LoginPage from './components/login/LoginPage'
+import MenuBar from './components/menu/menu'
+import NavBar from './components/nav/nav'
+
+import PrivateRoute from './containers/PrivateRoute'
+import './style'
+
+const history = createHistory()
+const store = configureStore(history)
+
+function Footer(props) {
+  return (
+    <footer>
+        <p className='footer-content'>Copyright © 2018 The Rock Creek Group All rights reserved.</p>
+    </footer>
+  );
+}
+
+function Header(props) {
+  return (
+    <header>
+        <NavBar />
+    </header>
+  );
+}
 
 ReactDom.render(
-    <App />,
+    <Provider store={store}>
+    
+    	<ConnectedRouter history={history}>
+	    	<div className="base">
+	        	<Header></Header>
+	        	<section>
+		    		<Switch>
+			        	<Route exact path="/login/" component={LoginPage} />
+			        	<PrivateRoute path="/" component={App}/>
+				    </Switch>
+				</section>
+			    <Footer />
+			</div>
+        </ConnectedRouter>
+    </Provider>,
     document.getElementById('root')
 )
 
 registerServiceWorker();
-

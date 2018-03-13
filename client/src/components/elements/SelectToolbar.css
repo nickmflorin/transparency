@@ -1,0 +1,26 @@
+.select-toolbar-container{
+    height: 28px;
+    margin-bottom: 5px;
+    display: flex;
+    width: 100%;
+    padding-left: 60px;
+    padding-right: 15px;
+}
+.select-toolbar-container-select-container{
+	flex-grow: 100;
+	display: flex;
+}
+.select-toolbar-label{
+	margin-right: 5px;
+	font-size: 12px;
+	line-height: 28px;
+}
+.select-toolbar-select{
+	margin-left: 5px;
+}
+.select-toolbar-container-select-container:not(:first-child){
+    margin-left: 10px;
+}
+.select-toolbar-container-select-container:not(:last-child){
+    margin-right: 10px;
+}

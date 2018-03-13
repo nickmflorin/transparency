@@ -1,0 +1,21 @@
+.manager-home-top{
+	display : flex;
+	margin-top: 25px;
+}
+.manager-home-top .left{
+	margin-right: 10px;
+	width: 650px;
+}
+.manager-home-top .right{
+	margin-top: 0px;
+	margin-left: 10px;
+	flex-grow: 100;
+}
+.manager-home-bottom{
+	margin-top: 10px;
+	padding: 15px;
+	width: 100%;
+	flex-grow: 100;
+	margin-bottom: 100px;
+}
+
