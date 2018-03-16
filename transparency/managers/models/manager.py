@@ -13,6 +13,8 @@ from returns import ManagerReturns, ManagerReturn
 from benchmarks import ManagerBenchmarks 
 from peers import ManagerPeers 
 
+import transparency.db as db 
+
 class Manager(Document):
 
 	id = fields.IntField(primary_key = True, required=True)
