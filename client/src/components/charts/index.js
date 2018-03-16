@@ -1,3 +1,5 @@
-export * from './config'
+import './chart.css'
+
 export * from './ManagerComparisonBubbleChart'
-export * from './ReturnsBarChart'
+export * from './BetaBarChart'
+export * from './ExposureCharts'

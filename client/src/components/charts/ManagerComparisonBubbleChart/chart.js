@@ -9,7 +9,7 @@ import HighchartsMore from 'highcharts-more';
 import SelectToolbar from '../../../components/elements/SelectToolbar'
 
 HighchartsMore(ReactHighcharts.Highcharts);
-var config = new ManagerComparisonChartConfig({ height: 400 })
+var config = new ManagerComparisonChartConfig('bubble', { height: 400 })
 
 export class ManagerComparisonBubbleChart extends React.Component {
     constructor(props) {
@@ -27,12 +27,6 @@ export class ManagerComparisonBubbleChart extends React.Component {
     static propTypes = {
         stat_config: PropTypes.object.isRequired,
     };
-    // Destroying Chart Causing Errors
-    // componentWillUnmount() {
-    //     if(this.chart){
-    //         this.chart.destroy();
-    //     }
-    // }
     generateSeries(managers, dimensions = null){
         var mgrSeries = []
         if(!dimensions) dimensions = this.state.dimensions 

@@ -9,20 +9,34 @@ import LoginPageForm from './LoginPageForm'
 import './login.css'
 
 class LoginPage extends React.Component {
+  constructor(props, context){
+    super(props, context)
+    this.state = {
+      redirectToReferrer : false
+    }
+  }
+  componentWillReceiveProps(props){
+    this.setState({
+      redirectToReferrer: props.isAuthenticated
+    })
+  }
+  login = (username, password) => {
+    this.props.onLogIn(username, password)
+  }
   render(){
+    var fromPath = '/'
+    if(this.props.location.state && this.props.location.state.from && this.props.location.state.from.pathname){
+      fromPath = this.props.location.state.from.pathname
+    }
     return (
-        <div>
-          {this.props.isAuthenticated && 
-            <Redirect to='/' />
-          }
-          {!this.props.isAuthenticated && 
-            <div className="login-page-container">
-              <div className="login-page-form-container">
-                <LoginPageForm {...this.props}/>
-              </div>
-            </div>
-          }
+      <div className="login-page-container">
+        {this.state.redirectToReferrer === true && 
+          <Redirect to={fromPath} />
+        }
+        <div className="login-page-form-container">
+          <LoginPageForm {...this.props} login={this.login.bind(this)}/>
         </div>
+      </div>
     )
   }
 }

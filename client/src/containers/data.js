@@ -11,7 +11,7 @@ import QueryDetail from '../components/data/QueryDetail'
 import { QueryResultsTable, QueryTable } from '../components/tables'
 import QueryFieldToolbar from '../components/elements/QueryFieldToolbar'
 
-import { getDatabases, query } from '../actions'
+import { getDatabases, query, query_table } from '../actions'
 import './data.css'
 
 const options = {
@@ -27,15 +27,7 @@ class Data extends React.Component {
     super()
     this.state = {
       database : null, 
-      saved : [], 
-      results : null,
       'sql' : 'SELECT TOP 20 * FROM Research.dbo.vDailyTrades',
-    }
-  }
-  componentWillReceiveProps(props){
-    if(props.result){
-      console.log('Got Query Result')
-      console.log(props.result)
     }
   }
   componentWillMount() {
@@ -50,26 +42,17 @@ class Data extends React.Component {
   databaseSelected(event, database){
     this.setState({'database' : database })
   }
-  // If No SQL Passed In, Show Top 5 Used
   showTop5(event, table){
-      var self = this 
-      this.props.query(table.id)
-      // var cm = this.cm.getCodeMirror()
-
-      // this.setState({'loading' : true})
-      // var promiseObj = axios.get('http://localhost:8000/api/query/?id=' + table.id)
-      // promiseObj.then(function(response){
-      //   self.setState({'loading' : false})
-
-      //   if(response.data && response.data.length == 1){
-      //     cm.setValue(response.data[0].sql)
-      //     self.setState({'sql' : response.data[0].sql})
-      //     self.setState({'results' : response.data[0]})
-      //     if(response.data[0].results){
-      //       self.setState({'to_download' : response.data[0].results})
-      //     }
-      //   }
-      // });
+      this.props.query_table(table.id)
+  }
+  // Here We Can Either Use Direct Value from CM or Update SQL State Whenever Code Mirror Edited
+  runQuery(event){
+    var cm = this.cm.getCodeMirror()
+    var value = cm.getValue()
+    console.log(value)
+    if(value.trim() != ""){
+      this.props.query(value)
+    }
   }
   get to_download(){
     return []
@@ -84,26 +67,6 @@ class Data extends React.Component {
   }
   clearQuery(){
 
-  }
-  runQuery(){
-    var self = this 
-    var cm = this.cm.getCodeMirror()
-    var value = cm.getValue()
-    if(value.trim() != ""){
-      this.setState({'loading' : true})
-
-      // var promiseObj = axios.get('http://localhost:8000/api/query/?sql=' + value)
-      // promiseObj.then(function(response){
-      //   self.setState({'loading' : false})
-
-      //   if(response.data && response.data.length == 1){
-      //       self.setState({'results' : response.data[0]})
-      //       if(response.data[0].results){
-      //         self.setState({'to_download' : response.data[0].results})
-      //       }
-      //   }
-      // });
-    }
   }
   render(){
     return (
@@ -145,7 +108,9 @@ class Data extends React.Component {
             </div>
           </div>
           <div className="data-bottom-container">
-            <QueryResultsTable results={this.state.results}/>
+            <QueryResultsTable 
+              result={this.props.query_result}
+            />
           </div>
       </div>
     </div>
@@ -155,15 +120,16 @@ class Data extends React.Component {
 
 const DataStateToProps = (state, ownProps) => {  
   return {
-    databases : state.databases,
-    result : state.result
+    databases : state.db.databases,
+    query_result : state.db.query_result
   };
 };
 
 const DataDispatchToProps = (dispatch, ownProps) => {
   return {
     getDatabases: () =>  dispatch(getDatabases()),
-    query : (tableId, sql) => dispatch(query(tableId, sql))
+    query : (sql) => dispatch(query(sql)),
+    query_table : (tableId, sql) => dispatch(query_table(tableId, sql))
   }
 };
 

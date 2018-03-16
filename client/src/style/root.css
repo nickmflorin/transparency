@@ -14,6 +14,8 @@
     --base-color-alpha: rgba(0, 76, 151, 0.9);
     --base-color-text: rgba(0, 76, 151, 1.0);
     --primary-color: #263238;
+    --secondary-color: #5e676c;
+    
     --offwhite-color: #EDEAE8;
     --blue-hover: #4c83c1;
     --blue-shade: rgba(64, 154, 254, 0.21);
@@ -22,7 +24,10 @@
     --orangered: #F46C43;
     --orange: #ff9800;
     --yellow: #FFE761;
+
     --highlight: rgba(255, 231, 97, 0.18);
+    --highlight-faded: rgba(255, 231, 97, 0.05);
+
     --green: #3DB987;
     --border-color: #d9d9d9;
     --panel-background: rgba(255,255,255,0.75);

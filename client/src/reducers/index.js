@@ -1,8 +1,6 @@
 import { combineReducers, createStore, applyMiddleware } from 'redux';
 import { routerReducer, routerMiddleware } from 'react-router-redux'
-//import storage from 'redux-persist/es/storage'
-import storage from 'redux-persist/lib/storage'
-import hardSet from 'redux-persist/lib/stateReconciler/hardSet'
+import storage from 'redux-persist/es/storage'
 
 import { apiMiddleware } from 'redux-api-middleware';
 import { createFilter   } from 'redux-persist-transform-filter';
@@ -12,14 +10,16 @@ import thunk from 'redux-thunk';
 import auth, * as Auth from './auth.js'
 
 import { lists, list } from './lists';
-import { search, managers } from './managers'
-import { databases } from './db'
+import { mgrs } from './managers'
+import { db } from './db'
 import { requesting } from './http'
 
 const rootReducer = combineReducers({  
     router: routerReducer,
     auth: auth,
-    lists, list, search, requesting, managers, databases
+    db,
+    mgrs,
+    lists, list, requesting,
 });
 
 const persistedFilter = createFilter(
@@ -31,7 +31,6 @@ const persistConfig = {
   storage: storage,
   whitelist: ['auth'],
   transforms: [persistedFilter],
-  stateReconciler: hardSet,
 }
 // Reducer Maintains Logged In State Across Page Refreshes
 export const persistedReducer = persistReducer(persistConfig, rootReducer)

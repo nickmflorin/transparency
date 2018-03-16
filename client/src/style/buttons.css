@@ -1,5 +1,6 @@
 .btn {
     font-weight: 400;
+    color: var(--secondary-color);
     font-family: var(--plain);
     font-size: 12px;
     line-height: 12px;
@@ -54,6 +55,11 @@
     color: #333;
     background-color: #cbc8c8 !important;
     border-color: #adadad;
+}
+.btn-default.active {
+    background-color: #cbc8c8 !important;
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
 }
 
 .btn:after {

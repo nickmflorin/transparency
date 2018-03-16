@@ -3,39 +3,50 @@ import moment from 'moment'
 
 const SearchLimit = 20
 var _urls = {
-    url: '/api/managers/',
-    search_url: '/api/mgrsearch/',
-    returns_url: '/api/returns/',
-    list_url: '/api/managerlists/',
+    url: '/managers/',
+    search_url: '/managers/search/',
+    returns_url: '/managers/returns/',
+    exposures_url: '/managers/exposures/',
 }
 
-function parse_dates(start_date = null, end_date = null){
+function parse_dates(start_date = null, end_date = null, date = null){
     var query = {}
-    if(start_date){
-        var mmt = new moment(start_date)
+    // Date Specification Overrides Any Date Interval
+    if(date){
+        var mmt = new moment(date)
         if(!mmt.isValid()){
-            throw new Error('Invalid Start Date in API Request')
+            throw new Error('Invalid Date in API Request')
         }
         mmt = mmt.format('YYYY-MM-DD')
-        query['start_date'] = mmt
+        query['date'] = mmt
     }
-    if(end_date){
-        var mmt = new moment(end_date)
-        if(!mmt.isValid()){
-            throw new Error('Invalid End Date in API Request')
+    else{
+        if(start_date){
+            var mmt = new moment(start_date)
+            if(!mmt.isValid()){
+                throw new Error('Invalid Start Date in API Request')
+            }
+            mmt = mmt.format('YYYY-MM-DD')
+            query['start_date'] = mmt
         }
-        mmt = mmt.format('YYYY-MM-DD')
-        query['end_date'] = mmt
+        if(end_date){
+            var mmt = new moment(end_date)
+            if(!mmt.isValid()){
+                throw new Error('Invalid End Date in API Request')
+            }
+            mmt = mmt.format('YYYY-MM-DD')
+            query['end_date'] = mmt
+        }
     }
+    
     return query
 }
 
-
-export const apiGetManager = function(id, start_date = null, end_date = null, extended = true) {
+export const apiGetManager = function(id, options = { start_date : null, end_date : null, date : null, group : null}) {
     var url = _urls.url + String(parseInt(id)) + '/'
-    var query = parse_dates(start_date = start_date, end_date = end_date)
-    if(extended){
-        query['extended'] = true
+    var query = parse_dates(options.start_date, options.end_date, options.date)
+    if(options.group){
+        query['group'] = JSON.stringify(options.group)
     }
 
     return $.ajax({
@@ -44,24 +55,19 @@ export const apiGetManager = function(id, start_date = null, end_date = null, ex
         data: query,
         cache: true,
     }).then(response => {
+        console.log(response)
         return response
     }).catch(error => {
         return error;
     });
 }
 
-export const apiGetManagers = function(ids, start_date = null, end_date = null, extended = true) {
+export const apiGetManagers = function(ids, options = { start_date : null, end_date : null, date : null, group : null}) {
     var url = _urls.url
-    if(ids.length == 0){
-        throw new Error('Must Provide Non Empty Array of IDs')
-    }
-
-    var query = parse_dates(start_date = start_date, end_date = end_date)
+    if(ids.length == 0) throw new Error('Must Provide Non Empty Array of IDs')
+    
+    var query = parse_dates(options.start_date, options.end_date, options.date)
     query['ids'] = JSON.stringify(ids)
-    if(extended){
-        query['extended'] = true
-    }
-
     
     return $.ajax({
         url: url,
@@ -75,13 +81,28 @@ export const apiGetManagers = function(ids, start_date = null, end_date = null, 
     });
 }
 
-export const apiGetManagerReturns = function(ids, start_date = null, end_date = null) {
-    var url = _urls.returns_url
-    if(ids.length == 0){
-        throw new Error('Must Provide Non Empty Array of IDs')
-    }
+export const apiGetManagerExposures = function(id, options = { start_date : null, end_date : null, date : null, group : null}) {
 
-    var query = parse_dates(start_date = start_date, end_date = end_date)
+    var query = parse_dates(options.start_date, options.end_date, options.date)
+    query['id'] = id
+
+    return $.ajax({
+        url: _urls.exposures_url,
+        dataType: 'json',
+        data: query,
+    }).then(response => {
+        return response
+    }).catch(error => {
+        return error;
+    });
+}
+
+export const apiGetManagerReturns = function(ids, options = { start_date : null, end_date : null, date : null, group : null}) {
+
+    var url = _urls.returns_url
+    if(ids.length == 0) throw new Error('Must Provide Non Empty Array of IDs')
+    
+    var query = parse_dates(options.start_date, options.end_date, options.date)
     query['ids'] = JSON.stringify(ids)
 
     return $.ajax({
@@ -97,8 +118,6 @@ export const apiGetManagerReturns = function(ids, start_date = null, end_date = 
 
 export const apiSearchManager = function(search, limit=SearchLimit) {
     var url = _urls.search_url
-    // url += '?search=' + String(search)
-    // url += '?limit=' + parseInt(limit)
 
     return $.ajax({
         url: url,

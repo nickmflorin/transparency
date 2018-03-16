@@ -13,8 +13,10 @@ urlpatterns = [
 	url(r'^$', TemplateView.as_view(template_name="index.html")),
 	url(r'^admin/', admin.site.urls),
 	url(r'^accounts/', include('transparency.accounts.urls')),
-    url(r'^api/', include('transparency.api.urls')),
-    	
+    url(r'^managers/', include('transparency.managers.urls')),
+    url(r'^db/', include('transparency.db.urls')),
+    url(r'^lists/', include('transparency.lists.urls')),
+
     # If We Include $, Everytime Server Reboots the URL After / Will Not be Found Unless We Duplicate API Routes Above This Route
-    url(r'^', TemplateView.as_view(template_name="index.html")),
+    url('.*', TemplateView.as_view(template_name='index.html')),
 ]

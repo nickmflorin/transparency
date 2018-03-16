@@ -2,8 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux'
 import { PulseLoader } from 'react-spinners';
 import { Route, Switch } from 'react-router'
-
-import * as reducers from '../reducers'
+import { Redirect } from 'react-router-dom'
 
 import Data from './data.js'
 import DailyPlatform from './daily_platform.js'
@@ -14,7 +13,11 @@ import RCGIndices from './rcg_indices.js'
 import AssetAllocation from './aam.js'
 import AssetAllocationDashboard from './aam_dashboard.js'
 import ManagerComparison from './manager_comparison'
-import Home from './home.js'
+
+import Home from './home/home'
+import PrivateRoute from './PrivateRoute'
+
+import * as reducers from '../reducers'
 
 class App extends React.Component {
   render(){
@@ -27,19 +30,21 @@ class App extends React.Component {
             />
           </div>
 
-          <Route exact path="/" component={Home} name="home"></Route>
-          <Route exact path="/data" component={Data}></Route>
-          <Route exact path="/mgrcomp" component={ManagerComparison}></Route>
-          
-          <Route exact path="/dailymet" component={DailyMetrics}></Route>
-          <Route exact path="/dailyplat" component={DailyPlatform}></Route>
-
-          <Route exact path="/indices" component={Indices}></Route>
-          <Route exact path="/rcgind" component={RCGIndices}></Route>
-          <Route exact path="/indscreen" component={IndexScreen}></Route>
-
-          <Route exact path="/aam" component={AssetAllocation}></Route>
-          <Route exact path="/aamdash" component={AssetAllocationDashboard}></Route>
+          <Route exact path='/' render={(props) => (
+              <Redirect to={{ pathname : '/managers', state : { from : '/'}}} />
+          )}/>
+          <Switch>
+            <PrivateRoute path='/managers' component={Home} />
+            <PrivateRoute exact path='/data' component={Data} />
+            <PrivateRoute exact path='/mgrcomp' component={ManagerComparison} />
+            <PrivateRoute exact path='/dailymet' component={DailyMetrics} />
+            <PrivateRoute exact path='/dailyplat' component={DailyPlatform} />
+            <PrivateRoute exact path='/indices' component={Indices} />
+            <PrivateRoute exact path='/rcgind' component={RCGIndices}/>
+            <PrivateRoute exact path='/rcgind' component={IndexScreen} />
+            <PrivateRoute exact path='/aam' component={AssetAllocation} />
+            <PrivateRoute exact path='/aamdash' component={AssetAllocationDashboard}/>
+          </Switch>
       </div>
     )
   }
@@ -48,7 +53,6 @@ class App extends React.Component {
 const mapStateToProps = (state, ownProps) => {  
   return {
     requesting : state.requesting,
-    isAuthenticated: reducers.isAuthenticated(state)
   }
 };
 

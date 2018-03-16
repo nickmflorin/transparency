@@ -15,7 +15,7 @@
 	display: flex;
 }
 .data-bottom-container {
-	margin-top: 10px;
+	margin-top: 25px;
 	width: 100%;
 	flex-grow: 100;
 	margin-bottom: 100px;
@@ -51,7 +51,7 @@
     color: rgba(233, 237, 237, 1);
 }
 .cm-s-material .CodeMirror-gutters {
-    background: rgba(38, 50, 56, 0.74);
+    background: rgba(38, 50, 56, 0.34);
     color: rgb(83,127,126);
     border: none;
 }

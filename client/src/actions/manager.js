@@ -1,19 +1,10 @@
 import moment from 'moment'
 import { ManagerTypes } from './types'
-import { apiGetManagerReturns, apiSearchManager, apiGetManagers, apiGetManager } from '../api'
+import { apiGetManagerReturns, apiSearchManager, apiGetManagers, apiGetManager, apiGetManagerExposures } from '../api'
 import { HttpRequest } from './http'
 
-function loadManagerSuccess(manager) {
-    return { type: ManagerTypes.LOAD_MANAGER_SUCCESS, manager };
-}
-function searchedManagerSuccess(results) {
-    return { type: ManagerTypes.SEARCH_MANAGER_SUCCESS, results };
-}
-function selectManagerSuccess(selected){
-    return { type: ManagerTypes.SELECT_MANAGER_SUCCESS, selected };
-}
-function loadManagersSuccess(managers) {
-    return { type: ManagerTypes.LOAD_MANAGERS_SUCCESS, managers };
+function SearchManagerSuccess(results) {
+    return { type: ManagerTypes.SEARCH_MANAGER, results };
 }
 function clearManagersSuccess() {
     return { type: ManagerTypes.CLEAR_MANAGERS };
@@ -24,20 +15,7 @@ function removeManagerSuccess(id) {
 function UpdateManagerReturns(id, returns){
     return { type: ManagerTypes.UPDATE_MANAGER_RETURNS, id , returns};
 }
-export const getManagers = function(ids, start_date = null, end_date = null, extended = true) {
-    return function(dispatch) {
-        dispatch(HttpRequest(true))
 
-        return apiGetManagers(ids,  start_date, end_date, extended).then(selected => {
-            dispatch(HttpRequest(false))
-            dispatch(loadManagersSuccess(selected));
-
-        }).catch(error => {
-            dispatch(HttpRequest(false))
-            throw (error);
-        });
-    };
-}
 export const clearManagers = function(ids, query) {
     return function(dispatch) {
         dispatch(clearManagersSuccess())
@@ -48,13 +26,41 @@ export const removeManager = function(id) {
         dispatch(removeManagerSuccess(id))
     };
 }
-export const selectManager = function(id, start_date = null, end_date = null, extended = true) {
+export const addManager = function(id, options = { start_date : null, end_date : null, date : null}) {
     return function(dispatch) {
         dispatch(HttpRequest(true))
 
-        return apiGetManager(id, start_date, end_date, extended).then(selected => {
+        return apiGetManager(id, options).then(added => {
             dispatch(HttpRequest(false))
-            dispatch(selectManagerSuccess(selected));
+            dispatch({ type: ManagerTypes.ADD_MANAGER, added });
+
+        }).catch(error => {
+            dispatch(HttpRequest(false))
+            throw (error);
+        });
+    };
+}
+export const getManagerExposures = function(id, options = { start_date : null, end_date : null, date : null}) {
+    return function(dispatch) {
+        dispatch(HttpRequest(true))
+
+        return apiGetManagerExposures(id, options).then(exposures => {
+            dispatch(HttpRequest(false))
+            dispatch({ type: ManagerTypes.GET_MANAGER_EXPOSURES, exposures });
+        }).catch(error => {
+            dispatch(HttpRequest(false))
+            throw (error);
+        });
+    };
+}
+
+export const selectManager = function(id, options = { start_date : null, end_date : null, date : null}) {
+    return function(dispatch) {
+        dispatch(HttpRequest(true))
+
+        return apiGetManager(id, options).then(selected => {
+            dispatch(HttpRequest(false))
+            dispatch({ type: ManagerTypes.SELECT_MANAGER, selected });
 
         }).catch(error => {
             dispatch(HttpRequest(false))
@@ -64,11 +70,11 @@ export const selectManager = function(id, start_date = null, end_date = null, ex
 }
 // To Do: Make Sure Start and End Dates Valid
 // Start Date and End Dates Passed In as Moment Objects
-export const updateManagerReturns = function(ids, start_date = null, end_date = null){
+export const updateManagerReturns = function(ids, options = { start_date : null, end_date : null, date : null}){
     return function(dispatch) {
         dispatch(HttpRequest(true))
 
-        return apiGetManagerReturns(ids, start_date, end_date).then(returns => {
+        return apiGetManagerReturns(ids, options).then(returns => {
             dispatch(HttpRequest(false))
 
             for(var i = 0; i<returns.length; i++){
@@ -80,24 +86,10 @@ export const updateManagerReturns = function(ids, start_date = null, end_date = 
         });
     };
 }
-export const getManager = function(id,  start_date = null, end_date = null, extended = true) {
-    return function(dispatch) {
-        dispatch(HttpRequest(true))
-
-        return apiGetManager(id, start_date, end_date, extended).then(manager => {
-            dispatch(HttpRequest(false))
-            dispatch(loadManagerSuccess(manager));
-
-        }).catch(error => {
-            dispatch(HttpRequest(false))
-            throw (error);
-        });
-    };
-}
 export const searchManager = function(search, limit) {
     return function(dispatch) {
         return apiSearchManager(search, limit=limit).then(results => {
-            dispatch(searchedManagerSuccess(results));
+            dispatch(SearchManagerSuccess(results));
         }).catch(error => {
             throw (error);
         });

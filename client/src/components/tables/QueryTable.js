@@ -22,15 +22,15 @@ export class QueryTable extends React.Component {
   };
   render(){
 	    return (
-        <div className="query-table-container">
-	         <QueryTableToolbar 
-	            database={this.props.database} 
-	            databases={this.props.databases || []} 
-	            saved={this.props.saved || []} 
-	            databaseSelected={this.props.databaseSelected}
-	         />
-          <div className="query-table-table-container">
-			      <ReactTable
+	        <div className="query-table-container">
+		         <QueryTableToolbar 
+		            database={this.props.database} 
+		            databases={this.props.databases || []} 
+		            saved={this.props.saved || []} 
+		            databaseSelected={this.props.databaseSelected}
+		         />
+	          <div className="query-table-table-container">
+				 <ReactTable
 			          data={(this.props.database && this.props.database.tables) || []}
 			          columns={[
 			          	{ Header: "Table Name", id : "name",
@@ -45,14 +45,16 @@ export class QueryTable extends React.Component {
 				        	)
 				    	}
 			          ]}
-		          minRows={25}
-		          defaultPageSize={15}
-		          className="-striped -highlight react-table-condensed"
+			          minRows={25}
+			          loadingText= 'Loading Results...'
+  					  noDataText='No Tables Found'
+			          defaultPageSize={15}
+			          className="-striped -highlight react-table-condensed"
 			          defaultPageSize={20}
 			          getTdProps={this.tdProps}
-			      />
-			   </div>
-		  </div>
+				 />
+			 </div>
+		</div>
 	   )
  	}
 }

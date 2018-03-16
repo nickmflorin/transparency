@@ -1,22 +1,28 @@
-import React from 'react'
-import { Route, Redirect } from 'react-router'
+import React from 'react';
 import { connect } from 'react-redux'
+import { Route, Switch } from 'react-router'
+import { Redirect } from 'react-router-dom'
 import * as reducers from '../reducers'
 
-const PrivateRoute = ({ component: Component, isAuthenticated, ...rest }) => (
-  <Route {...rest} render={props => (
-    isAuthenticated ? (
-      <Component {...props}/>
-    ) : (
-      <Redirect to={{
-        pathname: '/login',
-        state: { from: props.location }
-      }}/>
-    )
-  )}/>
+export const PrivateRoute = ({ component: Component, isAuthenticated : isAuthenticated, ...rest }) => (
+  <Route {...rest} render={(props) => (
+    isAuthenticated === true
+      ? <Component {...props} />
+      : <Redirect to={{
+          pathname: '/login',
+          state: { from: props.location }
+        }} />
+  )} />
 )
 
-const mapStateToProps = (state) => ({
-  isAuthenticated: reducers.isAuthenticated(state)
-})
-export default connect(mapStateToProps, null)(PrivateRoute);
+const mapStateToProps = (state, ownProps) => {  
+  return {
+    isAuthenticated: reducers.isAuthenticated(state)
+  }
+};
+
+const mapDispatchToProps = (dispatch, ownProps) => {
+  return {}
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(PrivateRoute);  

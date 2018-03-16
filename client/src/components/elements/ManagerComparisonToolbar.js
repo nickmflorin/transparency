@@ -5,7 +5,6 @@ import moment from 'moment'
 
 import { DropdownButton, ButtonToolbar, MenuItem, Button } from 'react-bootstrap';
 import { FormGroup, FormControl, ControlLabel, Input, Checkbox } from 'react-bootstrap';
-import { CSVLink, CSVDownload } from 'react-csv';
 
 import FontAwesomeIcon from '@fortawesome/react-fontawesome'
 import faSave from '@fortawesome/fontawesome-free-solid/faSave'
@@ -14,7 +13,7 @@ import faDownload from '@fortawesome/fontawesome-free-solid/faDownload'
 
 import StatisticsDropdown from './StatDropdown'
 import ListsDropdown from './ListDropdown'
-import ToolbarDateRange from './DateRange'
+import ToolbarDateRange from './ToolbarDateRange'
 
 import './toolbar.css'
 
@@ -107,17 +106,15 @@ class ManagerComparisonToolbar extends React.Component {
 				    </div>
 
 					<div className="toolbar-buttons-container" style={{marginRight:0}}>
-						<div className="toolbar-button-container">
-							<CSVLink data={this.props.to_download}
-			                    filename={"manager_comparison.csv"}
-			                    className="btn btn-default toolbar-button"
-			                    target="_blank">
-			                    <span className='toolbar-button-icon'>
-			                       <FontAwesomeIcon icon={faDownload}/> 
-			                    </span>
-			                    CSV 
-		                  	</CSVLink>
+						<div className="toolbar-button-container" style={{marginRight:0}}>
+						    <a className="btn btn-default toolbar-button" style={{marginLeft: 5}} onClick={this.props.download}> 
+						      <span className='toolbar-button-icon'>
+			                    <FontAwesomeIcon icon={faDownload}/> 
+			                  </span>
+						      CSV 
+						    </a>
 						</div>
+
 					    <div className="toolbar-button-container" style={{marginRight:0}}>
 						    <a className="btn btn-default toolbar-button" style={{marginLeft: 5}} onClick={this.props.onClear}> 
 						      <span className='toolbar-button-icon'>

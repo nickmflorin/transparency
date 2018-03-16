@@ -26,37 +26,40 @@ export class QueryFieldToolbar extends React.Component {
 	    return (
 	        <div className="toolbar-container" style={{minHeight:"30px", maxHeight:"30px"}}>
 	      		<ButtonToolbar>
-	      			<div className="toolbar-button-container" style={{marginLeft:0}}>
-						 <a className="btn btn-default toolbar-button" style={{marginRight: 5}} onClick={this.props.run}> 
+	      			<div className="flex flex-grow">
+		      			<div className="toolbar-button-container" style={{marginLeft:0}}>
+							 <a className="btn btn-default toolbar-button" style={{marginRight: 5}} onClick={this.props.run}> 
 					 			<span className='toolbar-button-icon'>
 	                    			<FontAwesomeIcon icon={faPlay}/> 
 	                  			</span>
-					      Run 
-					    </a>
-					</div>
-
-					<div className="toolbar-button-container">
-						 <a className="btn btn-default toolbar-button" style={{marginRight: 5}} onClick={this.props.clear}> 
-					 		<span className='toolbar-button-icon'>
-			                    <FontAwesomeIcon icon={faEraser}/> 
-			                 </span>
-					      Clear 
-					    </a>
-					</div>
-
-					{this.props.to_download && 
-						<div className="toolbar-button-container">
-							 <CSVLink data={this.props.to_download}
-					              filename={"data.csv"}
-					              className="btn btn-default toolbar-button"
-					              target="_blank">
-						 	<span className='toolbar-button-icon'>
-			                  <FontAwesomeIcon icon={faDownload}/> 
-			                </span>
-						      Export 
-						    </CSVLink>
+						      Run 
+						    </a>
 						</div>
-					}
+					</div>
+					<div className="flex">
+						<div className="toolbar-button-container" style={{marginRight:0}}>
+							 <a className="btn btn-default toolbar-button" style={{marginRight: 5}} onClick={this.props.clear}> 
+						 		<span className='toolbar-button-icon'>
+				                    <FontAwesomeIcon icon={faEraser}/> 
+				                 </span>
+						      Clear 
+						    </a>
+						</div>
+
+						{this.props.to_download && 
+							<div className="toolbar-button-container" style={{marginLeft: 10, marginRight:0}}>
+								 <CSVLink data={this.props.to_download}
+						              filename={"data.csv"}
+						              className="btn btn-default toolbar-button"
+						              target="_blank">
+							 	<span className='toolbar-button-icon'>
+				                  <FontAwesomeIcon icon={faDownload}/> 
+				                </span>
+							      Export 
+							    </CSVLink>
+							</div>
+						}
+					</div>
 				</ButtonToolbar>
 			</div>
 			)

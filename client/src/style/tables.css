@@ -87,7 +87,7 @@ table tbody tr td {
     padding: 3px;
     -webkit-box-shadow: none !important;
     box-shadow: none !important;
-    border-top: 1px solid rgba(0,0,0,0.1);
+    border-top: 1px solid var(--border-color) !important;
 }
 .ReactTable .-pagination .-previous, .ReactTable .-pagination .-next {
     -ms-flex: 1;
@@ -128,10 +128,13 @@ table tbody tr td {
     font-size: 11px;
     border-color: var(--border-color) !important;
 }
+.ReactTable .rt-tbody .rt-td {
+    border-right: none !important;
+}
 .ReactTable .rt-thead.-header {
      -webkit-box-shadow: none !important;
      box-shadow: none !important;
-     border-bottom: 1px solid rgba(0,0,0,0.1);
+     border-bottom: 1px solid var(--border-color) !important;
 }
 .ReactTable .rt-thead .rt-th.-sort-asc, .ReactTable .rt-thead .rt-td.-sort-asc {
     -webkit-box-shadow: none !important;

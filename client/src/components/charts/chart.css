@@ -1,0 +1,20 @@
+.tooltip-name{
+	font-size: 10px;
+	font-family: var(--styled);
+	color: var(--blue) !important;
+	font-weight: 300 !important;
+	position:relative;
+	bottom: 1px;
+}
+
+.tooltip-value{
+	font-size: 10px;
+	font-family: var(--styled);
+	color: black;
+	font-weight: 400 !important;
+}
+
+.tooltip-container{
+	margin-bottom: 5px;
+	margin-top: 5px;
+}

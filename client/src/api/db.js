@@ -1,8 +1,8 @@
 import $ from 'jquery'
 
 var urls = {
-    databases: '/api/databases/',
-    query: '/api/query/',
+    databases: '/db/databases/',
+    query: '/db/query/',
 }
 
 export const apiGetDatabases = function(){
@@ -30,11 +30,25 @@ export const apiGetDatabase = function(id){
     });
 }   
 
+export const apiQuery = function(query){
+    var data = { sql : query }
+    return $.ajax({
+        url: urls.query,
+        dataType: 'json',
+        type : 'GET',
+        data : data,
+    }).then(response => {
+        return response
+    }).catch(error => {
+        return error;
+    });
+}   
+
 // If No SQL Passed In, Show Top 5 Used
-export const apiQuery = function(tableId, query = null){
+export const apiTableQuery = function(tableId, query = null){
     var data = { id : tableId }
     if(query){
-        data['query'] = query 
+        data['sql'] = query 
     }
     return $.ajax({
         url: urls.query,
@@ -42,7 +56,6 @@ export const apiQuery = function(tableId, query = null){
         type : 'GET',
         data : data,
     }).then(response => {
-        console.log(response)
         return response
     }).catch(error => {
         return error;

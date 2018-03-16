@@ -30,7 +30,7 @@ class SearchResults extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {  
   return {
-    managers: state.managers,
+    managers: state.mgrs.managers,
   };
 };
 

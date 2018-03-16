@@ -1,37 +1,49 @@
 import React from 'react';
 import { connect } from 'react-redux'
 import _ from 'underscore'
+import PropTypes from 'prop-types';
+
+import { AppsConfiguration } from '../../config'
 
 import SearchBar from '../search/search.js'
-
-import MenuConfiguration from './config.js'
 import { MenuItem, DropdownItem } from './items.js'
 import './menu.css'
+
+const MenuNavigationItem = ({ app: app, ...props }) => (
+      app.isParent === true
+      ? (<DropdownItem 
+			key={app.id} 
+			item={app} 
+			opened={props.opened} 
+			close={props.close} 
+			toggle={props.toggle} 
+		/>)
+      : (<MenuItem 
+	    	key={app.id} 
+	    	item={app} 
+	    	closeAll={props.closeAll}
+	    />)
+)
 
 class MenuNavigation extends React.Component {
 	constructor(props){
 		super(props)
-
-		// Initialize Opened State for Menu Items
-		var opened = {}
-		_.each(props.menus, function(menu){
-			if(menu.children){
-				opened[menu.name] = false;
+		this.state = {'opened' : {}}
+	}
+	static propTypes = {
+	    config: PropTypes.array.isRequired,
+	};
+	componentWillReceiveProps(props){
+		if(props.config){
+			var opened = this.state.opened 
+			for(var i = 0; i<props.config.length; i++){
+				var app = props.config[i]
+				if(this.state.opened[app.id] === undefined){
+					this.state.opened[app.id] = false;
+				}
 			}
-		})
-
-		this.state = {
-			'opened' : opened,
 		}
 	}
-	createItem(menu, i){
-		if(!menu.children){
-			return <MenuItem key={menu.name} index={i} item={menu} closeOthers={this.closeOthers}/>
-		}
-		var show = this.props.dropdown_states[menu.name] == 'opened'
-		return <DropdownItem key={menu.name} index={i} item={menu} show={show} closeOthers={this.closeOthers} />
-	}
-	// Called When Non Dropdown Item Clicked
 	closeAll(e){
 		var opened = this.state.opened
 		Object.keys(opened).forEach(function(id){
@@ -54,9 +66,7 @@ class MenuNavigation extends React.Component {
 		this.setState({'opened' : opened})
 	}
 	open(e, item){
-		console.log('opening ',item)
 		this.closeAll(e)
-
 		var opened = this.state.opened
 		opened[item.name] = true;
 		this.setState({'opened' : opened})
@@ -64,26 +74,16 @@ class MenuNavigation extends React.Component {
 	render(){
 		return (
 	    	<div className='menu-navigation'>
-	    		{this.props.menus.map((menu, i) => {
-	    			if(!menu.children){
-	    				return(
-	    				    <MenuItem 
-	    				    	key={menu.name} 
-	    				    	index={i} 
-	    				    	item={menu} 
-	    				    	closeAll={this.closeAll.bind(this)}
-	    				    />
-	    				) 
-	    			}
-		    		return (
-		    		    <DropdownItem 
-			    			key={menu.name} 
-			    			index={i} 
-			    			item={menu} 
-			    			opened={this.state.opened[menu.name]} 
+	    		{this.props.config.map((app) => {
+	    			return (
+	    			   <MenuNavigationItem 
+		    				key={app.id} 
+		    				app={app}
+		    				opened={this.state.opened[app.id]} 
 			    			close={this.close.bind(this)} 
 			    			toggle={this.toggle.bind(this)} 
-			    		/>
+			    			closeAll={this.closeAll.bind(this)}
+		    			/>
 		    		)
 		    	})}
 			</div>
@@ -98,9 +98,7 @@ class MenuBar extends React.Component {
 	render(){
 		return (
 		    <div className='menu-bar'>
-		    	<MenuNavigation 
-		    		menus={MenuConfiguration} 
-		    	/>
+		    	<MenuNavigation config={AppsConfiguration} />
 		    	<div className='menu-search-navigation'>
 		          <SearchBar 
 		            onSelect={this.props.onSelect}
@@ -113,8 +111,7 @@ class MenuBar extends React.Component {
 }
 const mapStateToProps = (state, ownProps) => {  
   return {
-  	managers: state.managers,
-    selected: state.selected,
+  	managers: state.mgrs.managers,
   };
 };
 

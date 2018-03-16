@@ -14,8 +14,8 @@ import { ManagerComparisonTable, ReturnsTable } from '../components/tables'
 import { ManagerComparisonBubbleChart } from '../components/charts'
 import { SaveListModal } from '../components/modals'
 
-import { ManagerStatisticsConfiguration } from '../utilities'
-import { getManagerLists, addManagerList, getManagerList, clearManagers, removeManager, updateManagerReturns, selectManager, clearManagerLists, Loading } from '../actions'
+import { ManagerStatisticsConfiguration } from '../config'
+import { getManagerLists, addManagerList, getManagerList, clearManagers, removeManager, updateManagerReturns, selectManager, addManager, clearManagerLists, Loading } from '../actions'
 
 import ManagersAPI from '../api/manager'
 import './manager_comparison.css'
@@ -45,7 +45,6 @@ class ManagerComparison extends React.Component {
     clearManagerLists: PropTypes.func.isRequired
   };
   componentDidMount(){
-    //this.props.clearManagerLists()
     this.props.getManagerLists()
   }
   componentWillReceiveProps(nextProps) {
@@ -85,7 +84,10 @@ class ManagerComparison extends React.Component {
     var exists = _.findWhere(this.props.managers, { id : manager.id })
 
     if(!exists){
-      this.props.selectManager(manager.id, start_mmt.format('YYYY-MM-DD'), end_mmt.format('YYYY-MM-DD'))
+      this.props.addManager(manager.id, {
+        start_date : start_mmt.format('YYYY-MM-DD'),
+        end_date : end_mmt.format('YYYY-MM-DD'),
+      })
     }
     else{
       console.log('Manager Already in List')
@@ -149,9 +151,9 @@ class ManagerComparison extends React.Component {
     config.toggle(toToggle.id)
     this.setState({ stat_config : config })
   }
-  get to_download(){
-    var data = this.state.stat_config.create_array(this.props.managers)
-    return data
+  // To Do: Have to Filter Out Stats
+  download(){
+    this.refs['comparison-table'].download()
   }
   togglePeers(){
     console.log('Toggling Peers and Benchmarked Suppressed for This Version')
@@ -185,50 +187,51 @@ class ManagerComparison extends React.Component {
           {this.state.active && 
             <ManagerHeader manager={this.state.active} />
           }
+          <div className="underneath-header">
+              <div className="manager-comparison-top" style={{marginTop:10}}>
+                <div className="left">
+                  <ReturnsTable 
+                    title={this.state.active && this.state.active.name}
+                    subtitle={this.state.active && this.state.active.id}
+                    dates={this.state.dates}
+                    complete={(this.state.active && this.state.active.returns && this.state.active.returns.complete) || []}
+                    in_range={(this.state.active && this.state.active.returns && this.state.active.returns.series) || []}
+                  />
+                </div>
+                <div className="right">
+                  <ManagerComparisonBubbleChart 
+                    managers={this.props.managers}
+                    stat_config={this.state.stat_config}
+                  />
+                </div>
+              </div>
 
-          <div className="manager-comparison-top" style={{marginTop:10}}>
-            <div className="left">
-              <ReturnsTable 
-                title={this.state.active && this.state.active.name}
-                subtitle={this.state.active && this.state.active.id}
-                dates={this.state.dates}
-                complete={(this.state.active && this.state.active.returns && this.state.active.returns.complete) || []}
-                in_range={(this.state.active && this.state.active.returns && this.state.active.returns.series) || []}
-              />
-            </div>
-            <div className="right">
-              <ManagerComparisonBubbleChart 
-                managers={this.props.managers}
-                stat_config={this.state.stat_config}
-              />
-            </div>
-          </div>
+              <div className="manager-comparison-bottom">
+                  <ManagerComparisonToolbar 
+                      stat_config={this.state.stat_config}
+                      handleDateChange={this.handleDateChange.bind(this)}
+                      toggleStat={this.toggleStat.bind(this)}
+                      togglePeers={this.togglePeers.bind(this)}
+                      toggleBenchmarks={this.toggleBenchmarks.bind(this)}
 
-          <div className="manager-comparison-bottom">
-              <ManagerComparisonToolbar 
-                  stat_config={this.state.stat_config}
+                      download={this.download.bind(this)}
+                      onSave={this.toggleModal.bind(this)}
+                      onLoad={this.onLoad.bind(this)}
+                      onClear={this.onClear.bind(this)}
 
-                  handleDateChange={this.handleDateChange.bind(this)}
-                  toggleStat={this.toggleStat.bind(this)}
-                  togglePeers={this.togglePeers.bind(this)}
-                  toggleBenchmarks={this.toggleBenchmarks.bind(this)}
+                      lists={this.props.lists}
+                      list={this.props.list}
+                      dates={this.state.dates}
+                    />
 
-                  to_download={this.to_download}
-                  onSave={this.toggleModal.bind(this)}
-                  onLoad={this.onLoad.bind(this)}
-                  onClear={this.onClear.bind(this)}
-
-                  lists={this.props.lists}
-                  list={this.props.list}
-                  dates={this.state.dates}
-                />
-
-              <ManagerComparisonTable 
-                  stat_config={this.state.stat_config}
-                  data={this.props.managers}
-                  rowClicked={this.setActiveManager.bind(this)} 
-                  removeManager={this.removeManager.bind(this)}
-              />
+                  <ManagerComparisonTable 
+                      ref="comparison-table"
+                      stat_config={this.state.stat_config}
+                      data={this.props.managers}
+                      rowClicked={this.setActiveManager.bind(this)} 
+                      removeManager={this.removeManager.bind(this)}
+                  />
+                </div>
             </div>
         </div>
     </div>
@@ -240,7 +243,7 @@ const ComparisonStateToProps = (state, ownProps) => {
   return {
     lists : state.lists, 
     list : state.list,
-    managers : state.managers
+    managers : state.mgrs.managers
   };
 };
 
@@ -254,7 +257,8 @@ const ComparisonDispatchToProps = (dispatch, ownProps) => {
     removeManager: (id) =>  dispatch(removeManager(id)),
     clearManagers: () =>  dispatch(clearManagers()),
     updateManagerReturns: (ids, start_date, end_date) =>  dispatch(updateManagerReturns(ids, start_date, end_date)),
-    selectManager: (id, start_date, end_date) =>  dispatch(selectManager(id, start_date, end_date, false)),
+
+    addManager: (id, start_date, end_date) =>  dispatch(addManager(id, start_date, end_date, false)),
 
     startLoading: () =>  dispatch(Loading.startLoading()),
     stopLoading: () =>  dispatch(Loading.stopLoading()),

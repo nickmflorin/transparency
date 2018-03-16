@@ -15,7 +15,6 @@ import LoginPage from './components/login/LoginPage'
 import MenuBar from './components/menu/menu'
 import NavBar from './components/nav/nav'
 
-import PrivateRoute from './containers/PrivateRoute'
 import './style'
 
 const history = createHistory()
@@ -37,23 +36,31 @@ function Header(props) {
   );
 }
 
-ReactDom.render(
-    <Provider store={store}>
-    
-    	<ConnectedRouter history={history}>
-	    	<div className="base">
-	        	<Header></Header>
-	        	<section>
-		    		<Switch>
-			        	<Route exact path="/login/" component={LoginPage} />
-			        	<PrivateRoute path="/" component={App}/>
-				    </Switch>
-				</section>
-			    <Footer />
-			</div>
+const render = () => {
+    ReactDom.render(
+      <Provider store={store}>
+        <ConnectedRouter history={history}>
+            <div className="base">
+                <Header></Header>
+                <section>
+                  <Switch>
+                    <Route exact path="/login/" component={LoginPage} />
+                    <Route path="/" component={App} />
+                  </Switch>
+                </section>
+                <Footer />
+            </div>
         </ConnectedRouter>
-    </Provider>,
-    document.getElementById('root')
-)
+      </Provider>,
+      document.getElementById('root')
+  )
+}
+
+if(process.env.NODE_ENV == 'development' && module.hot) {
+    module.hot.accept(['./containers/App', './reducers'], () => {
+        store.replaceReducer(require('./reducers').default);
+    });
+    render();
+}
 
 registerServiceWorker();

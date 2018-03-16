@@ -19,7 +19,7 @@ class LoginPageForm extends React.Component {
   }
   onSubmit = (event) => {
     event.preventDefault()
-    this.props.onLogIn(this.state.username, this.state.password)
+    this.props.login(this.state.username, this.state.password)
   }
   render() {
     const errors = this.props.errors || {}

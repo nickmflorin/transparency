@@ -4,7 +4,7 @@ import Cookies from 'js-cookie';
 import { csrfSafeMethod } from '../actions'
 
 var _props = {
-    url: '/api/managerlists/',
+    url: '/lists/managers/',
 }
 
 export const apiSaveManagerList = function(ids, name){

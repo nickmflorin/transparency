@@ -1,9 +1,8 @@
-import _ from 'underscore'
-import { Manager } from './managers'
-import { DatabaseTypes } from '../actions'
+import { DatabaseTypes } from '../actions/types'
+import { combineReducers } from 'redux';
 
 // Doesnt Serve Much Purpose Now but May in Future
-export class QueryResult {
+class QueryResult {
 	constructor(data){
 		this.sql = data.sql 
 		this.table = data.table 
@@ -12,22 +11,26 @@ export class QueryResult {
 	}
 }
 
-export function databases(state = [], action) {
+function databases(state = [], action) {
   	switch(action.type){
 		case DatabaseTypes.LOAD_DATABASES_SUCCESS:
             return action.databases
         default:
             return state;
 	}
-}
+};
 
-export function result(state = null, action) {
+function query_result(state = null, action) {
   	switch(action.type){
 		case DatabaseTypes.RUN_QUERY_SUCCESS:
-			var result = new QueryResult(action.result)
-			console.log(result)
+			var result = new QueryResult(action.query_result)
             return result
         default:
             return state;
 	}
-}
+};
+
+export const db = combineReducers({  
+    query_result: query_result,
+    databases: databases,
+});

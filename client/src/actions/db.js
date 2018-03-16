@@ -1,20 +1,20 @@
 import moment from 'moment'
+import { apiGetDatabases, apiGetDatabase, apiQuery, apiTableQuery } from '../api'
+import { HttpRequest } from './http'
 import { DatabaseTypes } from './types'
-import { apiGetDatabases, apiGetDatabase, apiQuery } from '../api'
-import {HttpRequest} from './http'
 
-function loadDatabasesSuccess(databases) {
+export function loadDatabasesSuccess(databases) {
     return { type: DatabaseTypes.LOAD_DATABASES_SUCCESS, databases };
-}
-function loadDatabasesError(error) {
+};
+export function loadDatabasesError(error) {
     return { type: DatabaseTypes.LOAD_DATABASES_ERROR, error };
-}
-function runQuerySuccess(result) {
-    return { type: DatabaseTypes.RUN_QUERY_SUCCESS, result };
-}
-function runQueryError(error) {
+};
+export function runQuerySuccess(query_result) {
+    return {type: DatabaseTypes.RUN_QUERY_SUCCESS, query_result};
+};
+export function runQueryError(error) {
     return { type: DatabaseTypes.RUN_QUERY_ERROR, error };
-}
+};
 
 export const getDatabases = function() {
     return function(dispatch) {
@@ -35,11 +35,37 @@ export const getDatabases = function() {
     };
 }
 
-export const query = function(tableId, query = null) {
+export const query_table = function(tableId, query = null) {
     return function(dispatch) {
         dispatch(HttpRequest(true))
 
-        return apiQuery(tableId, query).then(response => {
+        return apiTableQuery(tableId, query).then(response => {
+            dispatch(HttpRequest(false))
+            if(response.error){
+                dispatch(runQueryError(response.error));
+            }
+            else{
+                // Must be Passed As List for Query Set
+                if(response.length == 0){
+                    throw new Error('Unexpected Query Result Response Length')
+                }
+                dispatch(runQuerySuccess(response[0]));
+            }
+        }).catch(error => {
+            dispatch(HttpRequest(false))
+            throw (error);
+        });
+    };
+}
+
+export const query = function(query) {
+    if(!query || String(query).trim() == ""){
+        throw new Error('Must Provide Valid Query')
+    }
+
+    return function(dispatch) {
+        dispatch(HttpRequest(true))
+        return apiQuery(query).then(response => {
             dispatch(HttpRequest(false))
             if(response.error){
             	dispatch(runQueryError(response.error));
@@ -57,6 +83,7 @@ export const query = function(tableId, query = null) {
         });
     };
 }
+
 
 
 

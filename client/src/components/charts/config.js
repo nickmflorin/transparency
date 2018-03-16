@@ -1,75 +1,84 @@
 import _ from 'underscore'
+import Constants from './constants'
 
-export var Constants = {
-    PeerColor : '#3DB987',
-    BenchmarkColor : '#0e90f6'
-}
-
-export class AxisConfig extends Object{
-    constructor(kwargs = {}){
-        super()
-        // this.categories = []
+export class AxisConfig {
+    constructor(title = null){
+        this.title = {text: title}
 
         this.startOnTick = true
         this.endOnTick = true
-
         this.showLastLabel = true
         this.minorTicks = true
-
         this.gridLineWidth = 1
         this.minorTickLength = 4
         this.minorTickPosition = 'outside'
 
-        this.plotLines = kwargs.plotLines || []
-        this.labels = {
-            step: 1,
-            style: {
-                color: '#696969',
-                fontSize: '10px',
-                fontWeight: '300',
-                fontFamily: 'Helvetica'
-            },
-        }
         this.title = {
-            text: null
+            align : 'high',
+            style : Constants.Style.Label
         }
+
+        this.labels = {
+            step: 1, 
+            overflow : 'justify',
+            align: 'center',   
+            style: Constants.Style.Label
+        }
+        this.maxPadding = 0.2
     }
 }
 
 export class ChartConfig{
-    constructor(kwargs) {        
+    constructor(type, options = {}) {        
         this.series = []
-        
+        this.credits = {enabled: false}
+        this.exporting = { enabled: false }
+
         this.chart = {
-            type : kwargs.type
-        }
-        if(!this.chart.type) throw new Error('Must Specify Chart Type')
-        
-        if(kwargs.height){
-            this.chart.height = kwargs.height
+            height : options.height || 400,
+            type : type,
+            zoomType: 'xy', 
+            backgroundColor: null
         }
 
-        this.credits = {'enabled': false}
-        this.colors = [
-            '#ff6383','#50aded', '#fed36b', '#62c7c8', '#a579ff', '#f44336', '#FFE761', '#3DB987', '#ff9800', '#3D5A80', '#E0FBFC', '#293241', '#fccde5', '#d9d9d9', '#bc80bd', '#ccebc5', '#ffed6f', '#195da1', "#F1684E", "#85C8DD", "#D3E0E2", "#E9F6F5", "#EBCBAE", "#18587A", "#FCA7A7", "#359768", "#FF5252", "#B2EBF2", "#FFE495", "#FFC97B"
-        ]
-        var text = kwargs.title || null
-        this.title = {
-            text : text,
-            style : {
-                color: '#696969',
-                fontSize: '12px',
-                fontWeight: '300',
-                fontFamily: 'Helvetica'
-            }
+        this.xAxis = new AxisConfig()
+        this.yAxis = new AxisConfig()
+
+        var pointFormat = '<tr class="tooltip-container">'
+        pointFormat += '<td>'
+        pointFormat += '<i style="color: {series.color}" class="fa fa-circle"></i>'
+        pointFormat += '<span class="tooltip-name"> {series.name} </span>'
+        pointFormat += '<span class="tooltip-value"> {point.y} </span>'
+        pointFormat += '</td>'
+        pointFormat += '</tr>'
+
+        this.tooltip  = {
+            shared: false,
+            useHTML: true,
+            padding: 6,
+            distance: 10,
+            borderRadius: 1,
+            backgroundColor: 'rgba(257,257,257,0.35)',
+            pointFormat: pointFormat,
+            valueDecimals: 5
         }
-        
+
+        this.title = {
+            text : options.title || "",
+            style : Constants.Style.Title
+        }
         this.legend = {
-            itemStyle: {
-                color: '#696969',
-                fontSize: '10px',
-                fontWeight: '300',
-                fontFamily: 'Helvetica'
+            itemStyle: Constants.Style.Legend
+        }
+
+        this.plotOptions = {
+            series: {
+               groupPadding: 0,
+                dataLabels: {
+                    enabled: true,
+                    format: '{point.name}',
+                    style : Constants.Style.Legend
+                }
             }
         }
     }
