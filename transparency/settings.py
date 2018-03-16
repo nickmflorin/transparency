@@ -82,7 +82,12 @@ CORS_ORIGIN_WHITELIST = (
     'transparency:8000',
     'localhost:3000',
      'transparency:3000',
-    '127.0.0.0:3000'
+    '127.0.0.0:3000',
+    'localhost:8000',
+    'transparency:8000',
+    'localhost:3001',
+     'transparency:3001',
+    '127.0.0.0:3001'
 )
 
 CORS_ALLOW_HEADERS = (
@@ -117,12 +122,12 @@ TEMPLATES = [
 
 REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': ('rest_framework.filters.DjangoFilterBackend',),
-    # 'DEFAULT_AUTHENTICATION_CLASSES': (
-    #     'rest_framework.authentication.SessionAuthentication',
-    # ),
-    # 'DEFAULT_PERMISSION_CLASSES': (
-    #    'rest_framework.permissions.IsAuthenticated',
-    # )
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.SessionAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+       'rest_framework.permissions.IsAuthenticated',
+    )
 }
 
 AUTH_PASSWORD_VALIDATORS = [
