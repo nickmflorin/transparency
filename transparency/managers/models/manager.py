@@ -14,7 +14,6 @@ from benchmarks import ManagerBenchmarks
 from peers import ManagerPeers 
 
 import transparency.db as db 
-
 class Manager(Document):
 
 	id = fields.IntField(primary_key = True, required=True)
@@ -75,17 +74,17 @@ class Manager(Document):
 			queried_mgr.name = queried_mgr.name.encode('ascii','ignore')
 
 			manager = Manager.objects.filter(id = queried_mgr.id).first()
-			manager.name = manager.name.encode('ascii','ignore')
-
 			if not manager:
 				print 'Adding New Manager {}'.format(queried_mgr.id)
 				manager = Manager(id = queried_mgr.id, name = queried_mgr.name)
 				manager.save()
 
-			elif manager.name != queried_mgr.name:
-				print 'Manager Name {} Updated to {}'.format(manager.name, queried_mgr.name)
-				manager.name = queried_mgr.name 
-				manager.save()
+			else:
+				manager.name = manager.name.encode('ascii','ignore')
+				if manager.name != queried_mgr.name:
+					print 'Manager Name {} Updated to {}'.format(manager.name, queried_mgr.name)
+					manager.name = queried_mgr.name 
+					manager.save()
 
 		Manager.refresh_relationships()
 		return
