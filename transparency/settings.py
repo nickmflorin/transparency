@@ -8,6 +8,7 @@ PROJECT_PATH = os.path.realpath(os.path.dirname(__file__))
 
 SECRET_KEY = '^zq-2!istmlc@0p1m@a$ko6cw4k8ii6%@ey=&-4$8$jeywava%'
 DEBUG = True
+SERVER = True
 
 WSGI_APPLICATION = 'transparency.wsgi.application' 
 LANGUAGE_CODE = 'en-us'
