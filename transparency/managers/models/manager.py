@@ -65,9 +65,7 @@ class Manager(Document):
 	@staticmethod
 	def refresh(relationships_only = True):
 		print 'Refreshing Managers'
-		Manager.refresh_relationships()
-		return
-		
+
 		queried = Manager.query()
 		print 'Retrieved {} Managers from Database'.format(len(queried))
 
