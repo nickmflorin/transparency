@@ -3,7 +3,7 @@ sys.dont_write_bytecode = True
 from django.conf import settings
 
 class ServerConfig:
-	DRIVER = 'SQL SERVER'
+	DRIVER = '{SQL SERVER}'
 	SERVER='10.13.0.25'
 	UID='Transparency'
 	PWD='RCGTransparency'
@@ -21,7 +21,7 @@ class ReportingConfig:
 	PWD = 'R0ckyReporting'
 
 class ServerReportingConfig:
-	DRIVER = 'SQL SERVER'
+	DRIVER = '{SQL SERVER}'
 	SERVER='10.13.0.25'
 	UID='Reporting'
 	PWD='R0ckyReporting'
