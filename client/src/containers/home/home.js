@@ -21,7 +21,7 @@ import PrivateRoute from '../../PrivateRoute'
 import { Actions } from '../../store'
 import './home.css'
 
-export class Home extends React.Component {
+class Home extends React.Component {
   constructor(props, context){
     super(props, context)
   }
