@@ -41,22 +41,8 @@ if (!checkRequiredFiles([paths.appHtml, paths.appIndexJs])) {
 
 // Tools like Cloud9 rely on this.
 const DEFAULT_PORT = parseInt(process.env.PORT, 10) || 3001;
-console.log(
-  chalk.cyan(
-    `Default Port: ${chalk.yellow(
-      chalk.bold(DEFAULT_PORT)
-    )}`
-  )
-);
-const HOST = process.env.HOST || '0.0.0.0';
-console.log(
-  chalk.cyan(
-    `HOST: ${chalk.yellow(
-      chalk.bold(HOST)
-    )}`
-  )
-);
 
+const HOST = process.env.HOST || '0.0.0.0';
 if (process.env.HOST) {
   console.log(
     chalk.cyan(
@@ -102,8 +88,23 @@ choosePort(HOST, DEFAULT_PORT)
       if (isInteractive) {
         clearConsole();
       }
+      console.log(
+        chalk.cyan(
+          `Default Port: ${chalk.yellow(
+            chalk.bold(DEFAULT_PORT)
+          )}`
+        )
+      );
+      console.log(
+        chalk.cyan(
+          `HOST: ${chalk.yellow(
+            chalk.bold(HOST)
+          )}`
+        )
+      );
+
       console.log(chalk.cyan('Starting the development server...\n'));
-      openBrowser(urls.localUrlForBrowser);
+      //openBrowser(urls.localUrlForBrowser);
     });
 
     ['SIGINT', 'SIGTERM'].forEach(function(sig) {
