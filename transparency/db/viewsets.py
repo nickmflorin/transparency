@@ -20,7 +20,7 @@ class QueriesViewSet(viewsets.ModelViewSet):
 			if not sql:
 				raise Exception('Must Provide SQL to Retrieve Results')
 			query = SavedQuery(user = request.user.id, name = 'new', sql = sql)
-
+		
 		else:
 			query = SavedQuery.objects.filter(id = id).first()
 			if not query:

@@ -10,7 +10,7 @@ SECRET_KEY = '^zq-2!istmlc@0p1m@a$ko6cw4k8ii6%@ey=&-4$8$jeywava%'
 DEBUG = True
 SERVER = True # Set to True When Running on Transparency Server
 
-ALLOWED_HOSTS = ['transparency', '10.13.0.29']
+ALLOWED_HOSTS = ['transparency', '10.13.0.29', 'localhost']
 
 WSGI_APPLICATION = 'transparency.wsgi.application' 
 LANGUAGE_CODE = 'en-us'
@@ -112,7 +112,7 @@ CORS_ALLOW_HEADERS = (
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [PROJECT_PATH + '/templates/'],
+        'DIRS': [BASE_DIR + '/client/public/'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
