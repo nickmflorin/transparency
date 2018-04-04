@@ -84,15 +84,10 @@ MIDDLEWARE = [
 
 CORS_ORIGIN_WHITELIST = (
     'localhost:8000',
-    'transparency:8000',
+    'transparency:3000',
+    'transparency:3001',
     'localhost:3000',
-     'transparency:3000',
-    '127.0.0.0:3000',
-    'localhost:8000',
-    'transparency:8000',
     'localhost:3001',
-     'transparency:3001',
-    '127.0.0.0:3001'
 )
 
 CORS_ALLOW_HEADERS = (

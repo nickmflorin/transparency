@@ -7,8 +7,6 @@ import { NavBar } from '../components/nav'
 
 class Nav extends React.Component {
   render(){
-    console.log('nav bar')
-    console.log(this.props.authErrors)
     return (
       <NavBar {...this.props} />
     )
