@@ -21,8 +21,8 @@ const paths = require('./paths');
 // `publicUrl` is just like `publicPath`, but we will provide it to our app
 // as %PUBLIC_URL% in `index.html` and `process.env.PUBLIC_URL` in JavaScript.
 // Omit trailing slash as %PUBLIC_PATH%/xyz looks better than %PUBLIC_PATH%xyz.
-const publicPath = 'http://localhost:3001/';
-const publicUrl = 'http://localhost:3001/';
+const publicPath = 'http://localhost:3000/';
+const publicUrl = 'http://localhost:3000/';
 
 // Get environment variables to inject into our app.
 const env = getClientEnvironment(publicUrl);
@@ -53,7 +53,7 @@ module.exports = {
     // require.resolve('webpack/hot/dev-server'),
 
     //require.resolve('react-dev-utils/webpackHotDevClient'),
-    require.resolve('webpack-dev-server/client') + '?http://localhost:3001',
+    require.resolve('webpack-dev-server/client') + '?http://localhost:3000',
     require.resolve('webpack/hot/dev-server'),
 
     // Finally, this is your app's code:

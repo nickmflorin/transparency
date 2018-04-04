@@ -43,7 +43,6 @@ module.exports = {
   dotenv: resolveApp('.env'),
   //appBuild: resolveApp('build'), // Comment This to Build for Web Pack Hot Reloading
   appBuild: resolveApp('../assets/bundles'), // Uncomment This to Build for Production
-
   appPublic: resolveApp('public'),
   appHtml: resolveApp('public/index.html'),
   appIndexJs: resolveApp('src/index.js'),
