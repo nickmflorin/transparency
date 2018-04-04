@@ -41,7 +41,21 @@ if (!checkRequiredFiles([paths.appHtml, paths.appIndexJs])) {
 
 // Tools like Cloud9 rely on this.
 const DEFAULT_PORT = parseInt(process.env.PORT, 10) || 3001;
+console.log(
+  chalk.cyan(
+    `Default Port: ${chalk.yellow(
+      chalk.bold(DEFAULT_PORT)
+    )}`
+  )
+);
 const HOST = process.env.HOST || '0.0.0.0';
+console.log(
+  chalk.cyan(
+    `HOST: ${chalk.yellow(
+      chalk.bold(HOST)
+    )}`
+  )
+);
 
 if (process.env.HOST) {
   console.log(
