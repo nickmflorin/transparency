@@ -38,7 +38,6 @@ export class Login extends React.Component {
         fromPath = location.state.from.pathname
       }
     }
-    
     return (
       <div>
         <div className='loading'>

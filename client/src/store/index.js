@@ -17,6 +17,7 @@ import { dbReducer, dbActions } from './db'
 import { requesting, dates, sidebarShowing, toggleSidebar, StartRequest, StopRequest, changeDate, HttpRequest} from './utility'
 
 export * from './api'
+export * from './auth'
 
 const rootReducer = combineReducers({  
     router: routerReducer,

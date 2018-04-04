@@ -16,7 +16,7 @@ export class LoginDropdown extends React.Component {
       PropTypes.number
     ]),
     label: PropTypes.string.isRequired,
-    authErrors: PropTypes.array.isRequired,
+    authErrors: PropTypes.array,
     isAuthenticated: PropTypes.bool.isRequired,
     onLogIn: PropTypes.func.isRequired,
   };
