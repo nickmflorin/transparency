@@ -4,49 +4,47 @@ from underscore import _
 import time
 import datetime 
 
+from pymongo.read_preferences import ReadPreference    
 from mongoengine import Document, EmbeddedDocument, DynamicEmbeddedDocument, fields
 import pymongo
+
 import transparency.utility as utility 
 import transparency.db as db 
 
-from results import ManagerExposureResult
-
-class ManagerCategoryExposurePoint(EmbeddedDocument):
-	name = fields.StringField(required = True) # Asset Class, Sector, etc.
-	gross = fields.FloatField(default=0.0)
-	pct_gross = fields.FloatField(default=0.0)
-	net = fields.FloatField(default=0.0)
-	long = fields.FloatField(default=0.0)
-	short = fields.FloatField(default=0.0)
-
-class ManagerCategoryExposure(EmbeddedDocument):
-	type = fields.StringField(required = True) # Asset Class, Sector, etc.
-	exposures = fields.EmbeddedDocumentListField(ManagerCategoryExposurePoint)
+from manager import Manager
+from process import ManagerExposureResult
 
 class ManagerExposure(Document):
-	manager_id = fields.IntField(required=True) # Manager ID
+
+	manager_id = fields.IntField(required = True)
 	date = fields.DateTimeField(required = True)
-	categories = fields.EmbeddedDocumentListField(ManagerCategoryExposure)
-
-	gross = fields.FloatField(default=0.0)
-	pct_gross = fields.FloatField(default=0.0)
-	net = fields.FloatField(default=0.0)
-	long = fields.FloatField(default=0.0)
-	short = fields.FloatField(default=0.0)
-
-	meta = {
-		'collection' : 'exposures',
-		'ordering': ['-date'],
-		'indexes': [
-			{'fields': ['date','manager_id'], 'unique': True },
-		],
-	}
+	tier = fields.StringField(required = True, choices = ['long','short','gross','net','pct_gross'])
+	value = fields.FloatField(default=0.0)
 
 	class Meta:
 		managed = True 
 		app_label = 'api'
 
-	# Only Filters Exposures Two Layers Deep for Now
+	meta = {
+		'collection' : 'exposures',
+		'ordering': ['-date'],
+		'indexes': [
+			{'fields': ['date', 'manager_id', 'tier'], 'unique': True },
+			{'fields': ['date', 'manager_id'] },
+			{'fields': ['manager_id'] },
+		],
+	}
+
+# To Do: Exposure Groupings Currently Setup as Having Individual Exposures Stored Separately... Might Want to Group in Database So These Work
+# / Are More Consistent with New Serializer Method
+class ManagerExposures(Document):
+	id = fields.IntField(required = True)
+	exposures = fields.ListField(fields.ReferenceField(ManagerExposure))
+
+	meta = {
+		'collection' : 'grouped_exposures',
+	}
+
 	@staticmethod
 	def process(results):
 		exposures = []
@@ -57,92 +55,53 @@ class ManagerExposure(Document):
 
 			# Ignores Unwanted Categories and Invalid Tiers
 			if result.valid:
-				exposure = filter(lambda exp: exp['manager_id'] == result.id and exp['date'] == result.date, exposures)
-				if len(exposure) == 0:
-					exposure = {
-						'date' : result.date, 
-						'manager_id' : result.id,  
-						'categories' : [],
-						'gross' : 0.0,
-						'net' : 0.0,
-						'pct_gross': 0.0,
-						'long' : 0.0,
-						'short' : 0.0
-					}
-					exposures.append(exposure)
-				else:
-					exposure = exposure[0]
-
-				if result.level == 0:
-					exposure[result.tier] = result.value
-				else:
-					if result.level == 1:
-						tp = result.categories[1]
-						name = result.categories[2]
+				exposure = {
+				    'manager_id' : result.id, 
+				    'date' : result.date, 
+				    'value' : result.value,
+				    'tier' : result.tier,
+				}
+				exposures.append(exposure)
 				
-						category = filter(lambda cat: cat['type'] == tp, exposure['categories'])
-						if len(category) == 0:
-							category = { 'type' : result.categories[1], 'exposures' : [] }
-							exposure['categories'].append(category)
-						else:
-							category = category[0]
-
-						point = filter(lambda pt: pt['name'] == name, category['exposures'])
-						if len(point) == 0:
-							point = { 
-								'name' : name,
-								'gross' : 0.0,
-								'net' : 0.0,
-								'pct_gross': 0.0,
-								'long' : 0.0,
-								'short' : 0.0
-							}
-							category['exposures'].append(point)
-						else:
-							point = point[0]
-						point[result.tier] = result.value
 		return exposures
 
-	# Only Supporting Multiple Manager Quries for Now
 	@staticmethod
-	def refresh(managers = [], save = True):
-		query_batch_size = 200
-		bulk_size = 1000
-		managers = managers[:2000]
-		client = pymongo.MongoClient("localhost", 27017, maxPoolSize=50)
-		database = client['peers']
-		collection = database['exposures']
-
-		print 'Clearing Existing Manager Exposures..'
-		collection.remove({})
-		print 'Finished Clearing Existing Manager Exposures'
-
-		saved = []
-		chunks = [managers[x:x+200] for x in xrange(0, len(managers), 200)]
-		for i in range(len(chunks)):
-			print 'Querying Batch {} Out of {}'.format(i+1,len(chunks))
-
-			queryString = """SELECT f.managerid, f.reportdate, f.Tier1, f.Tier2, f.Category1, f.Category2, f.Category3, f.Category4, f.defaultmeasurefilled
-			 FROM Risk.dbo.vFactManagerRisk f 
-			 WHERE f.Tier1 = 'Tier 1 - Exposure' AND f.defaultmeasurefilled IS NOT NULL"""
-			queryString += """ AND f.managerid IN {}""".format(str(tuple([int(mgr.id) for mgr in chunks[i]])))
-
-			results = db.queryRCG(queryString, title="Exposures", db="Diligence.dbo.vFactManagerRisk", notify=False, timer=False)
-
-			# We Dont Have to Use Consistent Currenet Set of Exposures Between Processes Since We Query by New Manager IDs Each Time
-			exposures = ManagerExposure.process(results)
-
-			ids = list(set([exp['manager_id'] for exp in exposures]))
-			if any(id in saved for id in ids):
-				print 'Duplicate IDS Found'
-				import pdb; pdb.set_trace()
-
-			saved.extend(ids)
-			print 'Saving {} Exposures for {} Managers...'.format(len(exposures), len(chunks[i]))
-			collection.insert(exposures)
-
-		return exposures
+	def get_query_string(ids):
+		queryString = """
+			SELECT ManagerID, ReportDate, Tier2, DefaultMeasureFilled
+			FROM Risk.dbo.vFactManagerRisk 
+			WHERE Tier1 = 'Tier 1 - Exposure' AND IsNull(Category1, '') = '' AND DefaultMeasureFilled IS NOT NULL"""
 		
+		queryString += """ AND ManagerID IN {}""".format(str(tuple(ids)))
+		return queryString
+
+	@staticmethod
+	def refresh():
+		batch_size = 500
+
+		managers = list(Manager._get_collection().find({}))
+
+		chunks = [managers[x:x+batch_size] for x in xrange(0, len(managers), batch_size)]
+		for i in range(len(chunks)):
+			batch_prefix = 'Batch {} / {} : '.format(i+1,len(chunks))
+			ids = [int(manager['_id']) for manager in chunks[i]]
+
+			print batch_prefix + 'Clearing Existing Manager Exposures...'
+			ManagerExposure._get_collection().remove({
+			    'manager_id' : { '$in' : ids},                              
+			})
+			print batch_prefix + 'Querying Exposures from Transparency'
+
+			queryString = ManagerExposures.get_query_string(ids)
+			results = db.queryRCG(queryString, title="Exposures", db="Diligence.dbo.vFactManagerRisk", notify=False, timer=False)
+			exposures = ManagerExposures.process(results)
+
+			if len(exposures) != 0:
+				print batch_prefix + 'Saving {} Exposures for {} Managers...'.format(len(exposures), len(ids))
+				ManagerExposure._get_collection().insert(exposures)
+
+		return 
+
+
+
 	
-
-

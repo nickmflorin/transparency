@@ -2,114 +2,101 @@ import React from 'react';
 import _ from 'underscore'
 import PropTypes from 'prop-types';
 
-import BetaBarChartConfig from './config.js'
-import Constants from '../constants.js'
-import BetaChartToolbar from '../../elements/BetaChartToolbar'
-
 import ReactHighcharts from 'react-highcharts';
 import HighchartsMore from 'highcharts-more';
+
+import { BarChartConfig } from '../Config'
 HighchartsMore(ReactHighcharts.Highcharts);
 
-const Conversion = {
-    'year_1' : '1 Year',
-    'year_3' : '3 Years',
-    'year_5' : '5 Years',
-    'total' : 'All'
+const series = (beta, horizons) => {
+    var ser = {'name' : 'Missing', 'data' : []}
+    ser.desc = beta.desc 
+
+    if(beta.to){
+        ser.name = beta.to.name 
+        if(beta.cumulative){
+            _.each(horizons, function(horizon){
+                var cum = _.findWhere(beta.cumulative, { months : horizon })
+                if(cum){
+                    ser.data.push(cum.value)
+                }
+                else{
+                    console.log('Warning: Missing Beta to Manager',beta.to.id,'at Horizon',horizon)
+                    ser.data.push(0.0)
+                }
+            })
+        }
+    }
+    return ser
 }
 
-var config = new BetaBarChartConfig('column', { height: 400 })
-const horizons = ['year_1','year_3','year_5','total']
-config.xAxis.categories = _.map(horizons, function(horizon){
-    return Conversion[horizon]
-})
+const Serieses = (betas, horizons) => {
+    var Serieses = []
+    _.each(betas, function(beta){
+        var Series = series(beta, horizons)
+        Serieses.push(Series)
+    })
+    return Serieses
+}
 
 export class BetaBarChart extends React.Component {
     constructor(props){
         super(props)
+        this.Horizons = [24,36,48,60]
+        this.Conversion = {
+            24 : '2 Years',
+            36 : '3 Years',
+            48 : '4 Years',
+            60 : '5 Years',
+        }
+        var config = new BarChartConfig({ height: 400 })
+
+        var self = this 
+        config.xAxis.categories = _.map(this.Horizons, function(horizon){
+            return self.Conversion[horizon]
+        })
+
         this.state = {
-            active : 'peer',
-            serieses : {
-                peer : [],
-                benchmark : [],
-                general : []
-            },
+            config : config
         }
     }
-    updateChart(manager, serieses){
-        if(this.chart){
-            for(var i = 0; i<this.chart.series.length; i++){
-                if(this.chart.series[i].ref != manager.id){
-                    this.chart.series[i].remove(false)
-                }
-            }
-            for(var i = 0; i<serieses.length; i++){
-                this.chart.addSeries(serieses[i], false)
-            }
-            this.chart.redraw()
+    componentDidMount() {
+        if(this.props.betas && this.props.betas.betas){
+            var series = Serieses(this.props.betas.betas, this.Horizons)
+            var chart = this.refs.chart 
+            var config = this.state.config 
+            config.series = series 
+            this.setState({config : config})
         }
     }
-    removeAll(){
-        if(this.chart){
-            for(var i = 0; i<this.chart.series.length; i++){
-                this.chart.series[i].remove(false)
-            }
-        }
+    // Hack to Make React Charts Animate
+    componentDidUpdate() {
+        const chart = this.refs.chart ? this.refs.chart.getChart() : {}
+        const chartReflow = chart.reflow
+        chart.reflow = () => {}
+        setTimeout(() => (chart.reflow = chartReflow))
     }
-    componentWillReceiveProps(nextProps){
-        var serieses = {peer : [], benchmark : [], general : []}
-        var test = []
-        
-        if(!nextProps.manager || !nextProps.manager.group || (nextProps.manager.group.references && nextProps.manager.group.length == 0)){
-            this.removeAll()
-            this.setState({ manager : nextProps.manager })
-            return
-        }
-
-        if(nextProps.manager && nextProps.manager.group && nextProps.manager.group.references){
-            this.setState({ manager : nextProps.manager })
-
-            const references = nextProps.manager.group.references.slice()
-            for(var i = 0; i<references.length; i++){
- 
-                var name = references[i].manager.name 
-                var desc = references[i].desc 
-                if(desc === undefined){
-                    desc = 'general'
-                }
-
-                var ser = {'name' : name, 'data' : [], 'ref' : nextProps.manager.id}
-                if(references[i].betas){
-                    for(var k = 0; k<horizons.length; k++){
-                        var point = references[i].betas[horizons[k]]
-                        ser.data.push(point)
-                    }
-                    serieses[desc].push(ser)
-                    test.push(ser)
-                }
-            }
-            this.updateChart(nextProps.manager, test)
+    componentWillReceiveProps(props){
+        if(props.betas && props.betas.betas){
+   
+            var series = Serieses(props.betas.betas, this.Horizons)
+            var chart = this.refs.chart 
+            var config = this.state.config 
+            config.series = series 
+            this.setState({config : config})
         }
     }
     afterRender(chart){
-      this.chart = chart 
-    }
-    toggle(e, id){
-        this.setState({'active' : id})
+        this.chart = chart 
     }
     render(){
         return (
-            <div>
-                <BetaChartToolbar 
-                    active={this.state.active}
-                    toggle={this.toggle.bind(this)}
-                />
-                <ReactHighcharts 
-                    isPureConfig config={config} 
-                    ref="chart"
-                    callback={this.afterRender.bind(this)}
-                >
-                </ReactHighcharts>
-            </div>
+            <ReactHighcharts 
+                config={this.state.config} 
+                ref="chart"
+                callback={this.afterRender.bind(this)}
+            >
+            </ReactHighcharts>
         )
     }
 }

@@ -1,3 +1,2 @@
-export * from './config'
-export * from './ManagerComparisonBubbleChart'
-export * from './ReturnsBarChart'
+export * from './NavBar'
+

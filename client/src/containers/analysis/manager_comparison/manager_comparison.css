@@ -1,0 +1,19 @@
+.manager-comparison-top{
+	display: flex;
+}
+.manager-comparison-top .left{
+	margin-right: 10px;
+	width: 650px;
+}
+.manager-comparison-top .right{
+	margin-top: 0px;
+	margin-left: 10px;
+	flex-grow: 100;
+}
+.manager-comparison-bottom{
+	padding: 15px;
+	width: 100%;
+	flex-grow: 100;
+	margin-bottom: 100px;
+}
+

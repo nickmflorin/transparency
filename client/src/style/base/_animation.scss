@@ -1,0 +1,29 @@
+.alert-enter {
+  opacity: 0.01;
+}
+.alert-enter.alert-enter-active {
+  opacity: 1;
+  transition: opacity 500ms ease-in;
+}
+.alert-leave {
+  opacity: 1;
+}
+.alert-leave.alert-leave-active {
+  opacity: 0.01;
+  transition: opacity 300ms ease-in;
+}
+
+.manager-header-enter {
+  opacity: 0.01;
+}
+.manager-header-enter.manager-header-enter-active {
+  opacity: 1;
+  transition: opacity 500ms ease-in;
+}
+.manager-header-leave {
+  opacity: 1;
+}
+.manager-header-leave.manager-header-leave-active {
+  opacity: 0.01;
+  transition: opacity 300ms ease-in;
+}

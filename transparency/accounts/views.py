@@ -3,6 +3,7 @@ sys.dont_write_bytecode = True
 import json
 import jwt
 from rest_framework import views
+from django.views import View
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 
@@ -16,36 +17,43 @@ from models import TransparencyUser
 from serializers import UserSerializer
 
 class Errors:
-	InvalidLogin = 'Invalid Username/Password'
-	NotProvided = "Please Valid Username/Password"
+	InvalidPassword = {'message' : 'The Password Provided is Incorrect', 'field' : 'password'}
+	NotProvided = {'message' : "Please Valid Username/Password", 'field' : 'both'}
+	UsernameDoesNotExist = {'message' : "The Provided Username Does Not Exist", 'field' : 'username'} 
 
-class Login(views.APIView):
+class Login(View):
 	permission_classes = (AllowAny,)
 
 	def post(self, request, *args, **kwargs):
 		response = {}
 		print 'Logging User In'
 
-		if not request.data:
+		username =  request.POST.get('username')
+		password =  request.POST.get('password')
+
+		if not username and not password:
 			print Errors.NotProvided
 			response['error'] = Errors.NotProvided
-			return Response(response, status=400, content_type="application/json")
+			return JsonResponse(response)
 		
-		username = request.data['username']
-		password = request.data['password']
-
 		user = authenticate(username = username, password = password)
 		if not user:
-			print Errors.InvalidLogin
-			response['error'] = Errors.InvalidLogin
-			return Response(response, status=400, content_type="application/json")
+			user_with_username = TransparencyUser.objects.filter(username = username).first()
+
+			if not user_with_username:
+				print Errors.UsernameDoesNotExist
+				response['error'] = Errors.UsernameDoesNotExist
+			else:
+				print Errors.InvalidPassword
+				response['error'] = Errors.InvalidPassword
+			return JsonResponse(response)
 
 		login(request, user)
 
 		response['user'] = UserSerializer(user).data 
-		response['token'] = jwt.encode({'id': response['user']['_id'], 'email': user.email}, "SECRET_KEY")
+		response['token'] = jwt.encode({'id': response['user']['id'], 'email': user.email}, "SECRET_KEY")
 		
-		return Response(response, status=200, content_type="application/json")
+		return JsonResponse(response)
 
 class Logout(views.APIView):
 	permission_classes = (AllowAny,)

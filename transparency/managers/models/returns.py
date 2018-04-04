@@ -3,15 +3,19 @@ sys.dont_write_bytecode = True
 import time
 import datetime 
 from underscore import _
+import numpy as np 
+import pandas as pd 
+import math
+from scipy.stats import skew, kurtosis, norm, genpareto, linregress, pearsonr, scoreatpercentile
 
 from mongoengine import Document, EmbeddedDocument, fields
 import pymongo
 
 import transparency.db as db
-import transparency.utility as utility
+import transparency.utility as utility 
 
-from results import ManagerReturnResult
-from range import Range 
+from process import ManagerReturnResult
+from transparency.config.models import Range 
 
 class ManagerReturn(EmbeddedDocument):
 	date = fields.DateTimeField(required = True)
@@ -27,88 +31,168 @@ class ManagerReturn(EmbeddedDocument):
 		ret = ManagerReturn(date = result.date, value = result.value)
 		return ret
 
+class CumReturn(EmbeddedDocument):
+	value = fields.FloatField(default = 0.0) 
+	months = fields.IntField(required = True)
+	range = fields.EmbeddedDocumentField(Range)
+	series = fields.ListField(fields.EmbeddedDocumentField(ManagerReturn))
+	
+	@staticmethod 
+	def create(returns, range_, months):
+		mini_range = range_.at_lookback(months)
+		cum = CumReturn(months = months, range = mini_range)
+		
+		returns = returns.slice(mini_range, fill_zeros = True)
+		cum.series = returns.series 
+
+		cum.value = returns.total()
+		return cum
+
 class ManagerReturns(EmbeddedDocument):
 	series = fields.ListField(fields.EmbeddedDocumentField(ManagerReturn))
 	range = fields.EmbeddedDocumentField(Range)
 
-	# Returns Series with Dates Present in Dates List
-	def prune(self, dates):
-		pruned = self.prune_(dates)
-		self.series = pruned[:]
-		return 
+	@property
+	def basic_range(self):
+		return Range(start = self.start, end = self.end)
 
-	def prune_(self, dates):
-	
-		# Convert to Tuple Format if 
-		to_prune_with = dates[:]
-		if len(dates) != 0:
-			if type(dates[0])==datetime.date:
-				to_prune_with = [(a.month, a.year) for a in dates]
+	@property 
+	def end(self):
+		if len(self.series) != 0:
+			return max([a.date for a in self.series])
+		return None 
 
-		pruned = []
+	@property 
+	def start(self):
+		if len(self.series) != 0:
+			return min([a.date for a in self.series])
+		return None 
+
+	# Range Must be Valid -> To Do: Maybe Use .create_range so Valid Range Ensured Around Series?
+	def total(self):
+		values = self.values(absolute = False)
+		ret = 1.0
+		for val in values:
+			ret = val * ret
+		return 100.0 * (ret - 1.0)
+
+	def values(self, range_ = None, absolute = True):
+		if not range_:
+			series = self.series[:]
+		else:
+			returns = self.slice(range_)
+			series = returns.series[:]
+		
+		series.sort(key=lambda r: r.date)
+		if absolute:
+			return [float(a.value) for a in series]
+		else:
+			return [1.0 + float(a.value)/100.0 for a in series]
+
+	# Performs Linear Regression of Returns Over Specified Dates
+	def linregress(self, returns, dates = None, manager = None, other = None):
+		beta, intercept, r_value, p_value, stderr = 0.0, 0.0, 0.0, 0.0, 0.0
+
+		# If Not Pruning -> Need to Match Returns Since Dates Might Not Correspond
+		if dates:
+			range_ = Range(start = min(dates), end = max(dates))
+			primary = self.slice(range_, fill_zeros = True)
+			secondary = returns.slice(range_, fill_zeros = True)
+		else:
+			primary, secondary = ManagerReturns.match(self, returns)
+
+		if len(primary.series) != len(secondary.series):
+			raise Exception('Primary and Secondary Series Should be of Same Length and Same Length as Dates')
+		if dates:
+			 if len(primary.series) != len(dates) or len(secondary.series) != len(dates):
+			 	raise Exception('Primary and Secondary Series Should be of Same Length and Same Length as Dates')
+
+		if len(primary.series) != 0 and len(secondary.series) != 0:
+			primary.series.sort(key=lambda r: r.date)
+			secondary.series.sort(key=lambda r: r.date)
+
+			primary_returns = np.array([ret.value for ret in primary.series])
+			secondary_returns = np.array([ret.value for ret in secondary.series])
+
+			beta, intercept, r_value, p_value, stderr = linregress(primary_returns, secondary_returns)
+			beta = float(beta)
+
+			try: 
+				beta = float(beta)
+			except:
+				num_months = 'all'
+				if dates: 
+					num_months = len(dates)
+				print 'Warning: Found Invalid Beta Value for Num Months {}'.format(num_months)
+				beta = 0.0
+
+		return beta, intercept, r_value, p_value, stderr 
+
+	def find(self, month, year):
 		for ret in self.series:
 			date = ret.date.date()
-			if (date.month, date.year) in to_prune_with:
-				pruned.append(ret)
+			if date.month == month and date.year == year:
+				return ret 
+		return None
 
-		return pruned
+	@staticmethod 
+	def match(primary, secondary):
+		primary_dates = [a.date for a in primary.series]
+		secondary_dates = [a.date for a in secondary.series]
+		shared = utility.dates.intersect(primary_dates, secondary_dates)
 
-	def slice(self, start = None, end = None):
+		range_ = Range(start = min(shared), end = max(shared))
+
+		# Shouldnt Need to Fill Zeros
+		primary = primary.slice(range_, fill_zeros = False)
+		secondary = secondary.slice(range_, fill_zeros = False)
+		return primary, secondary
+
+	# Creates Range Using Specified Dates Primarily and With Return Bounds Secondly
+	def create_range(self, start = None, end = None):
+		range_ = Range(start = None, end = None)
+
+		# Prevents Invalid Start/End Dates
 		if len(self.series) != 0:
-			if not start:
-				start = min([ret.date for ret in self.series])
-			if not end:
-				end = max([ret.date for ret in self.series])
+			range_ = Range(start = self.start, end = self.end)
 
-			self.range = Range(start = start, end = end)
-			self.range.validate()
+			# Only Slice Range if Inside Valid Range of Series
+			if start and start > self.start:
+				range_.start = start 
+			if end and end < self.end:
+				range_.end = end 
 
-			dates = self.range.generate_series(format='tuple')
-			self.prune(dates)
-		return
+		return range_
 
-	# Returns Series with Dates Sliced Between Start and End Dates
-	@staticmethod
-	def create_slice(model, range):
-		range.validate()
-		new = ManagerReturns(series = model.series)
+	# Finds Returns In Series That Have Date in the Date List and Creates New List Corresponding to Dates
+	# If Dates Are Missing and Fill Zeros is True, Fills In Zero Return Values for Missing Dates
+	def slice(self, range_, fill_zeros = False):
+		if not range_.valid:
+			raise Exception('Can Only Slice with Valid Ranges')
 
-		end = range.end 
-		if not range.end:
-			end = range.date
+		new = ManagerReturns(series = [], range = Range())
 
-		new.slice(start = range.start , end = end)
+		dates = range_.get_month_series()
+
+		to_prune_with = [(a.month, a.year) for a in dates]
+		
+		for tup in to_prune_with:
+			ret = self.find(tup[0], tup[1])
+			if not ret:
+				if fill_zeros:
+
+					eomonth = utility.dates.last_day_of_month(tup[0], tup[1])
+					ret = ManagerReturn(value = 0.0, date = eomonth)
+					new.series.append(ret)
+			elif ret:
+				new.series.append(ret)
+
+		new.series.sort(key=lambda r: r.date)
+		if len(new.series) != 0:
+			new.range.start = min([a.date for a in new.series])
+			new.range.end = max([a.date for a in new.series])
 		return new
+
 	
-	# Only Supporting Multiple Manager Quries for Now
-	@staticmethod
-	def refresh(managers = []):
-		query_batch_size = 2000
-		chunks = [managers[x:x+query_batch_size] for x in xrange(0, len(managers), query_batch_size)]
-
-		grouped = {}
-		p = utility.progress.Progress('Querying {} Batches'.format(len(chunks)),len(chunks))
-		for chunk in chunks:
-			queryString = """ SELECT f.fundsid, f.fundreturn/100, f.returnyear, f.returnmonth 
-						  FROM diligence.dbo.vperformance f 
-						  WHERE f.fundreturn IS NOT NULL"""
-			queryString += """ AND f.fundsid IN {}""".format(str(tuple([int(mgr['_id']) for mgr in chunk])))
-
-			new_results = db.queryRCG(queryString, title="Returns", db="Diligence.dbo.vPerformance")
-
-			for result in new_results:
-				result = ManagerReturnResult(result)
-
-				if not grouped.get(result['_id']):
-					grouped[result['_id']] = []
-
-				grouped[result['_id']].append({
-				    'date' : result['date'], 
-				    'value' : result['value']
-				})
-			p.update()
-
-		return grouped 
-
 
 

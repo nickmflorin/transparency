@@ -84,7 +84,6 @@ module.exports = {
     // if there are any conflicts. This matches Node resolution mechanism.
     // https://github.com/facebookincubator/create-react-app/issues/253
     modules: ['node_modules', paths.appNodeModules].concat(
-      // It is guaranteed to exist because we tweak it in `env.js`
       process.env.NODE_PATH.split(path.delimiter).filter(Boolean)
     ),
     // These are the reasonable defaults supported by the Node ecosystem.
@@ -95,8 +94,6 @@ module.exports = {
     // for React Native Web.
     extensions: ['.web.js', '.mjs', '.js', '.json', '.web.jsx', '.jsx'],
     alias: {
-      // Support React Native Web
-      // https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
       'react-native': 'react-native-web',
     },
     plugins: [
@@ -111,7 +108,15 @@ module.exports = {
   module: {
     strictExportPresence: true,
     rules: [
-
+      {
+        test: /\.scss$/,
+        include: paths.appSrc,
+        loaders: [
+          require.resolve('style-loader'),
+          require.resolve('css-loader'),
+          require.resolve('sass-loader'),
+        ]
+      },
       // TODO: Disable require.ensure as it's not a standard language feature.
       // We are waiting for https://github.com/facebookincubator/create-react-app/issues/2176.
       // { parser: { requireEnsure: false } },
@@ -133,13 +138,7 @@ module.exports = {
         include: paths.appSrc,
       },
       {
-        // "oneOf" will traverse all following loaders until one will
-        // match the requirements. When no loader matches it will fall
-        // back to the "file" loader at the end of the loader list.
         oneOf: [
-          // "url" loader works like "file" loader except that it embeds assets
-          // smaller than specified limit in bytes as data URLs to avoid requests.
-          // A missing `test` is equivalent to a match.
           {
             test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/],
             loader: require.resolve('url-loader'),
@@ -154,18 +153,11 @@ module.exports = {
             include: paths.appSrc,
             loader: require.resolve('babel-loader'),
             options: {
-              
               // This is a feature of `babel-loader` for webpack (not Babel itself).
-              // It enables caching results in ./node_modules/.cache/babel-loader/
-              // directory for faster rebuilds.
+              // It enables caching results in ./node_modules/.cache/babel-loader/ directory for faster rebuilds.
               cacheDirectory: true,
             },
           },
-          // "postcss" loader applies autoprefixer to our CSS.
-          // "css" loader resolves paths in CSS and adds assets as dependencies.
-          // "style" loader turns CSS into JS modules that inject <style> tags.
-          // In production, we use a plugin to extract that CSS to a file, but
-          // in development "style" loader enables hot editing of CSS.
           {
             test: /\.css$/,
             use: [
@@ -201,14 +193,11 @@ module.exports = {
           // "file" loader makes sure those assets get served by WebpackDevServer.
           // When you `import` an asset, you get its (virtual) filename.
           // In production, they would get copied to the `build` folder.
-          // This loader doesn't use a "test" so it will catch all modules
-          // that fall through the other loaders.
+          // This loader doesn't use a "test" so it will catch all modules that fall through the other loaders.
           {
-            // Exclude `js` files to keep "css" loader working as it injects
-            // its runtime that would otherwise processed through "file" loader.
-            // Also exclude `html` and `json` extensions so they get processed
-            // by webpacks internal loaders.
-            exclude: [/\.(js|jsx|mjs)$/, /\.html$/, /\.json$/],
+            // Exclude `js` files to keep "css" loader working as it injects its runtime that would otherwise processed through "file" loader.
+            // Also exclude `html` and `json` extensions so they get processed by webpacks internal loaders.
+            exclude: [/\.(js|jsx|mjs)$/, /\.html$/, /\.json$/, /\.sass$/, /\.scss$/],
             loader: require.resolve('file-loader'),
             options: {
               name: 'static/media/[name].[hash:8].[ext]',

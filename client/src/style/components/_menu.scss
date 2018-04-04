@@ -1,0 +1,68 @@
+@import './helpers/variables';
+@import './helpers/mixins';
+
+.menu-bar {
+    @extend .zero-spacing;
+
+    background-color: $menu-background;
+    border-bottom: 1px solid $border-color;
+
+    display: flex;
+    width: 100%;
+    z-index: 100;
+    min-height: $menu-height;
+    max-height: $menu-height;
+}
+.manager-search{
+    max-height: $search-height;
+    min-height: $search-height;
+}
+.menu-navigation{
+	display: flex;
+	margin-left: 15px;
+}
+.menu-search-navigation{
+    @include margin($left : 10px, $right : 10px);
+    @include padding($top : 5px, $bottom : 5px);
+    display: flex;
+    flex-grow: 100;
+}
+
+.menu-bar-item {
+    padding: 7px;
+    border-radius: 2px;
+}
+.menu-bar-link{
+    color: $menu-item-color !important;
+
+    font-family: $styled !important;
+    font-size: 12px !important;
+    background-color: transparent !important; // Important to Make Blend with Bootstrap Button Styles
+    
+    border: 1px solid transparent !important;
+    padding: 3px 8px !important;   
+	line-height: 20px !important;
+    display: block;
+}
+.menu-bar-link .caret{
+    margin-left: 15px;
+    position:relative;
+    top: -1.5px
+}
+.menu-icon{
+    margin-right: 14px;
+}
+
+%menu-item-hover{
+    background-color: $menu-item-emphasize-background !important;
+    color: $menu-item-emphasize-color !important;
+    border: 1px solid rgba(0, 0, 0, 0.00) !important;
+    border-radius: 2px !important;
+}
+.menu-bar-item:hover .menu-bar-link, .menu-bar-item:focus .menu-bar-link, .menu-bar-item.active .menu-bar-link{
+    @extend %menu-item-hover;
+} 
+.menu-bar-dropdown:hover .menu-bar-link, .menu-bar-dropdown:focus .menu-bar-link, .menu-bar-dropdown.active .menu-bar-link{
+    @extend %menu-item-hover;
+} 
+

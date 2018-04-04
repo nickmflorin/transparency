@@ -1,0 +1,50 @@
+@import './helpers/variables';
+@import './helpers/mixins';
+
+section {
+    @extend .zero-padding;
+    margin-bottom: $footer-height;
+    margin-top: $header-height;
+    height: calc(100% - #{$footer-height} - #{$header-height}) !important;
+    width: 100% !important;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    position: relative;
+}
+
+.base{
+    display: flex;
+    flex-direction: column;
+}
+
+.menu-content {
+    @extend .zero-spacing;
+    @extend .full-size;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+.content-with-sidebar {
+	@extend .zero-spacing;
+    display: flex;
+    flex-direction: row;
+    height: calc(100% - #{$footer-height}) !important;
+}
+.content {
+	@include linear-transition(0.1s);
+
+	padding: 10px !important;
+	background-color: $background;
+	flex-grow: 100;
+    position: relative;
+
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+.white-content {
+    background-color: $white-background;
+}
+
+.content-under-header {
+    margin-top: 10px;
+}

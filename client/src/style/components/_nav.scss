@@ -1,0 +1,69 @@
+@import '../helpers/variables';
+@import '../helpers/mixins';
+
+.nav-bar {
+    @extend .zero-spacing;
+    background-color: $nav-background;
+    min-height: $header-height;
+    max-height: $header-height;
+    color: $offwhite;
+
+    display: flex;
+    width: 100%;
+    z-index: 10000;
+}
+.nav-bar-left-container {
+    display: flex;
+    flex-direction: row;
+}
+.nav-bar-separator-container {
+    flex-grow: 100;
+}
+.nav-bar-right-container {
+    display: flex;
+}
+.nav-bar-right-buttons-container {
+    @include margin($left:10px, $right:10px)
+    @include padding($top:16px, $bottom:16px)
+    height: 100%;
+}
+.nav-login-button-container {
+    height: 100%;
+    float: right;
+    display: block;
+}
+.nav-bar-logo {
+    @include font($font-family: $brand, $font-weight: 400, $font-size: 22px, $line-height: 60px)
+    letter-spacing: 0.15em;
+    color: $app-logo-color;
+    width: $app-logo-width;
+    text-align: center;
+    display: block;
+}
+.nav-bar-logo:hover, .nav-bar-logo:focus {
+    background: rgba(0, 0, 0, 0.07) !important;
+    color: $app-logo-hover-color !important;
+}
+.nav-bar-open-container {
+    width: 60px;
+}
+.sidebar-open-button {
+    @include font($font-family: $brand, $font-weight: 400, $font-size: 22px, $line-height: 24px)
+    @include padding($top: 18px, $bottom: 18px)
+    background-color: $brand-color;
+    background: rgba(0, 0, 0, 0.07) !important;
+    color: $app-logo-color;
+
+    position: relative;
+    display: block;
+
+    padding-top: 18px !important;
+    padding-bottom: 18px !important;
+    text-align: center;
+    z-index: 1
+}
+.sidebar-open-button:hover,
+.sidebar-open-button:active {
+    background: none !important;
+    color: $app-logo-hover-color !important;
+}

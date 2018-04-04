@@ -8,6 +8,7 @@ import pandas as pd
 
 from query import queryRCG, queryRCGReporting
 from results import DatabaseTableResult
+from transparency.accounts.models import TransparencyUser
 
 # Results from Actual Query of Database
 class QueryResults(Document):
@@ -15,30 +16,50 @@ class QueryResults(Document):
 	table = fields.ReferenceField('DatabaseTable')
 	columns = fields.ListField(fields.StringField())
 	results = fields.ListField(fields.DynamicField())
+	
+	limit = fields.IntField(required=False)
 
-	LIMIT = 200
+	warning = fields.StringField(required=False)
+	error = fields.StringField(required=False)
 
-	def retrieve(self, limit = False):
+	def retrieve(self, limit = None):
 		if not self.sql:
 			raise Exception('Cannot Retrieve Results for Missing SQL')
 
 		queried = queryRCGReporting(self.sql, columns = True)
 
 		self.columns = queried['columns'] 
-		self.results = queried['results'] 
-		if limit:
-			 self.results = self.results[:QueryResults.LIMIT]
+		results = queried['results'] 
+		if limit and len(results) > limit:
+			self.warning = 'Query Returned {} Rows... Top {} Shown Here'.format(str(len(results)), str(limit))
+			results = results[:limit]
+			
+		self.results = []
+		for res in results:
+			row = {}
+			for i in range(len(self.columns)):
+				row[self.columns[i]] = res[i]
+			self.results.append(row)
 
-		formatted = []
-		for res in self.results:
-			row = []
-			for element in res:
-				row.append(element)
-			formatted.append(row)
-
-		self.results = formatted
-		self.results = [list(a) for a in self.results]
 		return
+
+class SavedQuery(Document):
+	user = fields.IntField(required=True)
+	createdAt = fields.DateTimeField(required = True)
+	name = fields.StringField(required=True)
+	sql = fields.StringField(required=True)
+
+	meta = {
+		'collection' : 'queries',
+		'indexes': [
+			{'fields': ['$name', "$user"]}
+		]
+	}
+
+	def run(self, limit = None):
+		results = QueryResults(sql = self.sql, limit = limit)
+		results.retrieve()
+		return results
 
 class DatabaseTable(Document):
 
@@ -61,20 +82,7 @@ class DatabaseTable(Document):
 		sql = "SELECT Top 5 * FROM {}".format(self.query_name)
 
 		results = QueryResults(table = self.id, sql = sql, columns = [])
-		queried = queryRCGReporting(sql, columns = True)
-
-		results.results = queried['results'] 
-		formatted = []
-		for res in results.results:
-			row = []
-			for element in res:
-				row.append(element)
-			formatted.append(row)
-
-		results.results = formatted
-		results.results = [list(a) for a in results.results]
-
-		results.columns = queried['columns'] 
+		results.retrieve()
 		return results
 
 class Database(Document):
@@ -92,7 +100,7 @@ class Database(Document):
 		{'id' : 'Clients', 'name' : 'Clients'},
 		{'id' : 'RCGIndices', 'name' : 'RCG Indices'},
 		{'id' : 'Research', 'name' : 'Research'},
-		{'id' : 'Risk', 'name' : 'Research'}
+		{'id' : 'Risk', 'name' : 'Risk'}
 	]
 
 	@staticmethod

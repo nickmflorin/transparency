@@ -2,6 +2,9 @@ import moment from 'moment'
 import _ from 'underscore'
 
 export const Utilities = {
+    toTitleCase : function(str){
+        return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+    },
     percentify : function(value) {
         if (!value && value !== 0.0) {
             return value

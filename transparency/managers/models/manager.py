@@ -2,18 +2,18 @@ import sys
 sys.dont_write_bytecode = True
 import datetime 
 import time 
-from underscore import _
-import unicodedata
 
-from mongoengine import Document, EmbeddedDocument, ReferenceField, fields
-import pymongo
-
-from strategy import Strategy, SubStrategy
-from returns import ManagerReturns, ManagerReturn
-from benchmarks import ManagerBenchmarks 
-from peers import ManagerPeers 
+from mongoengine import Document, EmbeddedDocument, fields
+import multiprocessing 
 
 import transparency.db as db 
+import transparency.utility as utility 
+
+from strategy import Strategy, SubStrategy
+from returns import  ManagerReturns, ManagerReturn
+
+from process.managers import ManagerProcess
+
 class Manager(Document):
 
 	id = fields.IntField(primary_key = True, required=True)
@@ -40,131 +40,26 @@ class Manager(Document):
 		app_label = 'api'
 
 	@staticmethod
-	def query():
+	def refresh(strategy = True, substrategy = True, returns = True):
+		batch_size = 1000
+
 		queryString = """ SELECT DISTINCT FundsID, FundName FROM {} ORDER BY FundsID desc""".format(Manager.database)
-		results = db.queryRCG(queryString, title="Managers", db=Manager.database)
+		results = db.queryRCG(queryString, title="Managers", db=Manager.database, notify=True, timer=True)
+		print 'Retrieved {} Managers from Trasnparency Database'.format(len(results))
 
-		if len(results) == 0:
-			print 'Error: Did Not Retrieve Any Results from {}'.format(Manager.database)
-			return None
+		batches = [results[x:x+batch_size] for x in xrange(0, len(results), batch_size)]
+		processes = []
+		for i in range(len(batches)):
+			proc = ManagerProcess(batches[i], i+1, len(batches))
+			p = multiprocessing.Process(target=proc.process)
+			processes.append(p)
 
-		managers = []
-		for result in results:
-			result = {
-				'id' : int(result[0]),
-				'name' : result[1]
-			}
-			result['name'] = result['name'].encode('ascii','ignore')
-			manager = Manager(id = result['id'], name = result['name'])
-			managers.append(manager)
+		for process in processes:
+			process.start()
+		for process in processes:
+			process.join()
 
-		return managers 
-
-	# Refreshes Managers in Application DB from Query
-	# Here We Might Want to Refresh Returns Separately Before Managers,
-	# and Reference Returns from MongoDB Intstead of Returns from SQL Database
-	@staticmethod
-	def refresh(relationships_only = True):
-		print 'Refreshing Managers'
-
-		queried = Manager.query()
-		print 'Retrieved {} Managers from Database'.format(len(queried))
-
-		for queried_mgr in queried:
-			queried_mgr.name = queried_mgr.name.encode('ascii','ignore')
-
-			manager = Manager.objects.filter(id = queried_mgr.id).first()
-			if not manager:
-				print 'Adding New Manager {}'.format(queried_mgr.id)
-				manager = Manager(id = queried_mgr.id, name = queried_mgr.name)
-				manager.save()
-
-			else:
-				manager.name = manager.name.encode('ascii','ignore')
-				if manager.name != queried_mgr.name:
-					print 'Manager Name {} Updated to {}'.format(manager.name, queried_mgr.name)
-					manager.name = queried_mgr.name 
-					manager.save()
-
-		Manager.refresh_relationships()
 		return
-
-	@staticmethod
-	def refresh_relationships():
-		print 'Refreshing Manager Relationships'
-
-		client = pymongo.MongoClient("localhost", 27017, maxPoolSize=50)
-		db = client['peers']
-		collection = db['managers']
-
-		print 'Retrieving Managers'
-		managers = list(collection.find({}))
-
-		print 'Retrieving Returns'
-		returns = ManagerReturns.refresh(managers = managers)
-
-		print 'Retrieving Benchmarks'
-		benchmarks = ManagerBenchmarks.query(managers) 
-
-		print 'Retrieving Peers'
-		peers = ManagerPeers.query(managers) 
-
-		print 'Retrieving Strategies'
-		strategies = Strategy.query(managers = managers)
-
-		print 'Retrieving Sub Strategies'
-		substrategies = SubStrategy.query(managers = managers)
-
-		bulk = collection.initialize_unordered_bulk_op()
-		for manager in managers:
-			setter = {
-				'benchmarks': [], 
-				'peers': [], 
-				'substrategy' : None,
-				'strategy' : None,
-				'returns' : {'series' : []},
-			}
-
-			if returns.get(manager['_id']):
-				setter['returns']['series'] = returns[manager['_id']]
-
-			peers_ = peers.get(manager['_id'], [])
-			for id in peers_:
-				peerModel = Manager.objects.filter(id = id).first()
-				if not peerModel:
-					print 'Warning: Found Peer {} for Manager {} That is Not Saved Yet... Dropping'.format(id, manager['_id'])
-				else:
-					setter['peers'].append(peerModel.id)
-
-			bmarks = benchmarks.get(manager['_id'], [])
-			for id in bmarks:
-				benchmarkModel = Manager.objects.filter(id = id).first()
-				if not benchmarkModel:
-					print 'Warning: Found Benchmark {} for Manager {} That is Not Saved Yet... Dropping'.format(id, manager['_id'])
-				else:
-					setter['benchmarks'].append(benchmarkModel.id)
-
-			setter['strategy'] = strategies.get(manager['_id'])
-			if not setter['strategy']:
-				print 'Warning: Missing Strategy for Manager {}'.format(manager['_id'])
-			else:
-				setter['strategy'] = setter['strategy']['id']  
-
-			setter['substrategy'] = substrategies.get(manager['_id'])
-			if setter['substrategy']:
-				setter['substrategy'] = setter['substrategy']['id'] 
-
-			bulk.find({'_id': manager['_id']}).update({
-				'$set': setter
-			})
-
-		print 'Executing Bulk Save...'
-		bulk.execute()
-		print 'Bulk Save Finished...'
-
-		return 
-
-	
 
 
 	

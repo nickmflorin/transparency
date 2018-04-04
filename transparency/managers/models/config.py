@@ -1,29 +1,10 @@
-class ExposureSettings:
-	Tier1 = 'Tier 1 - Exposure'
-	Tiers = {
-		 'Economic Net Exposure':'net',
-		 'Economic Gross Exposure':'gross',
-		 '% Gross Exposure':'pct_gross',
-		 'Economic Long Exposure':'long',
-		 'Economic Short Exposure': 'short'
-	}
-	Categories = {
-		'Asset Category' : 'asset',
-		'Market Cap' : 'market_cap',
-		'Sector' : 'sector',
-		'Region' : 'region',
-		'Strategy' : 'strategy',
-		'Currency' : 'currency'
-	}
-
-	@staticmethod 
-	def convert_tier(tier):
-		return ExposureSettings.Tiers.get(tier, 'invalid')
-
-	@staticmethod 
-	def convert_category(category):
-		# This Will Happen for Categories That We Do Not Want
-		if not ExposureSettings.Categories.get(category):
-			return 'invalid'
-
-		return ExposureSettings.Categories[category]
+class ManagerGroupConfig:
+	groups = [
+		{'id' : 'common', 'name' : 'Common Indices', 'desc' : 'Common indices used for comparing manager betas', 'managers' : [
+			1772, # SP500
+			27185, # MSCI ACWI
+			26149, # MSCI EM
+			2492, # ML High Yield
+			26383, # Dow Jones
+		]}
+	]

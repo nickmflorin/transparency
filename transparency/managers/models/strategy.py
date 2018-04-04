@@ -7,7 +7,7 @@ from rest_framework import serializers, response, filters, viewsets
 import time 
 import datetime 
 import transparency.db as db
-from results import StrategyAssignmentResult, StrategyResult, SubStrategyResult
+from process import StrategyAssignmentResult, StrategyResult, SubStrategyResult
 
 class Strategy(Document):
 	id = fields.IntField(primary_key = True, required=True) # ID is Enum ID from DB
@@ -23,32 +23,6 @@ class Strategy(Document):
 
 	def __str__(self):
 		return 'Strategy : %s, %s' % (self.id, self.name)
-
-	# Queries Strategy Assignments for Individual Managers
-	@staticmethod 
-	def query(managers = []):
-		chunks = [managers[x:x+1000] for x in xrange(0, len(managers), 1000)]
-		assignments = {}
-
-		for chunk in chunks:
-			queryString = """SELECT FundsID, StrategyEnumID FROM Diligence.dbo.Funds"""
-			queryString = queryString + """ WHERE FundsID IN {}""".format(str(tuple([int(mgr['_id']) for mgr in chunk])))
-
-			results = db.queryRCG(queryString, title="Strategies", db="Diligence.dbo.Funds")
-			for result in results:
-				assignment = StrategyAssignmentResult.from_result(result)
-				if assignment:
-					if assignments.get(assignment['managerID']):
-						print 'Warning: Found Multiple Strategy Assignments for Manager {}'.format(assignment['managerID'])
-						continue 
-
-					model = Strategy.objects.filter(id = assignment['id']).first()
-					if model:
-						assignments[assignment['managerID']] = assignment
-					else:
-						print 'Warning: Strategy {} Not in Database... Need to Refresh Strategies First'.format(assignment['id'])
-		
-		return assignments
 
 	# Queries and Refreshes Strategy Models 
 	@staticmethod 
@@ -98,31 +72,6 @@ class SubStrategy(Document):
 	meta = {
 		'collection' : 'substrategies',
 	}
-
-	# Queries Strategy Assignments for Individual Managers
-	@staticmethod 
-	def query(managers = []):
-		assignments = {}
-
-		queryString = """SELECT FundsID, Strategy2EnumID FROM Diligence.dbo.Funds"""
-		queryString = queryString + """ WHERE FundsID IN {}""".format(str(tuple([int(mgr['_id']) for mgr in managers])))
-
-		results = db.queryRCG(queryString, title="Sub Strategies", db="Diligence.dbo.Funds")
-		for result in results:
-			assignment = StrategyAssignmentResult.from_result(result)
-
-			if assignment:
-				if assignments.get(assignment['managerID']):
-					print 'Warning: Found Multiple Sub Strategy Assignments for Manager {}'.format(assignment['managerID'])
-					continue 
-
-				model = SubStrategy.objects.filter(id = assignment['id']).first()
-				if model:
-					assignments[assignment['managerID']] = assignment
-				else:
-					print 'Warning: Strategy {} Not in Database... Need to Refresh SubStrategies First'.format(assignment['id'])
-	
-		return assignments
 
 	@staticmethod 
 	def refresh():

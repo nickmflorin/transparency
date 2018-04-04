@@ -3,10 +3,38 @@ import calendar
 from datetime import date, timedelta
 from dateutil import relativedelta
 
-def last_day_of_month(month, year):
+def tuplifi(date):
+	return (d.month, d.year)
+
+def tuplify(dates):
+	return [tuplifi(d) for d in dates]
+
+# Returns Date in DATETIME Format... Not Date -> Important to Keep Consistent
+def last_day_of_month(month = None, year = None, date = None,):
+	missing_month = not month and month != 0 
+	missing_year = not year and year != 0 
+
+	if not date and (missing_year or missing_month):
+		raise Exception('Must Specify Either Year & Month or Date')
+
+	if date:
+		month = date.month 
+		year = date.year 
+
 	last_day = calendar.monthrange(int(year),int(month))[1]
 	dt = datetime.date(int(year), int(month), last_day) 
-	return dt
+	return datetime.datetime.combine(dt, datetime.datetime.min.time())
+
+def stringify(date):
+	return date.strftime("%Y-%m-%d")
+
+# Returns Date in DATETIME Format... Not Date -> Important to Keep Consistent
+def parse(string):
+	try:  
+		return datetime.datetime.strptime(string, '%Y-%m-%d')
+	except:
+		print 'Invalid Date Format Supplied'
+		return None 
 
 def intersect(a, b):
 
@@ -21,39 +49,5 @@ def intersect(a, b):
 	intersection = list(set(a) & set(b))
 
 	return [back_convert(ii) for ii in intersection]
-
-def last_day_of_last_month(current):
-    first_day = current.replace(day=1)
-    prev_month_lastday = first_day - datetime.timedelta(days=1)
-    return prev_month_lastday
-
-def tuplify(dates):
-	return [(d.month, d.year) for d in dates]
-	
-# Generates End of Month Dates Starting at Current Date and Looking Back Number of Months
-def generate_lookback_end_of_month_dates(current, num_months):
-	end = last_day_of_month(current.month, current.year)
-	
-	dates = []
-	for i in range(num_months):
-		previous = end - relativedelta.relativedelta(months=i)
-		dates.append(previous)
-
-	dates.reverse()
-	return dates
-
-# Generates End of Month Dates That Are Before Today and In Given Year
-# Used for YTD
-def generate_end_of_month_dates_for_year():
-	dates = []
-	today = datetime.date.today()
-
-	for i in range(1,12):
-		new_date = last_day_of_month(i, today.year)
-		if(new_date < today):
-			dates.append(new_date)
-
-	return dates 
-	
 
 

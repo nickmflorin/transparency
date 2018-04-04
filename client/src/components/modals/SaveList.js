@@ -1,66 +1,84 @@
 import React from 'react';
-import { connect } from 'react-redux'
+import CustomModal from './CustomModal'
+import PropTypes from 'prop-types';
 import _ from 'underscore'
-
-import CustomModal from './modal'
-import { apiSaveManagerList } from '../../api'
-
-var qs = require('qs');
+import { Types } from '../../store/lists'
 
 export class SaveListModal extends React.Component {
 	constructor(props, context){
 		super(props, context)
 		this.state = {
-			error : null
+			error : null, 
+			warning : null
 		}
 	}
-	finish(){
+	static propTypes = {
+		 onClose: PropTypes.func.isRequired,
+		 show: PropTypes.bool.isRequired,
+		 list: PropTypes.object,
+		 user: PropTypes.object.isRequired,
+		 saveNewManagerList: PropTypes.func.isRequired,
+	};
+	validate(){
 		var name = this.refs.listname.value 
 		if(!name || String(name).trim() == ""){
-			console.log('Must Enter a Name to Save')
-			return
+			this.setState({ error : 'Must Enter a Name to Save' })
+			return false 
 		}
-		var managers = this.props.managers 
-		if(!managers || managers.length == 0){
-			console.log('Cannot Save Empty or Missing List')
-			return
+		var list = this.props.list 
+		if(!this.props.list || this.props.list.managers.length == 0){
+			this.setState({ error : 'Cannot Save Empty or Missing List' })
+			return false 
 		}
-		var ids = _.pluck(managers, 'id')
-
-		apiSaveManagerList(ids, name).then(response => {
-            if(response.error){
-                console.log('Error Saving Manager List')
-                this.setState({ error : response.error })
-            }
-            else{
-            	this.props.onClose()
-                this.props.addManagerList(response)
-            }
-        }).catch(error => {
-            throw (error);
-        });
+		return true 
+	}
+	finish(){
+		this.setState({ error : null })
+		const valid = this.validate()
+		if(valid){
+			var name = this.refs.listname.value 
+			var self = this 
+			
+			this.props.saveNewManagerList(name).then((action) => {
+				if (action.type != Types.list.new.success) {
+					self.setState({ error : action.error })
+				}
+	            else{
+	            	self.props.onClose()
+	            }
+			})
+		}
 	}
 	render(){
+		var notification = null, subnotification = null;
+		if(this.props.list){
+			if(this.props.user.id != this.props.list.user.id){
+				notification = "Cannot overwrite list created by " + this.props.list.user.username + "..."
+				subnotification = "Must save the list as another name."
+			}
+		}
+		
 		return (
-		    <CustomModal
-		      title="Save Manager List"
-	          show={this.props.show}
-	          error={this.state.error}
-	          onClose={this.props.onClose}
-	          finishButtonName="Save"
-	          finish={this.finish.bind(this)}
-	          content={
-	            <form id='new-client-form'>
-                  <div className="modal-input-group-vertical">
-                      <label>List Name:</label>
-                      <input name="name" type="text" ref="listname" placeholder="Create a name for this list"></input>
-                      <p className='detail'>e.g. My New Manager List</p>
-                  </div>
-                </form>
-	          }
-	        />
+			<CustomModal
+			  title="Save Manager List"
+			  show={this.props.show}
+			  error={this.state.error}
+			  notification={notification}
+			  subnotification={subnotification}
+			  warning={this.state.warning}
+			  onClose={this.props.onClose}
+			  finishButtonName="Save"
+			  finish={this.finish.bind(this)}
+			>
+				<form>
+				  <div className="modal-input-group">
+					  <label>List Name:</label>
+					  <input name="name" type="text" ref="listname" placeholder="Create a name for this list"></input>
+					  <p className='detail'>e.g. My New Manager List</p>
+				  </div>
+				</form>
+			</CustomModal>
 		)
 	}
 }
 
-export default SaveListModal;

@@ -1,0 +1,151 @@
+@import './helpers/variables';
+@import './helpers/mixins';
+
+.sidebar-caret {
+    margin-right: 3px;
+}
+.sidebar-icon {
+    font-size: 16px;
+    line-height: 16px;
+    height: 16px;
+    width: 16px;
+    text-align: center;
+    margin-right: 5px;
+}
+
+.sidebar-container {
+    @include linear-transition(0.1s)
+    max-width: $sidebar-width;
+    min-width: $sidebar-width;
+    position: relative;
+    display: flex;
+    border: none;
+    border-right: $sidebar-border;
+}
+.sidebar-panel {
+    width: 100% !important;
+    max-height: 100% !important;
+    border-radius: 0px !important;
+    background-color: $sidebar-background;
+}
+.sidebar {
+    width: 100% !important;
+    color: white !important;
+    z-index: 10000;
+    text-shadow: none !important;
+}
+.sidebar-item-panel {
+    @extend .zero-padding;
+    @include margin($bottom:10px)
+
+    color: $child-color;
+    border: none;
+    font-size: 13px !important;
+}
+.sidebar-search-panel {
+    @extend .zero-padding;
+    @include margin($bottom:10px)
+
+    color: $child-color;
+    border: none;
+    font-size: 11px !important;
+}
+
+.sidebar-link-format {
+    display: flex;
+    border: 0px solid rgba(255, 255, 255, 1.0);
+    border-radius: 1px !important;
+    color: inherit !important;
+}
+
+.sidebar-label-format {
+    text-align: left;
+    flex-grow: 100;
+    font-weight: 400;
+    @extend .smooth-font;
+}
+
+.sidebar-item {
+    width: 100% !important;
+    @extend .smooth-font;
+
+    &.parent {
+        background-color: $parent-background;
+        color: $parent-color;
+
+        .sidebar-link{
+            @extend .sidebar-link-format;
+            padding: 10px !important;
+            font-size: 12px;
+            font-weight: 400;
+
+            &:hover, &:focus {
+                background-color: $parent-emphasize-background;
+                color: $parent-emphasize-color;
+            }
+
+            .sidebar-label {
+                @extend .sidebar-label-format;
+                font-size: 12px;
+                line-height: 16px;
+                margin-left: 5px; // Only for Caret
+            }
+        }
+    }
+    
+
+    &.child {
+        background-color: $child-background;
+        color: $child-color;
+        
+        .sidebar-link {
+            @extend .sidebar-link-format;
+            padding: 8px !important;
+            border: 1px solid transparent;
+            border-radius: 2px;
+
+            .sidebar-label {
+                @extend .sidebar-label-format;
+                font-size: 11px;
+                line-height: 14px;
+                font-family: $plain !important;
+            }
+
+            &:hover, &:focus {
+                background-color: $child-emphasize-background;
+                color: $child-emphasize-color;
+            }
+            &.active{
+                background-color: $child-active-background;
+                border-top: $child-emphasize-border;
+                border-bottom: $child-emphasize-border;
+            }
+        }
+    }
+
+    &.search {
+        .sidebar-link {
+            @extend .sidebar-link-format;
+            background-color: $child-background;
+            color: $child-color;
+            padding: 8px;
+
+            &:hover, &:focus, &.active {
+                background-color: $child-emphasize-background;
+                color: $child-emphasize-color;
+            }
+
+            .sidebar-label {
+                @extend .sidebar-label-format;
+                font-family: $plain !important;
+                font-size: 10px;
+                line-height: 12px;
+            }
+        }
+    }
+}
+
+
+
+
+

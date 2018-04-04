@@ -1,0 +1,75 @@
+// Colors
+$brand-color:                   	#0159b3;
+$blue: 								#0159b3; 
+$default-color:						#f0f0f0;
+$primary-color:                     #515052;
+$secondary-color:                   #5a5a5a;
+$offwhite:                          #F2F2F2;
+
+$nav-background:					lighten($brand-color, 4%);
+$footer-background:					lighten($brand-color, 4%);
+
+$background:                        rgba(236, 236, 236, 0.35);
+$white-background:					rgba(240, 240, 240, 0.2); // Used for Pages Where Gray Background is Too Intense from Lack of Panels
+$border-color:                      rgb(197, 197, 197);
+$basic-border:                      1px solid rgb(197, 197, 197);
+$light-border: 						1px solid #EEE;	
+$thin-border: 						0.1rem solid rgb(197, 197, 197);
+
+$gray-shade: 						rgba(234, 234, 234, 0.5);
+$offwhite:                          #fcfcfc;
+$gray:                              #f2f2f2;
+$yellow:                            #FFE761;
+$green:                             #3DB987;
+$orangered:                         #F46C43;
+$orange:                            #ff9800;
+$red:                               rgb(255, 92, 80);
+
+// Menu and Side Bar
+$menu-background:         			rgba(242, 242, 242, 1.0);
+$sidebar-background:        		#919191;
+$sidebar-border:					1px solid #EFEFEF;
+
+$menu-item-color:         	    	#777;
+$menu-item-emphasize-background:    rgba(86, 86, 86, 0.1);
+$menu-item-emphasize-color:	 		#444;
+
+$child-color:						#FFF;
+$child-background:          		transparent;
+$child-emphasize-background: 		rgba(220, 220, 220, 0.3);
+$child-active-background: 			rgba(235, 235, 235, 0.35);
+$child-emphasize-color: 			$menu-item-emphasize-color;
+$child-emphasize-border:			0.05rem solid #efefef85;
+$parent-background:                 rgba(121, 121, 121, 0.7);
+$parent-color:                      #FFF;
+$parent-emphasize-color:            $parent-color;
+$parent-emphasize-background:       darken($parent-background, 5%);
+
+
+// App Logo and Nav Bar
+$app-logo-color:				     #FFFFFF;
+$app-logo-hover-color:		         #e6e6e6;
+
+// Modal Colors
+$modal-body-background:				#FFFFFF;
+$modal-header-background:			lighten($blue, 5%);
+$modal-border:						1px solid rgba(0, 0, 0, .2);
+
+// Panel Colors
+$panel-header-background:			#f4f4f4;
+$panel-background:					$offwhite;
+$panel-shadow:						1px 1px 1px rgba(0, 0, 0, 0.1);
+$panel-border:						0.05em solid #c5c5c5;
+
+// Table Variable Colors
+$negative-color: red;
+$positive-color: #282828;
+$table-border-color: opacify($border-color, 0.75);
+$table-cell-hover-color: rgba(96, 173, 255, 0.4);
+$table-cell-tint-color: rgba(0, 123, 255, 0.15);
+$table-cell-alternate-color: rgba(204, 204, 204, 0.25);
+
+$overlay-background:			rgba(55,55,55,1.0);
+
+$input-group-addon-background:		rgba(244, 244, 244, 0.4);
+$input-group-addon-icon-color: 	    #808080;

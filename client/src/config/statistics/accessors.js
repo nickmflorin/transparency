@@ -1,16 +1,6 @@
 import _ from 'underscore'
+import moment from 'moment'
 import {Utilities} from '../../utilities'
-
-export const TypeAccessor = {
-    accessor : function(manager){
-        if (manager.peer) return 'Peer'
-        else if (manager.benchmark) return 'Benchmark'
-    },
-    value : function(manager){
-        if (manager.peer) return 'Peer'
-        else if (manager.benchmark) return 'Benchmark'
-    }
-}
 
 export const StrategyAccessor = {
     accessor : function(manager){
@@ -22,6 +12,57 @@ export const StrategyAccessor = {
         if (manager.strategy){
             return manager.strategy.name
         }
+    }
+}
+
+export const RangeAccessor = {
+    accessor : function(manager){
+        if (manager.returns) {
+            var start = "", end = ""
+            if(manager.returns.range && manager.returns.range.start){
+                start = new moment(manager.returns.range.start)
+                if(start.isValid()){
+                    start = start.format('YYYY-MM-DD')
+                }
+                else{
+                    start = ""
+                }
+            }
+            if(manager.returns.range && manager.returns.range.end){
+                end = new moment(manager.returns.range.end)
+                if(end.isValid()){
+                    end = end.format('YYYY-MM-DD')
+                }
+                else{
+                    end = ""
+                }
+            }
+        }
+        return start + ' - ' + end
+    },
+    value : function(manager){
+        if (manager.returns) {
+            var start = "", end = ""
+            if(manager.returns.range && manager.returns.range.start){
+                start = new moment(manager.returns.range.start)
+                if(start.isValid()){
+                    start = moment.format('YYYY-MM-DD')
+                }
+                else{
+                    start = ""
+                }
+            }
+            if(manager.returns.range && manager.returns.range.end){
+                end = new moment(manager.returns.range.end)
+                if(end.isValid()){
+                    end = moment.format('YYYY-MM-DD')
+                }
+                else{
+                    end = ""
+                }
+            }
+        }
+        return start + ' - ' + end
     }
 }
 
@@ -51,14 +92,20 @@ export function ReturnStatsAccessor(key) {
         accessor : function(manager){
             if (manager.returns && manager.returns.stats) {
                 if (manager.returns.stats.cumulative) {
-                    return Utilities.percentify(manager.returns.stats.cumulative[key])
+                    var cum = _.findWhere(manager.returns.stats.cumulative, { months : key })
+                    if(cum){
+                        return Utilities.percentify(cum.value)
+                    }
                 }
             }
         },
         value : function(manager){
             if (manager.returns && manager.returns.stats) {
                 if (manager.returns.stats.cumulative) {
-                    return manager.returns.stats.cumulative[key]
+                    var cum = _.findWhere(manager.returns.stats.cumulative, { months : key })
+                    if(cum){
+                        return cum.value
+                    }
                 }
             }
         }
@@ -66,4 +113,4 @@ export function ReturnStatsAccessor(key) {
     return this 
 }
 
-export default { ReturnStatsAccessor, Accessor, StrategyAccessor, TypeAccessor}
+export default { ReturnStatsAccessor, Accessor, StrategyAccessor, RangeAccessor }

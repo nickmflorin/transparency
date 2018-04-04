@@ -3,7 +3,6 @@ import _ from 'underscore'
 import moment from 'moment'
 
 import { Utilities } from '../../utilities'
-import './ReturnsTable.css'
 
 class ReturnGridConstants {
   static get MONTHS(){
@@ -48,9 +47,9 @@ class ReturnsTableCell extends React.Component{
   render(){
     var className = "return-table-cell-wrap"
     var tdClassName = 'return-cell'
-    if(this.props.highlighted){
-      tdClassName += ' in_range_cell'
-    }
+    // if(this.props.highlighted){
+    //   tdClassName += ' in_range_cell'
+    // }
     if(this.props.point && this.props.point.value){
       if(this.props.point.value > 0.0){
         className += ' positive_return'
@@ -124,25 +123,28 @@ export class ReturnsTable extends React.Component{
   }
   get returns_grid(){
     var grid_returns = {}
+    
+    // Returns Table Uses Complete Returns from Manager Model
     var self = this 
 
-    if(this.props.complete){
-      _.each(this.props.complete, function(ret){
-          var mmt = new moment(ret.date)
-          var year = mmt.year()
-          var month = mmt.month()
+    if(this.props.manager && this.props.manager.returns && this.props.manager.returns.series){
+        _.each(this.props.manager.returns.series, function(ret){
+            var mmt = new moment(ret.date)
+            var year = mmt.year(), month = mmt.month()
 
-          var point = new GridReturnPoint(month, year, ret.value)
-          if(self.props.in_range){
-              var rangeReturn = _.findWhere(self.props.in_range, {date : ret.date})
-              if(rangeReturn){
-                  point.inRange = true;
-              }
-          }
+            var point = new GridReturnPoint(month, year, ret.value)
+            var range = self.props.manager.returns.range 
 
-          if(!grid_returns[mmt.year()]) grid_returns[mmt.year()] = {}
-          grid_returns[mmt.year()][mmt.month()] = point
-      })
+            // Need to Fix Range Highlighting
+            // if(range && range.start && range.end){
+            //     if( moment(range.start).isBefore(ret.date) && moment(range.end).isAfter(ret.date) ){
+            //          point.inRange = true;
+            //     }
+            // }
+
+            if(!grid_returns[mmt.year()]) grid_returns[mmt.year()] = {}
+            grid_returns[mmt.year()][mmt.month()] = point
+        })
     }
     return grid_returns
   }

@@ -8,31 +8,56 @@ from rest_framework.decorators import detail_route
 from rest_framework import generics
 
 from ..serializers import *
-from ..models import Manager, ManagerReturns, ManagerExposure
+from ..models import ManagerReturns, Manager
 
-import re
-
-# Only Serializes Single Field for Manager and Returns No Other Fields
 class ManagerReturnViewSet(viewsets.ModelViewSet):
 	lookup_field = 'id'
-	serializer_class = ManagerReturnsSerializer
-	
-	def get_queryset(self):
+	serializer_class = ReturnsSerializer
+	query_set = Manager.objects.all()
 
-		id = self.request.query_params.get('id', None)
-		ids = self.request.query_params.get('ids', None)
-		if ids:
-			ids = json.loads(ids)
-			ids = [ int(x) for x in ids ]
+	def list(self, request):
+		ids = utility.request.parse_list(request, 'managers', method = 'GET', default = None)
+		if not ids:
+			print 'Warning: Must Specify Manager IDs to Get List of Returns'
+			return response.Response([])
 
-		if id is not None:
-			id = int(id)
-			queryset = Manager.objects.only('returns').filter(id=id).all()
-		elif ids is not None:
-			queryset = Manager.objects.only('returns').filter(id__in=ids).all()
-		else:
-			raise Exception('Must Provide Specific ID or IDs for Manager Returns')
-		return queryset
+		ids = [int(a) for a in ids]
+
+		range_ = utility.request.parse_range(request)
+		range_.validate()	
+
+		if not range_.end:
+			today = datetime.datetime.today()
+			range_.end = utility.dates.last_day_of_month(date = today)
+
+		managers = Manager.objects.filter(id__in = ids).only('returns').all()
+		returns = [manager.returns for manager in managers]
+
+		data = []
+		for manager in managers:
+			serial = ReturnsSerializer(manager.returns, context={'request': request, 'range' : range_, 'id' : manager.id})
+			data.append(serial.data)
+		return response.Response(data)
+
+	def retrieve(self, request, id=None):
+		if not id:
+			raise Exception('Must Provide Primary Key for Returns Query')
+		id = int(id)
+
+		range_ = utility.request.parse_range(request)
+		range_.validate()	
+
+		# Have to Provide End Date of Range for Cumulative Lookback States... Use Today if Not Provided
+		if not range_.end:
+			today = datetime.datetime.today()
+			range_.end = utility.dates.last_day_of_month(date = today)
+
+		manager = Manager.objects.filter(id = id).only('returns').first()
+		if not manager:
+			raise Exception('Invalid Manager ID')
+
+		serial = ReturnsSerializer(manager.returns, context={'request': request, 'range' : range_, 'id' : manager.id})
+		return response.Response(serial.data)
 
 	def destroy(self, request, *args, **kwargs):
 		instance = self.get_object()

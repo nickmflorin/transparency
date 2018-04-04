@@ -12,7 +12,7 @@ import viewsets
 
 router = routers.SimpleRouter()
 router.register(r'databases', viewsets.DatabaseViewSet, r"databases")
-router.register(r'query', viewsets.DatabaseQueryResultsViewSet, r"query")
+router.register(r'query', viewsets.QueriesViewSet, r"query")
 
 urlpatterns = [
 	url(r'^', include(router.urls, namespace='db')),

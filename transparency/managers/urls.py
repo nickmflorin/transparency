@@ -12,13 +12,14 @@ import viewsets
 
 router = routers.SimpleRouter()
 
-router.register(r'group', viewsets.ManagerGroupViewSet, r"group")
 router.register(r'returns', viewsets.ManagerReturnViewSet, r"returns")
 router.register(r'exposures', viewsets.ManagerExposureViewSet, r"exposures")
+router.register(r'lists', viewsets.ManagerListViewSet, r"lists")
+router.register(r'betas', viewsets.ManagerBetaViewSet, r"betas")
+router.register(r'categories', viewsets.ManagerCategoryExposureViewSet, r"categories")
 router.register(r'search', viewsets.ManagerSearchViewSet, r"search")
 router.register(r'', viewsets.ManagerViewSet, r"managers")
 
 urlpatterns = [
 	url(r'^', include(router.urls, namespace='managers')),
 ]
-

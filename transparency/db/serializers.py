@@ -4,14 +4,31 @@ sys.dont_write_bytecode = True
 from rest_framework import serializers, response, filters, viewsets
 from rest_framework_mongoengine.serializers import DocumentSerializer, EmbeddedDocumentSerializer
 
-from models import DatabaseTable, Database, QueryResults
+from models import DatabaseTable, Database, QueryResults, SavedQuery
+from transparency.accounts.serializers import UserSerializer
+from transparency.accounts.models import TransparencyUser
+
+class SavedQuerySerializer(DocumentSerializer):	
+	user = serializers.SerializerMethodField()
+
+	# This Will Cause Issues If We Delete User ACcounts
+	def get_user(self, model):
+		userModel = TransparencyUser.objects.filter(id = model.user).first()
+		if not userModel:
+			raise Exception('Saved Query Was Not Created with Valid User')
+		serial = UserSerializer(userModel)
+		return serial.data
+
+	class Meta:
+		model = SavedQuery
+		fields = '__all__'
 
 class DatabaseTableSerializer(DocumentSerializer):	
 	class Meta:
 		model = DatabaseTable
 		fields = '__all__'
 
-class DatabaseQueryResultsSerializer(DocumentSerializer):
+class QueryResultsSerializer(DocumentSerializer):
 	class Meta:
 		model = QueryResults
 		fields = '__all__'

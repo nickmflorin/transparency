@@ -1,0 +1,48 @@
+.data-top-container{
+	display:flex; 
+	min-height: 40%;
+	max-height: 400px;
+	margin-top: 20px;
+}
+.data-top-container .left {
+	width: 50%;
+	margin-right: 10px;
+	display: flex;
+}
+.data-top-container .right{
+	width: 50%;
+	margin-left: 10px; 
+	display: flex;
+}
+.data-bottom-container {
+	margin-top: 25px;
+	width: 100%;
+/*	flex-grow: 100;*/
+	margin-bottom: 100px;
+}
+.query-field-container{
+	flex-grow: 100;
+	display: flex;
+	flex-direction: column;
+}
+.query-field-field-container{
+	overflow-y: hidden;
+	display: flex;
+	width: 100%;
+	flex-direction: column;
+}
+.query-detail-container{
+	height: 50px;
+}
+.query-table-container{
+	display: flex;
+	width: 100%;
+	flex-direction: column;
+}
+.query-table-table-container{
+	max-height: calc(100% - 26px);
+	overflow-y: hidden;
+	display: flex;
+	width: 100%;
+	flex-direction: column;
+}

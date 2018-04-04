@@ -1,60 +1,57 @@
 import colorbrewer from 'colorbrewer'
 
-export const ChartColors = {
+export const Colors = {
     long : 'rgba(208,29,27,0.65)',
     short : 'rgba(104,167,32,0.65)',
-    total : 'rgba(115,115,115,0.85)',
-    net : 'rgba(15,15,15,0.65)',
+    gross : 'rgba(76, 131, 193, 0.8)',
+    net : 'rgba(255, 152, 0, 0.8)',
     peer : '#3DB987',
     benchmark : '#0e90f6',
-
-    series : [
-        '#ff6383','#50aded', '#fed36b', '#62c7c8', '#a579ff', 
-        '#f44336', '#FFE761', '#3DB987', '#ff9800', '#3D5A80', 
-        '#E0FBFC', '#293241', '#fccde5', '#d9d9d9', '#bc80bd', 
-        '#ccebc5', '#ffed6f', '#195da1', "#F1684E", "#85C8DD", 
-        "#D3E0E2", "#E9F6F5", "#EBCBAE", "#18587A", "#FCA7A7",
-         "#359768", "#FF5252", "#B2EBF2", "#FFE495", "#FFC97B"
-    ],
 }
 
-export const TitleStyle = {
-	color: '#263238',
-    fontSize: '11px',
-    fontWeight: '400',
-    fontFamily: 'Helvetica'
-}
-
-export const LabelStyle = {
-	color: '#263238',
-    fontSize: '10px',
-    fontWeight: '300',
-    fontFamily: 'Helvetica',
-    whiteSpace: 'nowrap',
-}
-
-export const LegendStyle = {
-	color: '#5e676c',
-    fontSize: '10px',
-    fontWeight: '300',
-    fontFamily: 'Helvetica'
-}
-
-export const ChartFormals = {
+export const Formals = {
     'long' : 'Long Exposure',
     'short' : 'Short Exposure',
     'gross' : 'Gross Exposure',
     'net' : 'Net Exposure',
 }
 
-export const Constants = {
-	Formals : ChartFormals,
-	Style : {
-		Label : LabelStyle,
-		Title : TitleStyle,
-		Legend : LegendStyle,
-	},
-	Colors : ChartColors,
+export const Style = {
+    Title : {
+        color: '#454545',
+        fontSize: '11px',
+        fontWeight: '300',
+        fontFamily: 'Helvetica'
+    },
+    Tooltip : {
+        padding: 6,
+        distance: 10,
+        borderRadius: 1,
+        backgroundColor: 'rgba(257,257,257,0.35)',
+    },
+	AreaChart : {
+        lineColor: '#EFEFEF',
+        lineWidth: 0.5,
+        fillOpacity : 0.5,
+        marker : {
+            symbol : 'circle',
+            radius: 2,
+            lineWidth: 1,
+            lineColor: '#FFF'
+        }
+    },
+    Label : {
+        color: '#263238',
+        fontSize: '10px',
+        fontWeight: '300',
+        fontFamily: 'Helvetica',
+        whiteSpace: 'nowrap',
+    },
+    Legend : {
+        color: '#5e676c',
+        fontSize: '10px',
+        fontWeight: '300',
+        fontFamily: 'Helvetica'
+    }
 }
 
-export default Constants;

@@ -8,7 +8,7 @@ PROJECT_PATH = os.path.realpath(os.path.dirname(__file__))
 
 SECRET_KEY = '^zq-2!istmlc@0p1m@a$ko6cw4k8ii6%@ey=&-4$8$jeywava%'
 DEBUG = True
-SERVER = True
+SERVER = True # Set to True When Running on Transparency Server
 
 WSGI_APPLICATION = 'transparency.wsgi.application' 
 LANGUAGE_CODE = 'en-us'
@@ -21,13 +21,15 @@ ROOT_URLCONF = 'transparency.urls'
 STATIC_URL = '/static/'
 
 INSTALLED_APPS = [
-    'django.contrib.auth',
-    'django.contrib.admin',
 
+    
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'django.contrib.auth',
+    'django.contrib.admin',
 
     'webpack_loader',
     'rest_framework',
@@ -37,19 +39,20 @@ INSTALLED_APPS = [
     'django_filters',
 
     'transparency.managers',
-    'transparency.lists',
     'transparency.db',
+    'transparency.config',
+    'transparency.utility',
     'transparency.accounts'
 ]
 
 # For Message Communication -> Right Now, No Method for Serializing Messages to Front End Instead of Using Template Variables
 MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
 AUTH_USER_MODEL = 'accounts.TransparencyUser'
-
 mongoengine.connect(
     db="peers",
     host="localhost:27017"
 )
+
 
 DATABASES = {
     'default': {
@@ -122,12 +125,12 @@ TEMPLATES = [
 
 REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': ('rest_framework.filters.DjangoFilterBackend',),
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.SessionAuthentication',
-    ),
-    'DEFAULT_PERMISSION_CLASSES': (
-       'rest_framework.permissions.IsAuthenticated',
-    )
+    # 'DEFAULT_AUTHENTICATION_CLASSES': (
+    #     'rest_framework.authentication.SessionAuthentication',
+    # ),
+    # 'DEFAULT_PERMISSION_CLASSES': (
+    #    'rest_framework.permissions.IsAuthenticated',
+    # )
 }
 
 AUTH_PASSWORD_VALIDATORS = [

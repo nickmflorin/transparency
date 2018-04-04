@@ -1,0 +1,30 @@
+form {
+	display: inline;
+}
+label {
+    @extend .smooth-font;
+    font-weight: 400;
+    font-family: $styled;
+    color: $primary-color;
+    font-size: 12px;
+    margin-bottom: 0px !important;
+}
+.label {
+    color: $primary-color;
+    text-align: center;
+    display: inline-block;
+    white-space: nowrap;
+    vertical-align: middle !important;
+    border-radius: .25em;
+    padding: .1em .6em .1em .6em;
+    font-size: 10px;
+    margin-bottom: 5px;
+    background-color: rgb(236, 236, 236) !important;
+    font-weight: bold !important;
+}
+.form-vertical-label {
+	margin-top: 10px !important;
+}
+.form-vertical-input-group {
+	margin-bottom: 15px;
+}

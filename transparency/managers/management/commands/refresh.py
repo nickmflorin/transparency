@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 from django.apps import AppConfig
 from django.core.management.base import BaseCommand 
 
-from transparency.managers.models import Manager, ManagerPeers, ManagerBenchmarks, Strategy, ManagerReturns, SubStrategy, ManagerExposure
+from transparency.managers.models import Manager, Strategy, ManagerReturns, SubStrategy, ManagerExposures, ManagerCategoryExposures, PortfolioBenchmark
 from transparency.db.models import DatabaseTable, Database
 
 class Command(BaseCommand):
@@ -15,14 +15,15 @@ class Command(BaseCommand):
 
 		direct = {
 			'managers' : self.managers, 
-			'peers' : self.peers, 
 			'benchmarks' : self.benchmarks,
 			'strategies' : self.strategies, 
 			'strategy' : self.strategies,
 			'tables' : self.tables,
 			'exposures' : self.exposures,
 			'positions' : self.positions,
-			'funds' : self.funds
+			'funds' : self.funds,
+			'all' : self.master,
+			'categories' : self.categories
 		}
 
 		if direct.get(commands[0]) is None:
@@ -32,8 +33,20 @@ class Command(BaseCommand):
 		direct[commands[0]](options)
 		return 
 
+	def master(self, options):
+		self.strategies(options)
+		self.benchmarks(options)
+
+		self.managers(options)
+		self.funds(options)
+
+		self.tables(options)
+		self.exposures(options)
+		self.categories(options)
+		return
+
 	def funds(self, options):
-		#Fund.refresh()
+		Fund.refresh()
 		return
 
 	def positions(self, options):
@@ -46,16 +59,15 @@ class Command(BaseCommand):
 		return
 
 	def benchmarks(self, options):
-		ManagerBenchmarks.refresh()
+		PortfolioBenchmark.refresh()
+		return
+
+	def categories(self, options):
+		ManagerCategoryExposures.refresh()
 		return
 
 	def exposures(self, options):
-		managers = manager.Manager.objects.all()
-		ManagerExposure.refresh(managers = managers)
-		return
-
-	def peers(self, options):
-		ManagerPeers.refresh()
+		ManagerExposures.refresh()
 		return
 
 	def managers(self, options):

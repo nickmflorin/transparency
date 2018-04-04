@@ -7,9 +7,13 @@ from rest_framework_mongoengine.serializers import DocumentSerializer, EmbeddedD
 from models import TransparencyUser
 
 class UserSerializer(serializers.Serializer):	
-	_id = serializers.UUIDField()
+	id = serializers.IntegerField()
 	username = serializers.CharField()
 	email = serializers.EmailField()
+	first_name = serializers.CharField(max_length=200)
+	last_name = serializers.CharField(max_length=200)
+
 	class Meta:
 		model = TransparencyUser
-		fields = ('_id','username','email')
+		fields = ('id','username','email','first_name','last_name')
+

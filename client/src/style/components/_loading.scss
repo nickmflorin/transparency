@@ -1,0 +1,21 @@
+@import '../helpers/variables';
+@import '../helpers/mixins';
+
+$loading-height : 110px;
+$loading-width : 220px;
+
+.loading{
+	position: fixed;
+	z-index: -10000;
+	left: 50%;
+    top: 50%;
+
+    height: $loading-height;
+    width: $loading-width;
+    margin-left: -$loading-width/2;
+    margin-top: -$loading-height/2 + $header-height;
+}
+
+.loading-visible {
+	z-index: 1000 !important;
+}

@@ -1,4 +1,3 @@
-export * from './ManagerComparisonTable'
-export * from './QueryResultsTable'
-export * from './QueryTable'
+export * from './query'
 export * from './ReturnsTable'
+export * from './DownloadTable'
