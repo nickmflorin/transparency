@@ -1,4 +1,4 @@
-import { Style } from '../Constants'
+import { Style } from './Constants'
 import { Colors } from '../../../utilities'
 
 class AxisConfig {

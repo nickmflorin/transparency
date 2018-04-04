@@ -1,4 +1,4 @@
-import { Style } from '../Constants'
+import { Style } from './Constants'
 
 const PointFormat = function(){
 

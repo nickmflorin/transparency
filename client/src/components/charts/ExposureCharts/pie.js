@@ -5,8 +5,7 @@ import PropTypes from 'prop-types';
 import ReactHighcharts from 'react-highcharts';
 import HighchartsMore from 'highcharts-more';
 
-import { PieChartConfig } from '../Config'
-import { Colors, Formals } from '../Constants.js'
+import { PieChartConfig, Colors, Formals } from '../Config'
 
 HighchartsMore(ReactHighcharts.Highcharts);
 
