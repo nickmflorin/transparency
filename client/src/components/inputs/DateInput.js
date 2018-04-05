@@ -62,44 +62,35 @@ export class DateInput extends React.Component{
     }
     onDateChange(year, month) {
         var change = {}
+        if(month < 1){
+            throw new Error('Invalid Month')
+        }
         change[this.props.id] = { year : year, month : month }
-
+        var test = moment({year : change.year, month : change.month, day : 1})
+       
 	    this.props.changeDate(change)
     }
     handleMonthDissmis(value) {
     	this.onDateChange(value.year, value.month)
     }
-    date(format = 'tuple'){
-    	var date = new moment(new Date(this.props.date.year, this.props.date.month, 1))
-    	if(date.isValid()){
-    		if(format == 'tuple'){
-    			return {'month' : date.month() + 1, 'year' : date.year() }
-    		}
-    		else if(format == 'string'){
-    			return Months[date.month()] + ' - ' + date.year()
-    		}
-    	}
-    	else{
-    		throw new Error('Invalid Date')
-    	}
-    }
 	render(){
+        var start_mmt = moment({year : this.props.date.year, month : this.props.date.month, day : 1})
 		const years = this.get_years()
-		const value = this.date()
-		const string = this.date('string')
-
         var pickerClass = classNames({
           'push-right': this.props.pushRight === true,
         });
-
+       
 		return (
 		   <Picker
                 ref="date"
                 className={pickerClass}
                 years={years}
-                value={value}
+                value={{ 
+                    month : this.props.date.month + 1,
+                    year : this.props.date.year
+                }}
                 lang={Months}
-                onChange={(year, month) => this.onDateChange(year, month)}
+                onChange={(year, month) => this.onDateChange(year, month - 1)}
                 onDismiss={(value) => this.handleMonthDissmis(value)}
             >
             <InputGroup>
@@ -107,7 +98,9 @@ export class DateInput extends React.Component{
                     <FontAwesomeIcon icon={faCalendar}/> 
                 </InputGroup.Addon>
                 <MonthBox 
-                	value={string} 
+                	value={
+                        Months[this.props.date.month] + ' - ' + this.props.date.year
+                    } 
                 	onClick={this.toggleVisibility.bind(this)} 
                 />
             </InputGroup>

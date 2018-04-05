@@ -22,14 +22,20 @@ class SingleReturnSerializer(EmbeddedDocumentSerializer):
 class SimpleReturnsSerializer(EmbeddedDocumentSerializer):
 	series = serializers.SerializerMethodField()
 	range = serializers.SerializerMethodField()
+	complete_range = serializers.SerializerMethodField()
 
 	class Meta:
 		model = ManagerReturns
-		fields = ('series','range')
+		fields = ('series','range','complete_range')
 
 	def get_series(self, model):
 		serial = SingleReturnSerializer(model.series, many=True)
 		return serial.data
+
+	def get_complete_range(self, model):
+		range_ = model.basic_range # Just Based on Overall Start and End Dates
+		serial = RangeSerializer(range_)
+		return serial.data 
 
 	def get_range(self, model):
 		range_ = model.basic_range # Just Based on Overall Start and End Dates
@@ -42,11 +48,12 @@ class ReturnsSerializer(EmbeddedDocumentSerializer):
 	id = serializers.SerializerMethodField()
 	stats = serializers.SerializerMethodField()
 	range = serializers.SerializerMethodField()
+	complete_range = serializers.SerializerMethodField()
 	series = serializers.SerializerMethodField()
 
 	class Meta:
 		model = ManagerReturns
-		fields = ('stats','series','range','id')
+		fields = ('stats','series','range','id', 'complete_range')
 
 	def get_id(self, model):
 		id = self.context.get('id')
@@ -54,41 +61,38 @@ class ReturnsSerializer(EmbeddedDocumentSerializer):
 			raise Exception('Must Provide ID Context')
 		return id
 
-	def get_combined_range(self, model):
+	def get_complete_range(self, model):
+		range_ = model.basic_range # Just Based on Overall Start and End Dates
+		serial = RangeSerializer(range_)
+		return serial.data 
+
+	def get_range(self, model):
 		range_ = self.context.get('range')
 		if not range_:
 			raise Exception('Must Provide Range Context')
 
-		basic_range = model.basic_range # Just Based on Overall Start and End Dates
-		basic_range.restrict(range_)
-		return basic_range
-
-	def get_range(self, model):
-		range_ = self.get_combined_range(model)
-		serial = RangeSerializer(range_)
+		endpoints = model.basic_range # Just Based on Overall Start and End Dates
+		endpoints.restrict(range_)
+		serial = RangeSerializer(endpoints)
 		return serial.data 
 
 	def get_series(self, model):
+		range_ = self.context.get('range')
+		if not range_:
+			raise Exception('Must Provide Range Context')
 
-		range_ = self.get_combined_range(model)
-		# If the Return Series is Length = 0 => Range Will Not be Valid and We Cannot Generate Month Series from Range
-		if range_.complete:
-			returns = model.slice(range_)
-			serial = SingleReturnSerializer(returns.series, many=True)
-		else:
-			serial = SingleReturnSerializer(model.series, many=True)
+		returns = model.slice(range_)
+		serial = SingleReturnSerializer(returns.series, many=True)
 		return serial.data
 
 	def get_stats(self, model):
-		range_ = self.get_combined_range(model)
-		stats = ReturnStats(cumulative = [])
+		range_ = self.context.get('range')
+		if not range_:
+			raise Exception('Must Provide Range Context')
 
-		# If the Return Series is Length = 0 => Range Will Not be Valid and We Cannot Generate Month Series from Range
-		if range_.complete:
-			returns = model.slice(range_)
-			serial = ReturnStatsSerializer(stats, context={'returns': returns, 'range': range_})
-		else:
-			serial = ReturnStatsSerializer(stats, context={'returns': model, 'range': range_})
+		stats = ReturnStats(cumulative = [])
+		returns = model.slice(range_)
+		serial = ReturnStatsSerializer(stats, context={'returns': returns, 'range': range_})
 		return serial.data
 
 

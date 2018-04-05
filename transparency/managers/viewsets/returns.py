@@ -23,6 +23,7 @@ class ManagerReturnViewSet(viewsets.ModelViewSet):
 
 		ids = [int(a) for a in ids]
 
+		# Only Range on Initial Create from Request, Otherwise Dates Involve Date Horizons of Returns
 		range_ = utility.request.parse_range(request)
 		range_.validate()	
 
@@ -44,6 +45,7 @@ class ManagerReturnViewSet(viewsets.ModelViewSet):
 			raise Exception('Must Provide Primary Key for Returns Query')
 		id = int(id)
 
+		# Only Range on Initial Create from Request, Otherwise Dates Involve Date Horizons of Returns
 		range_ = utility.request.parse_range(request)
 		range_.validate()	
 

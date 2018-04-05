@@ -116,6 +116,7 @@ export const updateManagerListDates = function(dates = {start_date : null, end_d
     if(!dates.start_date && !dates.end_date){
         throw new Error('Invalid Dates Provided')
     }
+
     return function(dispatch, getState) {
         const state = getState()
         
@@ -131,6 +132,7 @@ export const updateManagerListDates = function(dates = {start_date : null, end_d
                     }
                     else{
                         const returns = response 
+                        console.log(returns)
                         for(var i = 0; i<returns.length; i++){
                             dispatch(Handler.List.Returns.Get.Success(returns[i]));
                         }

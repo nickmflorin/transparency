@@ -42,15 +42,16 @@ class CumReturn(EmbeddedDocument):
 		mini_range = range_.at_lookback(months)
 		cum = CumReturn(months = months, range = mini_range)
 		
-		returns = returns.slice(mini_range, fill_zeros = True)
-		cum.series = returns.series 
+		cum_returns = returns.slice(mini_range, fill_zeros = True)
 
-		cum.value = returns.total()
+		cum.series = cum_returns.series 
+		cum.value = cum_returns.total()
 		return cum
 
 class ManagerReturns(EmbeddedDocument):
 	series = fields.ListField(fields.EmbeddedDocumentField(ManagerReturn))
 	range = fields.EmbeddedDocumentField(Range)
+	complete_range = fields.EmbeddedDocumentField(Range)
 
 	@property
 	def basic_range(self):
@@ -128,13 +129,6 @@ class ManagerReturns(EmbeddedDocument):
 
 		return beta, intercept, r_value, p_value, stderr 
 
-	def find(self, month, year):
-		for ret in self.series:
-			date = ret.date.date()
-			if date.month == month and date.year == year:
-				return ret 
-		return None
-
 	@staticmethod 
 	def match(primary, secondary):
 		primary_dates = [a.date for a in primary.series]
@@ -148,49 +142,36 @@ class ManagerReturns(EmbeddedDocument):
 		secondary = secondary.slice(range_, fill_zeros = False)
 		return primary, secondary
 
-	# Creates Range Using Specified Dates Primarily and With Return Bounds Secondly
-	def create_range(self, start = None, end = None):
-		range_ = Range(start = None, end = None)
-
-		# Prevents Invalid Start/End Dates
-		if len(self.series) != 0:
-			range_ = Range(start = self.start, end = self.end)
-
-			# Only Slice Range if Inside Valid Range of Series
-			if start and start > self.start:
-				range_.start = start 
-			if end and end < self.end:
-				range_.end = end 
-
-		return range_
-
 	# Finds Returns In Series That Have Date in the Date List and Creates New List Corresponding to Dates
 	# If Dates Are Missing and Fill Zeros is True, Fills In Zero Return Values for Missing Dates
 	def slice(self, range_, fill_zeros = False):
-		if not range_.valid:
-			raise Exception('Can Only Slice with Valid Ranges')
-
-		new = ManagerReturns(series = [], range = Range())
-
-		dates = range_.get_month_series()
-
-		to_prune_with = [(a.month, a.year) for a in dates]
 		
-		for tup in to_prune_with:
-			ret = self.find(tup[0], tup[1])
-			if not ret:
-				if fill_zeros:
+		new = ManagerReturns(series = [], range = Range(start = self.start, end = self.end))
+		new.range.restrict(range_)
 
-					eomonth = utility.dates.last_day_of_month(tup[0], tup[1])
-					ret = ManagerReturn(value = 0.0, date = eomonth)
-					new.series.append(ret)
-			elif ret:
+		# Empty Range Means That Range Was Outside of Returns Range
+		if new.range.empty:
+			return new 
+
+		if not new.range.start or not new.range.end:
+			raise Exception('Cannot Slice Return Stream with Empty Range')
+
+		for ret in self.series:
+			if new.range.around_date(ret.date):
 				new.series.append(ret)
 
-		new.series.sort(key=lambda r: r.date)
 		if len(new.series) != 0:
 			new.range.start = min([a.date for a in new.series])
 			new.range.end = max([a.date for a in new.series])
+
+			if fill_zeros:
+				complete = new.range.get_month_series(start_add_in = new.range.start, end_add_in = new.range.end)
+				for comp in complete:
+					if comp not in [a.date for a in new.series]:
+						ret = ManagerReturn(value = 0.0, date = comp)
+						new.series.append(ret)
+
+		new.series.sort(key=lambda r: r.date)
 		return new
 
 	

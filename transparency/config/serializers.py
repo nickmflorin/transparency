@@ -9,6 +9,7 @@ from models import Range
 class RangeSerializer(serializers.Serializer):
 	start = serializers.DateTimeField(required = False)
 	end = serializers.DateTimeField(required = False)
+	complete = serializers.BooleanField(required = True)
 	class Meta:
 		model = Range
 		fields = '__all__'

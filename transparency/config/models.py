@@ -9,6 +9,7 @@ from dateutil import relativedelta
 class Range(EmbeddedDocument):
 	start = fields.DateTimeField(required = False)
 	end = fields.DateTimeField(required = False)
+	empty = fields.BooleanField(default = False)
 	__attrs__ = ['start','end']
 
 	def string_dict(self):
@@ -30,9 +31,15 @@ class Range(EmbeddedDocument):
 		return False 
 
 	@property
+	def singular(self):
+		if self.start == self.end:
+			return True 
+		return False 
+
+	@property
 	def valid(self):
 		if self.start and self.end:
-			if self.start > self.end or self.start == self.end:
+			if self.start > self.end:
 				return False 
 		return True 
 
@@ -40,14 +47,34 @@ class Range(EmbeddedDocument):
 		if not self.valid:
 			raise Exception('Range Start Date Must Be Before End Date')
 
-	def get_month_series(self):
-		self.validate()
-		if not self.end or not self.start:
-			raise Exception('Cannot Generate Series Without Initial End and Start Dates')
+	def around_date(self, date):
+		date = last_day_of_month(date = date)
+		if self.end:
+			end_eomonth = last_day_of_month(date = self.end)
+			if date > end_eomonth:
+				return False
 
-		# Probably Not Necessary -> But for Sanity
-		start = last_day_of_month(date = self.start)
-		end = last_day_of_month(date = self.end)
+		if self.start:
+			start_eomonth = last_day_of_month(date = self.start)
+			if date < start_eomonth:
+				return False
+
+		return True
+
+	def get_month_series(self, start_add_in = None, end_add_in = None):
+		if not self.start:
+			if not start_add_in:
+				raise Exception('Range Must Have End Points to Create Series')
+			start = last_day_of_month(date = start_add_in)
+		else:
+			start = last_day_of_month(date = self.start)
+
+		if not self.end:
+			if not end_add_in:
+				raise Exception('Range Must Have End Points to Create Series')
+			start = last_day_of_month(date = end_add_in)
+		else:
+			end = last_day_of_month(date = self.end)
 
 		dates = []
 		while start <= end:
@@ -72,24 +99,40 @@ class Range(EmbeddedDocument):
 		range_ = Range(start = start, end = end)
 		range_.validate()
 		return range_
-		
+	
+	def clear(self):
+		self.end = None 
+		self.start = None 
+		self.empty = True 
+
 	# Given Another Range, Restricts This Ranges Start and End Dates
 	def restrict(self, range):
-		if range.start:
-			if not self.start:
-				self.start = range.start 
-			else:
-				if range.start > self.start:
+		range.validate()
+
+		if self.end and range.start:
+			if range.start > self.end:
+				self.clear()
+
+		elif self.start and range.end:
+			if range.end < self.start:
+				self.clear()
+
+		if not self.empty:
+			if range.start:
+				if not self.start:
 					self.start = range.start 
+				else:
+					if range.start > self.start:
+						self.start = range.start 
 
-		if range.end:
-			if not self.end:
-				self.end = range.end 
-			else:
-				if range.end < self.end:
+			if range.end:
+				if not self.end:
 					self.end = range.end 
+				else:
+					if range.end < self.end:
+						self.end = range.end 
 
-		self.validate()
+			self.validate()
 		return
 
 	@staticmethod
