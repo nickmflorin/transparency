@@ -1,22 +1,9 @@
 import { combineReducers } from 'redux';
-import * as api from './api'
 import * as reducers from './reducers'
 import * as actions from './actions'
 
-export * from './handler'
 export * from './actions'
 export * from './models'
-
-export const managerApi = {
-    GetManager : api.GetManager,
-    SearchManager : api.SearchManager,
-    GetManagerExposures : api.GetManagerExposures,
-    GetManagerReturns : api.GetManagerReturns,
-    GetManagerExposure : api.GetManagerExposure,
-    GetManagerCategoryExposures : api.GetManagerCategoryExposures,
-    GetManagerBetas : api.GetManagerBetas,
-    GetManagersReturns : api.GetManagersReturns,
-}
 
 export const managerReducer = combineReducers({  
     search_results: reducers.search_results,

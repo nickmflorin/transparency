@@ -80,15 +80,15 @@ export class ManagerComparison extends React.Component {
     if(props.list){
 
       // Have to Get Returns for Managers Already in List if List Loaded
-      if(!this.props.list || this.props.list.id != props.list.id){
-        if(props.list.managers.length != 0){
-          // Get Full Manager Model to Set to New Active Manager
-          this.props.getManager(props.list.managers[0].id)
-        }
-        else{
-          this.setState({ active : null })
-        }
-      }
+      // if(!this.props.list || this.props.list.id != props.list.id){
+      //   if(props.list.managers.length != 0){
+      //     // Get Full Manager Model to Set to New Active Manager
+      //     this.props.addManagerToList(props.list.managers[0].id)
+      //   }
+      //   else{
+      //     this.setState({ active : null })
+      //   }
+      // }
 
       const startDiff = Dates.different(props.dates, this.props.dates, 'start')
       const endDiff = Dates.different(props.dates, this.props.dates, 'end')
@@ -112,10 +112,13 @@ export class ManagerComparison extends React.Component {
       if(props.selected){
         if(!this.props.selected || this.props.selected.id != props.selected.id){
           // Get Full Manager Model to Set to New Active Manager
+          console.log('Getting Manager')
           this.props.getManager(props.selected.id)
-
-          // Add Manager to List Over Specific Time Horizon
-          this.props.addManagerToList(props.selected.id, {
+        }
+      }
+      if(props.manager){
+        if(!this.props.manager || this.props.manager.id != props.manager.id){
+          this.props.addManagerToList(props.manager, {
             start_date : this.props.dates.start,
             end_date : this.props.dates.end,
           })

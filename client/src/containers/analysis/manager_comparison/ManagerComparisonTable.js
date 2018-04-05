@@ -46,17 +46,20 @@ class ManagerComparisonTable extends React.Component {
           this.setState({ modalIsOpen: true })
       } else {
           if (this.props.list.user.id == user.id) {
-              this.props.saveManagerList().then((action) => {
-                  if (action.type == Types.list.save.success) {
-                      this.setState({ confirm_save: true })
-                  } else {
-                      this.setState({ error_save: true })
-                  }
-              })
-          } else {
-              // Save As Situation
-              this.setState({ modalIsOpen: true })
-          }
+              this.props.saveManagerList()
+            }
+
+          //     .then((action) => {
+          //         if (action.type == Types.list.save.success) {
+          //             this.setState({ confirm_save: true })
+          //         } else {
+          //             this.setState({ error_save: true })
+          //         }
+          //     })
+          // } else {
+          //     // Save As Situation
+          //     this.setState({ modalIsOpen: true })
+          // }
       }
     }
     return

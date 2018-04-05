@@ -1,60 +1,61 @@
 import update from 'react-addons-update';
 import _ from 'underscore'
 
-import { Types } from './handler'
 import { ManagerList } from './models'
 import { Manager } from '../manager/models'
 
+const default_errors = {
+    'save' : null,
+}
+
+export function errors(state = default_errors, action){
+    switch(action.type){
+        default:
+            return state;
+    }
+}
+
 export function list(state = null, action) {
     switch(action.type){
-        case Types.list.temp.success:
-            return action.list;
+        case 'GET_MANAGER_LIST_RECEIVED':
+            return action.data
 
-        // To Make Faster, Keep Managers from Presaved List and Just Update All Other Components
-        case Types.list.new.success:
-            if(!state) throw new Error('List Must Exist in Store')
-            return {
-                ...state,
-                id : action.list.id,
-                name : action.list.name,
-                user : action.list.user,
-                isNew : false,
-                createdAt : action.list.createdAt,
-            }
-            return action.list;
-
-        case Types.list.manager.remove.success:
-            if(!state) throw new Error('List Must Exist in Store')
-
-            var manager = _.findWhere(state.managers, { id : action.id })
-            if(!manager) throw new Error('Cannot Remove Manager Already Missing from List')
-            
-            const index = state.managers.findIndex(mgr => mgr.id === action.id)
-            return {
-                ...state, 
-                managers: [
-                    ...state.managers.slice(0, index),
-                    ...state.managers.slice(index + 1),
-                ]
-            }
-            
-        case Types.list.manager.add.success:
-            if(!state) throw new Error('List Must Exist in Store')
-      
-            const exists = _.findWhere(state.managers, { id : action.manager.id })
-            if(!exists){
-                const manager = new Manager(action.manager)
-                if(action.returns){
-                    manager.returns = action.returns
-                }
+        case 'GET_MANAGER_RETURNS_RECEIVED':
+            var manager = _.findWhere(state.managers, { id : action.data.id })
+            if(manager){
+                const index = state.managers.findIndex(mgr => mgr.id === action.data.id)
                 return {
                     ...state, 
-                    managers: [...state.managers, manager]
+                    managers: [
+                        ...state.managers.slice(0, index),
+                        {
+                            ...state.managers[index],
+                            returns : action.data,
+                        },
+                        ...state.managers.slice(index + 1),
+                    ]
                 }
             }
-            return state;
+            return state
 
-        case Types.list.clear.success:
+        case 'ADD_MANAGER_TO_LIST':
+            if(state){
+                var exists = _.findWhere(state.managers, { id : action.data.id })
+                if(!exists){
+                    const index = state.managers.findIndex(mgr => mgr.id === action.data.id)
+                    return {
+                        ...state, 
+                        managers: [
+                            ...state.managers.slice(0, index),
+                            action.data,
+                            ...state.managers.slice(index + 1),
+                        ]
+                    }
+                }
+            }
+            return state 
+
+        case 'CLEAR_MANAGER_LIST':
             if(state){
                 return {
                     ...state, 
@@ -63,33 +64,35 @@ export function list(state = null, action) {
             }
             return state 
 
-        case Types.list.returns.get.success:
-            if(!state) throw new Error('List Must Exist in Store')
+        case 'CREATE_TEMP_MANAGER_LIST':
+            return ManagerList.create_temp(action.user)
 
-            const manager = _.findWhere(state.managers, { id : action.returns.id })
-            if(manager){
-                const index = state.managers.findIndex(mgr => mgr.id === action.returns.id)
-                return {
-                    ...state, 
-                    managers: [
-                        ...state.managers.slice(0, index),
-                        {
-                            ...manager,
-                            returns : action.returns
-                        },
-                        ...state.managers.slice(index + 1),
-                    ]
-                };
-            };
-            return state;
-
-        case Types.list.get.success:
-            var newlist = new ManagerList(action.list)
-            if(action.returns){
-                newlist.set_returns(action.returns)
+        case 'SAVE_NEW_MANAGER_LIST_SUCCESS':
+            return {
+                ...state,
+                id : action.list.id,
+                name : action.list.name,
+                user : action.list.user,
+                isNew : false,
+                createdAt : action.list.createdAt,
             }
-            return newlist;
 
+        case 'REMOVE_MANAGER_FROM_LIST':
+            if(state){
+                var manager = _.findWhere(state.managers, { id : action.id })
+                if(manager){
+                    const index = state.managers.findIndex(mgr => mgr.id === action.id)
+                    return {
+                        ...state, 
+                        managers: [
+                            ...state.managers.slice(0, index),
+                            ...state.managers.slice(index + 1),
+                        ]
+                    }
+                }
+            }
+            return state
+            
         default:
             return state;
     }
@@ -98,13 +101,13 @@ export function list(state = null, action) {
 // Dont Want to Mutate Any Lists in All State => Only Want to Mutate Open List and Allow Them to Save
 export function lists(state = [], action) {
     switch(action.type){
-        case Types.lists.get.success:
-            return action.lists
+        case 'GET_MANAGER_LISTS_RECEIVED':
+            return action.data
 
-        case Types.list.new.success:
-            var list = action.list 
-            list = new ManagerList(list)
-            return [...state, list]
+        // case Types.list.new.success:
+        //     var list = action.list 
+        //     list = new ManagerList(list)
+        //     return [...state, list]
 
         default:
             return state;

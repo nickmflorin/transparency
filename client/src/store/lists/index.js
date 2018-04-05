@@ -1,23 +1,14 @@
 import { combineReducers } from 'redux';
-import * as api from './api'
 import * as reducers from './reducers'
 import * as actions from './actions'
 
 export * from './actions'
-export * from './handler'
-
-export const listsApi = {
-    CreateManagerList : api.CreateManagerList,
-    GetManagerList : api.GetManagerList,
-    UpdateManagerList : api.UpdateManagerList,
-    GetManagerLists : api.GetManagerLists,
-};
 
 export const listsReducer = combineReducers({  
     list: reducers.list,
+    errors: reducers.errors,
     lists : reducers.lists,
 });
-
 
 // Dont Need Update Manager List Action -> Updates Performed by Adding Manager or Removing Manager
 export const listsActions = {

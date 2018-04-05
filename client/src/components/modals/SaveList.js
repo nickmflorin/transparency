@@ -38,15 +38,16 @@ export class SaveListModal extends React.Component {
 		if(valid){
 			var name = this.refs.listname.value 
 			var self = this 
+			this.props.saveNewManagerList(name)
 			
-			this.props.saveNewManagerList(name).then((action) => {
-				if (action.type != Types.list.new.success) {
-					self.setState({ error : action.error })
-				}
-	            else{
-	            	self.props.onClose()
-	            }
-			})
+			// this.props.saveNewManagerList(name).then((action) => {
+			// 	if (action.type != Types.list.new.success) {
+			// 		self.setState({ error : action.error })
+			// 	}
+	  //           else{
+	  //           	self.props.onClose()
+	  //           }
+			// })
 		}
 	}
 	render(){

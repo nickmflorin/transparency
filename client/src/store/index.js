@@ -16,6 +16,10 @@ import { managerReducer, managerActions } from './manager'
 import { dbReducer, dbActions } from './db'
 import { requesting, dates, sidebarShowing, toggleSidebar, StartRequest, StopRequest, changeDate, HttpRequest} from './utility'
 
+import dataService from '../services/data-service'
+import saveService from '../services/save-service'
+import putService from '../services/put-service'
+
 export * from './api'
 export * from './auth'
 
@@ -51,7 +55,7 @@ export const history = createHistory()
 
 const configureStore = function(history){
   // Use Uncommented Version Below to Persist State Into Local Storage Across Page Refreshes and Browser Reloads
-  let store = createStore(persistedReducer, persistedState, applyMiddleware(thunk, apiMiddleware, routerMiddleware(history)))
+  let store = createStore(persistedReducer, persistedState, applyMiddleware(thunk, saveService, putService, dataService, apiMiddleware, routerMiddleware(history)))
   persistStore(store)
 
   store.subscribe( () => {

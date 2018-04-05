@@ -31,8 +31,76 @@ export function dates(state = initialState, action) {
 
 export function requesting(state = true, action) {
 	switch(action.type){
-	    case Types.http.request:
-	        return action.requesting;
+		case 'GET_MANAGER_LISTS':
+			return true
+		case 'GET_MANAGER_LISTS_RECEIVED':
+			return false
+		case 'GET_MANAGER_LISTS_ERROR':
+			return false
+
+		case 'GET_MANAGER':
+			return true
+		case 'GET_MANAGER_RECEIVED':
+			return false
+		case 'GET_MANAGER_ERROR':
+			return false
+
+		case 'GET_MANAGER_EXPOSURE':
+			return true 
+		case 'GET_MANAGER_EXPOSURE_RECEIVED':
+			return false
+		case 'GET_MANAGER_EXPOSURE_ERROR':
+			return false
+
+		case 'GET_MANAGER_EXPOSURES':
+			return true 
+		case 'GET_MANAGER_EXPOSURES_RECEIVED':
+			return false
+		case 'GET_MANAGER_EXPOSURES_ERROR':
+			return false
+
+		case 'GET_MANAGER_CATEGORIES':
+			return true 
+		case 'GET_MANAGER_CATEGORIES_RECEIVED':
+			return false
+		case 'GET_MANAGER_CATEGORIES_ERROR':
+			return false
+
+		case 'GET_MANAGER_BETAS':
+			return true 
+		case 'GET_MANAGER_BETAS_RECEIVED':
+			return false
+		case 'GET_MANAGER_BETAS_ERROR':
+			return false
+
+		case 'GET_MANAGER_LIST':
+			return true
+		case 'GET_MANAGER_LIST_RECEIVED':
+			return false
+		case 'GET_MANAGER_LIST_ERROR':
+			return false
+
+		case 'GET_MANAGER_RETURNS':
+			return true
+		case 'GET_MANAGER_RETURNS_RECEIVED':
+			return false
+		case 'GET_MANAGER_RETURNS_ERROR':
+			return false
+
+		case 'SAVE_MANAGER_LIST':
+			return true
+		case 'SAVE_MANAGER_LIST_SUCCESS':
+			return false 
+		case 'SAVE_MANAGER_LIST_ERROR':
+			return false 
+
+		case 'SAVE_NEW_MANAGER_LIST':
+			return true
+		case 'SAVE_NEW_MANAGER_LIST_SUCCESS':
+			return false 
+		case 'SAVE_NEW_MANAGER_LIST_ERROR':
+			return false 
+
 	    default:
 	        return state;
 	}
