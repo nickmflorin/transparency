@@ -30,8 +30,6 @@ class ExposureExplorer extends React.Component {
       tier : 'gross',
       id : (props.selected && props.selected.id) || null,
       exposures : null,
-      warning : null,
-      error : null,
     }
     if(this.state.id){
       if(props.categorized_exposures && props.categorized_exposures.id == this.state.id){
@@ -58,13 +56,6 @@ class ExposureExplorer extends React.Component {
         if(changed_attr){
           this.props.getManagerCategoryExposures(this.state.id, { category : this.state.category, tier : this.state.tier, level : this.state.level })
         }
-
-        if(this.state.exposures.exposures.length == 0){
-          this.setState({ warning : 'No exposures found for manager.' })
-        }
-        else{
-          this.setState({ warning : null })
-        }
       }
     }
   }
@@ -85,26 +76,13 @@ class ExposureExplorer extends React.Component {
     if(props.categorized_exposures){
       if(!this.state.exposures){
         this.setState({ exposures : props.categorized_exposures })
-        if(props.categorized_exposures.exposures.length == 0){
-          this.setState({ warning : 'No exposures found for manager.' })
-        }
-        else{
-          this.setState({ warning : null })
-        }
       }
       else{
         // Check if Exposures Provided in Props Differ from Current Exposures
         const config = { id : this.state.exposures.id, category : this.state.exposures.category, tier : this.state.exposures.tier, level : this.state.exposures.level }
         var changed = findChange(props.categorized_exposures, config)
-
         if(changed){
           this.setState({ exposures : props.categorized_exposures })
-          if(props.categorized_exposures.exposures.length == 0){
-            this.setState({warning : 'No exposures found for manager.'})
-          }
-          else{
-            this.setState({warning : null})
-          }
           // Maybe Do This Too? => Set the Category, Level and Tier in State Based on Exposure Results Just In Case Returned Exposures Differ/There Was Error and Redux Reverted to Older Exposures
           //this.setState( { category : props.categorized_exposures.category, level : props.categorized_exposures.level, tier : props.categorized_exposures.tier })
         }
@@ -131,8 +109,8 @@ class ExposureExplorer extends React.Component {
   render() {
     return (
        <HomeContent
-        warning={this.state.warning}
-        error={this.state.error}
+        warning={this.props.warnings.categories}
+        error={this.props.errors.categories}
         manager={this.props.selected}
        >
         <Panel title="Exposure Explorer" classNames={{"chart-panel-body":true}}>

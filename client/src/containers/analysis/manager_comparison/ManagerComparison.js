@@ -10,10 +10,10 @@ import { PageContent } from '../../../components/layout'
 
 import { Dates } from '../../../utilities'
 import { Statistics } from '../../../config'
-import { user, Actions } from '../../../store'
+import Actions from '../../../actions'
 
-import ManagerComparisonChartArea from './ManagerComparisonChartArea'
-import ManagerComparisonTable from './ManagerComparisonTable'
+import ListSelection from './ListSelection'
+import ManagerResults from './ManagerResults'
 import './manager_comparison.css'
 
 const differentRanges = function(range1, range2){
@@ -179,9 +179,8 @@ export class ManagerComparison extends React.Component {
         white={true}
         className="content white-content"
       >
-
         <div className='content-under-header'>
-            <div className="blank-panel manager-comparison-top">
+            <div className="blank-panel comparison-top-container">
               <div className="left">
                 <ReturnsTable 
                   dates={this.props.dates}
@@ -189,17 +188,11 @@ export class ManagerComparison extends React.Component {
                 />
               </div>
               <div className="right">
-                  <ManagerComparisonChartArea 
-                    stats={this.state.stats}
-                    dimensions={this.state.dimensions}
-                    onDimensionChange={this.onDimensionChange.bind(this)}
-                    {...this.props}
-                  />
+                <ListSelection />
               </div>
             </div>
-
-            <div className="blank-panel manager-comparison-bottom">
-                <ManagerComparisonTable 
+            <div className="blank-panel comparison-bottom-container">
+                <ManagerResults 
                   stats={this.state.stats}
                   rowClicked={this.setActiveManager.bind(this)}
                   onStatChange={this.onStatChange.bind(this)}
@@ -217,17 +210,22 @@ const StateToProps = (state, ownProps) => {
   return {
     lists : state.lists.lists, 
     list : state.lists.list,
+    successes : state.successes.list,
+    errors : state.errors.list,
     selected : state.managers.selected,
     manager : state.managers.manager,
     returns : state.managers.returns,
-    user : user(state),
+    user : state.auth.user,
     dates : state.dates,
   };
 };
 
 const DispatchToProps = (dispatch, ownProps) => {
   return {
-    createTempManagerList: () =>  dispatch(Actions.list.createTemp()),
+    clearErrors: () => dispatch(Actions.errors.list.clear()),
+    clearSuccesses: () => dispatch(Actions.successes.list.clear()),
+
+    createTempManagerList: () =>  dispatch(Actions.list.temp()),
     saveNewManagerList: (name) =>  dispatch(Actions.list.saveNew(name)),
     saveManagerList: () =>  dispatch(Actions.list.save()),
     getManagerList: (id, options) =>  dispatch(Actions.list.get(id, options)),

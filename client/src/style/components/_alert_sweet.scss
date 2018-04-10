@@ -44,4 +44,9 @@ button {
     background-color: button_color(primary) !important;
     color: button_text(primary) !important;
   }
+  &.swal2-cancel{
+    border: 1px solid transparent !important;
+    background-color: button_color(def) !important;
+    color: button_text(def) !important;
+  }
 }

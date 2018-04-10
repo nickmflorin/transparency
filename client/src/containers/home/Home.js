@@ -18,13 +18,10 @@ import ManagerQuant from './Quant'
 import Sidebar from './Sidebar'
 import PrivateRoute from '../../PrivateRoute'
 
-import { Actions } from '../../store'
+import Actions from '../../actions'
 import './home.css'
 
 class Home extends React.Component {
-  constructor(props, context){
-    super(props, context)
-  }
   static propTypes = {
     manager_apps : PropTypes.array.isRequired
   }
@@ -100,13 +97,15 @@ class Home extends React.Component {
 const HomeStateToProps = (state, ownProps) => {  
   return {
     selected : state.managers.selected,
+    warnings : state.warnings.manager,
+    errors : state.errors.manager,
     manager : state.managers.manager,
     returns : state.managers.returns,
     exposure : state.managers.exposure,
     exposures : state.managers.exposures,
     betas : state.managers.betas,
+    categorized_exposure : state.managers.categorized_exposure,
     categorized_exposures : state.managers.categorized_exposures,
-
     sidebarShowing: state.sidebarShowing,
     dates : state.dates,
   };
@@ -118,6 +117,7 @@ const HomeDispatchToProps = (dispatch, ownProps) => {
     getManager: (id) => dispatch(Actions.manager.get(id)),
     getManagerBetas: (id, options) =>  dispatch(Actions.manager.returns.getBetas(id, options)),
     getManagerExposure: (id, date) =>  dispatch(Actions.manager.exposure.get(id, date)),
+    getManagerCategoryExposure: (id, date, options) =>  dispatch(Actions.manager.exposure.getCategory(id, date, options)),
     getManagerExposures: (id) =>  dispatch(Actions.manager.exposures.get(id)),
     getManagerCategoryExposures: (id, options) =>  dispatch(Actions.manager.exposures.getCategories(id, options)),
   }

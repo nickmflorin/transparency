@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux'
 import { Route, Switch } from 'react-router'
 import { Redirect } from 'react-router-dom'
-import { isAuthenticated } from './store'
+import { isAuthenticated } from './reducers'
 
 export const PrivateRoute = ({ component: Component, isAuthenticated : isAuthenticated, ...rest }) => (
   <Route {...rest} render={(props) => (

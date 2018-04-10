@@ -35,6 +35,8 @@ class HistoricalPerformance extends React.Component {
     return (
        <HomeContent
         manager={this.props.selected}
+        warning={this.props.warnings.returns}
+        error={this.props.errors.returns}
        >
           <div className="panel chart-panel manager-home-top" style={{marginTop:10}}>
               <ManagerReturns 

@@ -14,8 +14,6 @@ export class HistoricalExposures extends React.Component {
       selected_id : null, // Keeps Track of Active Manager So Multiple API Requests Not Performed
       exposures : null,
       date : null,
-      warning : null,
-      error : null,
     }
   }
   static propTypes = {
@@ -43,13 +41,6 @@ export class HistoricalExposures extends React.Component {
     if(props.exposures){
       if(!this.state.exposures || this.state.exposures.id != props.exposures.id ){
         this.setState({exposures : props.exposures})
-
-        if(props.exposures.exposures.length == 0){
-          this.setState({warning : 'No exposures found for manager.'})
-        }
-        else{
-          this.setState({warning:null})
-        }
       }
     }
   }
@@ -65,8 +56,8 @@ export class HistoricalExposures extends React.Component {
   render() {
     return (
        <HomeContent
-        warning={this.state.warning}
-        error={this.state.error}
+        warning={this.props.warnings.exposures}
+        error={this.props.errors.exposures}
         manager={this.props.selected}
        >
 

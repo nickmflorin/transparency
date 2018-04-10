@@ -2,18 +2,18 @@ import React from 'react';
 import CustomModal from './CustomModal'
 import PropTypes from 'prop-types';
 import _ from 'underscore'
-import { Types } from '../../store/lists'
 
 export class SaveListModal extends React.Component {
 	constructor(props, context){
 		super(props, context)
 		this.state = {
-			error : null, 
 			warning : null
 		}
 	}
 	static propTypes = {
 		 onClose: PropTypes.func.isRequired,
+		 errors: PropTypes.object.isRequired,
+		 successes: PropTypes.object.isRequired,
 		 show: PropTypes.bool.isRequired,
 		 list: PropTypes.object,
 		 user: PropTypes.object.isRequired,
@@ -37,9 +37,7 @@ export class SaveListModal extends React.Component {
 		const valid = this.validate()
 		if(valid){
 			var name = this.refs.listname.value 
-			var self = this 
-			this.props.saveNewManagerList(name)
-			
+			this.props.saveNewManagerList(name)			
 			// this.props.saveNewManagerList(name).then((action) => {
 			// 	if (action.type != Types.list.new.success) {
 			// 		self.setState({ error : action.error })
@@ -59,11 +57,16 @@ export class SaveListModal extends React.Component {
 			}
 		}
 		
+		var error = null;
+		if(this.props.errors && this.props.errors.save){
+			error = this.props.errors.save
+		}
+
 		return (
 			<CustomModal
 			  title="Save Manager List"
 			  show={this.props.show}
-			  error={this.state.error}
+			  error={error}
 			  notification={notification}
 			  subnotification={subnotification}
 			  warning={this.state.warning}

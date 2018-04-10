@@ -26,10 +26,10 @@ class Login(View):
 
 	def post(self, request, *args, **kwargs):
 		response = {}
-		print 'Logging User In'
+		payload = json.loads(request.body)
 
-		username =  request.POST.get('username')
-		password =  request.POST.get('password')
+		username =  payload.get('username')
+		password =  payload.get('password')
 
 		if not username and not password:
 			print Errors.NotProvided
@@ -59,6 +59,7 @@ class Logout(views.APIView):
 	permission_classes = (AllowAny,)
 
 	def get(self, request, *args, **kwargs):
+		
 		user = request.user 
 		if not user: 
 			raise Exception('User Already Logged Out')

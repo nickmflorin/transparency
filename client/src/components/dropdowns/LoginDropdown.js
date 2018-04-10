@@ -16,7 +16,7 @@ export class LoginDropdown extends React.Component {
       PropTypes.number
     ]),
     label: PropTypes.string.isRequired,
-    authErrors: PropTypes.array,
+    auth: PropTypes.object.isRequired,
     isAuthenticated: PropTypes.bool.isRequired,
     onLogIn: PropTypes.func.isRequired,
   };
@@ -38,7 +38,7 @@ export class LoginDropdown extends React.Component {
             <Dropdown.Menu className="dropdown-menu-right login-menu">
                 <LoginForm 
                   login={this.login.bind(this)} 
-                  authErrors={this.props.authErrors} 
+                  auth={this.props.auth} 
                   isAuthenticated={this.props.isAuthenticated}
                 />
             </Dropdown.Menu>

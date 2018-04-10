@@ -9,9 +9,8 @@ import { LoginDropdown, UserDropdown } from '../dropdowns'
 
 export class NavBar extends React.Component {
 	static propTypes = {
-	    authErrors: PropTypes.array,
+	    auth: PropTypes.object.isRequired,
 	    isAuthenticated: PropTypes.bool.isRequired,
-	    user: PropTypes.object, // Not Always Required if User Not Logged In Yet
 	    onLogIn: PropTypes.func.isRequired,
 	    onLogOut: PropTypes.func.isRequired,
 	    toggleSidebar: PropTypes.func.isRequired,
@@ -38,7 +37,7 @@ export class NavBar extends React.Component {
 				              <LoginDropdown 
 				                id="login"
 				                label="Login"
-				                authErrors={this.props.authErrors}
+				                auth={this.props.auth}
 				                isAuthenticated={this.props.isAuthenticated}
 				                onLogIn={this.props.onLogIn}
 				              />
@@ -46,9 +45,9 @@ export class NavBar extends React.Component {
 				            {this.props.isAuthenticated && 
 				              <UserDropdown 
 				                id="user"
-				                label={this.props.user.username}
+				                label={this.props.auth.user.username}
 				                isAuthenticated={this.props.isAuthenticated}
-				                user={this.props.user}
+				                user={this.props.auth.user}
 				                onLogOut={this.props.onLogOut}
 				              />
 				            }

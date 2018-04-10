@@ -2,7 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux'
 
-import { Actions } from '../store'
+import Actions from '../actions'
+import { isAuthenticated } from '../reducers'
 import { MenuBar } from '../components/menu/'
 
 class MenuContainer extends React.Component {

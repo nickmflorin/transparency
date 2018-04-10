@@ -1,8 +1,8 @@
 import React from 'react'
 import { connect } from 'react-redux'
 
-import { authErrors, Actions, isAuthenticated, user } from '../store'
-
+import Actions from '../actions'
+import { isAuthenticated } from '../reducers'
 import { NavBar } from '../components/nav'
 
 class Nav extends React.Component {
@@ -15,10 +15,9 @@ class Nav extends React.Component {
 
 const StateToProps = (state, ownProps) => {  
   return {
-    authErrors: authErrors(state),
     sidebarShowing : state.sidebarShowing,
     isAuthenticated: isAuthenticated(state),
-    user : user(state),
+    auth : state.auth,
   };
 };
 

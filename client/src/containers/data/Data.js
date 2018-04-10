@@ -10,7 +10,7 @@ import { Table } from '../../utilities'
 import QueryField from './QueryField'
 import QuerySelection from './QuerySelection'
 import QueryResults from './QueryResults'
-import { user, Actions, Api } from '../../store'
+import Actions from '../../actions'
 
 import './data.css'
 
@@ -44,21 +44,6 @@ export class Data extends React.Component {
       this.setState(update)
     }
   }
-  export(sql){
-    var self = this 
-    this.props.loading(true)
-    Api.db.RunQuery(sql, {'nolimit' : true}).then(response => {
-      self.props.loading(false)
-
-      if(response.error){
-        self.setState({ error : response.error })
-      }
-      else if(response.results && response.columns){
-        var data = Table.convertResultToArray(response.columns, response.results)
-        self.download(data)
-      }
-   })
-  }
   download(data){
     this.setState({to_download : data})
     var self = this 
@@ -75,7 +60,6 @@ export class Data extends React.Component {
           <div className="data-top-container">
             <div className="left">
                 <QueryField 
-                  export={this.export.bind(this)}
                   download={this.download.bind(this)}
                 />
             </div>
@@ -104,13 +88,13 @@ export class Data extends React.Component {
 const DataStateToProps = (state, ownProps) => {  
   return {
     query : state.db.query,
-    user : user(state),
+    auth: state.auth,
   };
 };
 
 const DataDispatchToProps = (dispatch, ownProps) => {
   return {
-    createTempQuery : () => dispatch(Actions.query.createTempQuery()),
+    createTempQuery : () => dispatch(Actions.query.temp()),
   }
 };
 

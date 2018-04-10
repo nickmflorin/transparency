@@ -10,11 +10,10 @@ import 'codemirror/mode/sql/sql.js';
 import 'codemirror/theme/material.css';
 
 import { Table } from '../../utilities'
-import { Types } from '../../store/db'
 import { QueryFieldToolbar } from '../../components/toolbars'
 import { SaveQueryModal } from '../../components/modals'
 
-import { user, Actions, Api } from '../../store'
+import Actions from '../../actions'
 
 const options = {
   lineNumbers: true,
@@ -36,58 +35,39 @@ class QueryField extends React.Component {
       error_save : false,
     }
   }
-  static propTypes = {
-      updateQuery : PropTypes.func.isRequired,
-      runQuery: PropTypes.func.isRequired,
-      saveNewQuery: PropTypes.func.isRequired,
-      export: PropTypes.func.isRequired,
-      query: PropTypes.object,
-  };
   componentWillMount(){
     if(this.props.query){
       this.setQuery(this.props.query.sql)
     }
   }
   componentWillReceiveProps(props){
+    if(props.errors){
+      if(props.errors.save){
+        this.setState({error_save : true})
+      }
+    }
+    if(props.successes){
+      if(props.successes.save){
+        this.setState({confirm_save : true})
+      }
+      if(props.successes.create){
+        this.toggleModal()
+      }
+    }
     if(props.query){
       this.setQuery(props.query.sql)
     }
   }
   onExport(event){
-    const sql = this.getQuery()
-    if(sql){
-      this.props.updateQuery({ sql: sql }).then((action) => {
-        if (action.type == Types.query.update.success) {
-          this.props.runQuery().then( (action) => {
-              if (action.type == Types.query.run.success) {
-                var results = action.result.results 
-                var columns = action.result.columns 
-                var data = Table.convertResultToArray(columns, results)
-                this.props.download(data)
-              }
-              else{
-                console.log('Error Running Query')
-                console.log(action.error)
-              }
-          })
-        }
-        else{
-          console.log('There Was an Error Updating the Query SQL Before Running...')
-        }
-      })
+    const value = this.getQuery()
+    if(value){
+      this.props.updateQuery({ sql: value }, { export : true })
     }
   }
   runQuery(event){
     const value = this.getQuery()
     if(value){
-      this.props.updateQuery({ sql: value }).then((action) => {
-        if (action.type == Types.query.update.success) {
-          this.props.runQuery()
-        }
-        else{
-          console.log('There Was an Error Updating the Query SQL Before Running...')
-        }
-      })
+      this.props.updateQuery({ sql: value }, { run : true })
     }
   }
   setQuery(sql){
@@ -113,60 +93,40 @@ class QueryField extends React.Component {
   }
   onSaveAs(){
       const user = this.props.user
-      if(!user){
-        throw new Error('User Must be Present')
-      }
-
-      const value = this.getQuery()
-      if(value){
-        this.props.updateQuery({ sql: value }).then((action) => {
-          if (action.type == Types.query.update.success) {
-            this.overwrite = true
-            this.setState({ modalIsOpen: true })
-          }
-          else{
-            console.log('There Was an Error Updating the Query SQL Before Saving...')
-          }
-        })
+      const query = this.props.query
+      if(user && query){
+        const value = this.getQuery()
+        if (value) {
+          this.props.updateQuery({ sql: value })
+          this.setState({ modalIsOpen: true })
+        }
       }
   }
   onSave(){
       const user = this.props.user
-      if(!user){
-        throw new Error('User Must be Present')
+      const query = this.props.query
+      if(user && query){
+        const value = this.getQuery()
+        if (value) {
+            if(query.id == 'new'){
+              this.setState({ modalIsOpen: true })
+            }
+            else if(query.user.id == user.id){
+              this.props.updateQuery({ sql: value }, { save : true })
+            }
+            else{
+              this.setState({ modalIsOpen: true })
+            }
+        }
       }
-
-      const value = this.getQuery()
-      if (value) {
-          // Make Sure State Query Model Has Updated SQL
-          this.props.updateQuery({ sql: value }).then((action) => {
-              if (action.type == Types.query.update.success) {
-                  if (this.props.query.id == 'new') {
-                      this.overwrite = false
-                      this.setState({ modalIsOpen: true })
-                  } else {
-                      if (this.props.query.user.id == user.id) {
-                          this.props.saveQuery().then((action) => {
-
-                              if (action.type == Types.query.save.success) {
-                                this.setState({ confirm_save : true })
-                              }
-                              else{
-                                this.setState({ error_save : true })
-                              }
-                          })
-                      } else {
-                          // Save As Situation
-                          this.overwrite = false
-                          this.setState({ modalIsOpen: true })
-                      }
-                  }
-              }
-              else{
-                console.log('There Was an Error Updating the Query SQL Before Saving...')
-              }
-          })
-      } 
+  }
+  successConfirmed(){
+    this.props.clearSuccesses('save')
+    this.setState({ confirm_save : false })
+  }
+  errorConfirmed(){
+    this.props.clearErrors('save')
+    this.setState({ error_save : false })
   }
   toggleModal(){
       this.setState({modalIsOpen: !this.state.modalIsOpen});
@@ -197,7 +157,7 @@ class QueryField extends React.Component {
           title="Saved"
           type='success'
           text="Your query was saved successfully."
-          onConfirm={() => this.setState({ confirm_save : false })}
+          onConfirm={this.successConfirmed.bind(this)}
         />
 
         <SweetAlert
@@ -205,7 +165,7 @@ class QueryField extends React.Component {
           title="Error"
           type='error'
           text="There was an error saving your query."
-          onConfirm={() => this.setState({ error_save : false })}
+          onConfirm={this.errorConfirmed.bind(this)}
         />
 
         <SaveQueryModal 
@@ -216,6 +176,8 @@ class QueryField extends React.Component {
           show={this.state.modalIsOpen} 
           onClose={this.toggleModal.bind(this)}
           afterSave={this.props.getQueries}
+          errors={this.props.errors}
+          successes={this.props.successes}
         />
 
         <div className="query-field-toolbar-container" style={{marginLeft:28}}>
@@ -245,18 +207,22 @@ class QueryField extends React.Component {
 const DataStateToProps = (state, ownProps) => {  
   return {
     query : state.db.query,
-    user : user(state),
+    user : state.auth.user,
+    successes : state.successes.query,
+    errors : state.errors.query,
   };
 };
 
 const DataDispatchToProps = (dispatch, ownProps) => {
   return {
-    createTempQuery : () => dispatch(Actions.query.createTempQuery()),
-    saveQuery : () => dispatch(Actions.query.saveQuery()),
-    saveNewQuery : (name) => dispatch(Actions.query.saveNewQuery(name)),
-    runQuery : (options) => dispatch(Actions.query.runQuery(options)),
-    updateQuery : (update) => dispatch(Actions.query.updateQuery(update)),
-    getQueries : () => dispatch(Actions.query.getQueries()),
+    clearSuccesses : (type) => dispatch(Actions.successes.query.clear(type)),
+    clearErrors : (type) => dispatch(Actions.errors.query.clear(type)),
+    createTempQuery : () => dispatch(Actions.query.temp()),
+    saveQuery : () => dispatch(Actions.query.save()),
+    saveNewQuery : (name, sql) => dispatch(Actions.query.saveNew(name, sql)),
+    runQuery : (options) => dispatch(Actions.query.run(options)),
+    updateQuery : (update, options) => dispatch(Actions.query.update(update, options)),
+    getQueries : () => dispatch(Actions.queries.get()),
   }
 };
 

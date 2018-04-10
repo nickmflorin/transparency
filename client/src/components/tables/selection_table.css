@@ -1,0 +1,8 @@
+.selection-table-container{
+	max-height: calc(100% - 26px);
+	overflow-y: hidden;
+	display: flex;
+	width: 100%;
+	flex-direction: column;
+}
+

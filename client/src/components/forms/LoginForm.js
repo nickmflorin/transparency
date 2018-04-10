@@ -13,12 +13,12 @@ export class LoginForm extends React.Component {
     this.state = {
       username : '',
       password : '',
-      errors : { username : null, password : null },
       messages : [],
+      errors : { username : null, password : null },
     }
   }
   static propTypes = {
-    authErrors: PropTypes.array,
+    auth: PropTypes.object.isRequired,
     isAuthenticated: PropTypes.bool.isRequired,
     login: PropTypes.func.isRequired,
   };
@@ -32,22 +32,19 @@ export class LoginForm extends React.Component {
   }
   componentWillReceiveProps(props){
     // Clear Errors and Messages on Submit
-    const errors = props.authErrors
-    if(errors && errors.length != 0){
-      
-        var err = { username : null, password : null }
-        var messages = []
-
-        for(var i = 0; i<errors.length; i++){
-          if(err[errors[i].field] !== undefined){
-
-            err[errors[i].field] = errors[i].message
-            messages.push(errors[i].message)
-          }
-        }
-        
-        this.setState({ messages : messages, errors : err })
+    if(props.auth.errors.login){
+      const error = props.auth.errors.login
+      var err = { username : null, password : null }
+      if(error.field){
+        err[error.field] = error.message
+        this.setState({ errors : err, messages : [error.message] })
       }
+      else{
+        console.log('Invalid Error Returned')
+        console.log(error)
+        //throw new Error('Invalid Error Returned')
+      }
+    }
   }
   handleInputChange = (event) => {
     const target = event.target

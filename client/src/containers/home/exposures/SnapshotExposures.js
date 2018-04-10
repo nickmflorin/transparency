@@ -14,47 +14,30 @@ class SnapshotExposures extends React.Component {
     super(props, context)
     this.state = {
       tiers : ['gross','long','short'],
-      error : null,
-      warning : null,
     }
   }
   static propTypes = {
     selected: PropTypes.object,
     dates: PropTypes.object.isRequired,
     exposures: PropTypes.object,
-    getManagerCategoryExposures: PropTypes.func.isRequired,
+    getManagerCategoryExposure: PropTypes.func.isRequired,
   };
   componentWillMount(){
     if(this.props.selected){
       if(this.props.categorized_exposures && this.props.categorized_exposures.id != this.props.selected.id){
           var string = Dates.stringify_tuple(this.props.dates.date)
-          this.props.getManagerCategoryExposures(this.props.selected.id, { date : string })
+          this.props.getManagerCategoryExposure(this.props.selected.id, string)
       }
     }
   }
   componentWillReceiveProps(props){
-
     // If Selected -> Check if Dates Changed and Requires New Exposures to be Retrieved
     if(props.selected){
-
       const diffDates = Dates.different(props.dates, this.props.dates, 'date')
       if(diffDates || !this.props.selected || this.props.selected.id != props.selected.id){
           var string = Dates.stringify_tuple(props.dates.date)
-          this.props.getManagerCategoryExposures(props.selected.id, { date : string  })
+          this.props.getManagerCategoryExposure(props.selected.id, string)
       }
-    }
-
-    if(props.categorized_exposures){
-       if(props.categorized_exposures.exposures.length == 0){
-          this.setState({
-            warning : 'No exposures found for manager.'
-          })
-        }
-        else{
-          this.setState({
-            warning : null
-          })
-        }
     }
   }
   shouldComponentUpdate(nextProps, nextState){
@@ -62,8 +45,8 @@ class SnapshotExposures extends React.Component {
     if(diffDates){
       return true 
     }
-    if(nextProps.categorized_exposures && nextProps.selected){
-      if(!this.props.categorized_exposures || this.props.categorized_exposures.id != nextProps.categorized_exposures.id){
+    if(nextProps.categorized_exposure && nextProps.selected){
+      if(!this.props.categorized_exposure || this.props.categorized_exposure.id != nextProps.categorized_exposure.id){
         return true
       }
     }
@@ -71,10 +54,10 @@ class SnapshotExposures extends React.Component {
   }
   render() {
     var exposures = [], indexed = {}, categories = []
-    if(this.props.categorized_exposures && this.props.categorized_exposures.exposures){
+    if(this.props.categorized_exposure && this.props.categorized_exposure.exposures){
 
         var self = this 
-        exposures = _.filter(this.props.categorized_exposures.exposures, function(exposure){
+        exposures = _.filter(this.props.categorized_exposure.exposures, function(exposure){
           return _.contains(self.state.tiers, exposure.tier) && exposure.value != 0.0
         })
         indexed = _.groupBy(exposures, 'category')
@@ -90,8 +73,8 @@ class SnapshotExposures extends React.Component {
           date={this.props.dates.date}
           manager={this.props.selected}
           changeDate={this.props.changeDate}
-          warning={this.state.warning} 
-          error={this.state.error} 
+          warning={this.props.warnings.category}
+          error={this.props.errors.category}
         > 
           {categories.map( (category) => {
             return(

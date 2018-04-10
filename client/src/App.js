@@ -9,7 +9,7 @@ import { ConnectedRouter } from 'react-router-redux'
 // Redux Related Imports
 import { PersistGate } from 'redux-persist/integration/react' // Not Used Currently
 import { Provider } from 'react-redux'
-import { store, history } from './store'
+import { store, history } from './reducers'
 
 import Base from './Base'
 import Login from './containers/login/Login'

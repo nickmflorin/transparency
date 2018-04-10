@@ -3,7 +3,9 @@ import { connect } from 'react-redux'
 import { Redirect } from 'react-router'
 import { PulseLoader } from 'react-spinners';
 
-import { Actions, authErrors, isAuthenticated, user } from  '../../store'
+import Actions from '../../actions'
+import { isAuthenticated } from  '../../reducers'
+
 import { LoginForm } from '../../components/forms'
 import Background from './background.png';
 
@@ -55,8 +57,7 @@ export class Login extends React.Component {
           <div className="login-page-form-container">
             <LoginForm 
               login={this.login.bind(this)} 
-              authErrors={this.props.authErrors} 
-              isAuthenticated={this.props.isAuthenticated}
+              {...this.props}
             />
           </div>
         </div>
@@ -67,9 +68,8 @@ export class Login extends React.Component {
 
 const mapStateToProps = (state, ownProps) => {  
   return {
-    authErrors: authErrors(state),
-    isAuthenticated: isAuthenticated(state),
-    user: user(state),
+    isAuthenticated : isAuthenticated(state),
+    auth: state.auth,
     requesting : state.requesting,
   };
 };

@@ -3,120 +3,139 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import _ from 'underscore'
 
-import { QueryTableToolbar } from '../../components/toolbars'
-import { QueryTable } from '../../components/tables'
-
-import { user, Actions, Api } from '../../store'
+import SweetAlert from 'sweetalert2-react';
+import { SelectionTable } from '../../components/tables'
+import { TablesQueryTableColumns, SavedQueryTableColumns } from './SelectionTableConfig'
+import Actions from '../../actions'
 
 class QuerySelection extends React.Component {
   constructor(props, context){
     super(props, context)
     this.state = {
         database : null,
-        display : 'tables',
-        query_display : 'personal',
+        confirm_delete : false,
+        to_delete : null,
     }
   }
-  static propTypes = {
-      openTableQuery: PropTypes.func.isRequired,
-      openQuery: PropTypes.func.isRequired,
-      removeQuery: PropTypes.func.isRequired,
-      getDatabases: PropTypes.func.isRequired,
-      getQueries: PropTypes.func.isRequired,
-  };
   componentWillMount() {
       this.props.getDatabases()
       this.props.getQueries()
   }
-  componentWillReceiveProps(props){
-    // Set Default Database if Not Specified
-    if(props.databases && props.databases.length != 0){
-        if(!this.state.database){
-          const defaultDB = props.databases[0]
-          this.setState({ database : defaultDB })
-        }
+  onDelete(id){
+      this.setState({ confirm_delete : true, to_delete : id })
+  }
+  onDatabaseSelect(id, database){
+    this.props.openDatabase(database)
+  }
+  deleteConfirmed(){
+    const to_delete = this.state.to_delete 
+    if(!to_delete){
+      throw new Error('Delete ID Not Stored in State')
     }
+    this.setState({ to_delete : null, confirm_delete : false })
+    this.props.removeQuery(to_delete)
   }
-  onDatabaseSelect(id, toolbarId, database){
-    this.setState({ 
-      database : database, 
-      display : 'tables'
-    })
-  }
-  onQuerySelect(id, toolbarId, query){
-    this.setState({
-      query_display : id,
-      display : 'saved'
-    })
+  deleteCancelled(){
+    this.setState({ to_delete : null, confirm_delete : false })
   }
   render(){
     var user = this.props.user 
     if(!user){
       throw new Error('User Not Present')
     }
-
-    var queries = this.props.queries 
-    if(this.state.query_display == 'personal'){
-      queries = _.filter(queries, function(que){
-          return que.user.id == user.id
-      })
-    }
-
     var tables = []
-    if(this.state.database){
-      tables = this.state.database.tables
+    if(this.props.database){
+      tables = this.props.database.tables
     }
 
-    var query_options = [
-      {id : 'all', name : 'All'},
-      {id : 'personal', name : user.username}
-    ]
-
+    var self = this 
     return (  
       <div className="query-table-container">
-         <QueryTableToolbar 
-            database={this.state.database} 
-            databases={this.props.databases} 
-            onDatabaseSelect={this.onDatabaseSelect.bind(this)} 
-            onQuerySelect={this.onQuerySelect.bind(this)} 
-            query_options={query_options} 
-         />
-         <div className="query-table-table-container">
-            <QueryTable 
-                database={this.state.database} 
-                tables={tables}
-                displayQueries={queries}
-                displayTables={tables}
-                display={this.state.display}
-                removeQuery={this.props.removeQuery}
-                openTableQuery={this.props.openTableQuery}
-                openQuery={this.props.openQuery}
-                user={this.props.user}
-            />
-          </div>
-        </div>
+        <SweetAlert
+          show={this.state.confirm_delete}
+          title="Warning"
+          type='warning'
+          text="Are you sure you would like to delete this query?"
+          showCancelButton={true}
+          showConfirmButton={true}
+          reverseButtons={true}
+          onConfirm={this.deleteConfirmed.bind(this)}
+          onCancel={this.deleteCancelled.bind(this)}
+        />
+        <SelectionTable 
+          display="databases"
+          selectedLabel="Database"
+          selected={this.props.database}
+          selections = {[
+            {
+              id : 'queries',
+              noDataText : "No Saved Queries",
+              loadingText : "Loading Queries...",
+              data : this.props.queries || [],
+              columns : SavedQueryTableColumns({
+                ...self.props,
+                onDelete : self.onDelete.bind(self),
+              }),
+              dropdown : {
+                label : 'Saved Queries',
+                style : 'primary',
+                items : [
+                    {id : 'all', name : 'All'},
+                    {id : 'personal', name : user.username,
+                      filter : function(items){
+                        return _.filter(items, (item) => {
+                          return item.user.id == user.id
+                        })
+                    },
+                  }
+                ],
+              },
+            },
+            {
+              id : 'databases',
+              noDataText : "No Tables Found",
+              loadingText : "Loading Tables...",
+              columns : TablesQueryTableColumns({
+                ...self.props,
+              }),
+              data : tables,
+              dropdown : {
+                label : 'Databases',
+                style : 'default',
+                items : this.props.databases.map((database) => {
+                  return {
+                    ...database,
+                    onSelect : this.onDatabaseSelect.bind(this)
+                  }
+                }),
+              },
+            }
+          ]}
+        />
+      </div>
     )
   }
 }
 
-
 const DataStateToProps = (state, ownProps) => {  
   return {
     query : state.db.query,
-    user : user(state),
+    user : state.auth.user,
     databases : state.db.databases,
+    database : state.db.database,
     queries : state.db.queries,
   };
 };
 
 const DataDispatchToProps = (dispatch, ownProps) => {
   return {
-    getDatabases: () =>  dispatch(Actions.databases.getDatabases()),
-    getQueries : () => dispatch(Actions.query.getQueries()),
-    createTempQuery : () => dispatch(Actions.query.createTempQuery()),
-    removeQuery : (id) => dispatch(Actions.query.removeQuery(id)),
-    openQuery : (id, options) => dispatch(Actions.query.openQuery(id, options)),
-    openTableQuery : (id, options) => dispatch(Actions.query.openTableQuery(id, options)),
+    getDatabases: () => dispatch(Actions.databases.get()),
+    openDatabase: (database) => dispatch(Actions.database.open(database)),
+    getQueries : () => dispatch(Actions.queries.get()),
+    createTempQuery : () => dispatch(Actions.query.temp()),
+    removeQuery : (id) => dispatch(Actions.query.remove(id)),
+    openQuery : (id, options) => dispatch(Actions.query.open(id, options)),
+    openTableQuery : (id, options) => dispatch(Actions.query.openTable(id, options)),
   }
 };
 
