@@ -6,7 +6,7 @@ import _ from 'underscore'
 import moment from 'moment'
 
 import {  ReturnsTable } from '../../../components/tables'
-import { PageContent } from '../../../components/layout'
+import { Page, ManagerHeader } from '../../../components/layout'
 
 import { Dates } from '../../../utilities'
 import { Statistics } from '../../../config'
@@ -14,7 +14,6 @@ import Actions from '../../../actions'
 
 import ListSelection from './ListSelection'
 import ManagerResults from './ManagerResults'
-import './manager_comparison.css'
 
 const differentRanges = function(range1, range2){
   const starts_equal = moment(range1.start).isSame(range2.start)
@@ -67,29 +66,49 @@ export class ManagerComparison extends React.Component {
       active : null,
     }
   }
+  static propTypes = {
+      user: PropTypes.object.isRequired,
+      lists: PropTypes.array.isRequired,
+      list: PropTypes.object
+  };
   componentDidMount(){
     this.props.getManagerLists()
     if(!this.props.list){
-      if(!this.props.user){
-        throw new Error('User Must be Available')
-      }
-      this.props.createTempManagerList()
+      this.props.createNewManagerList()
     }
   }
   componentWillReceiveProps(props) {
     if(props.list){
 
-      // Have to Get Returns for Managers Already in List if List Loaded
-      // if(!this.props.list || this.props.list.id != props.list.id){
-      //   if(props.list.managers.length != 0){
-      //     // Get Full Manager Model to Set to New Active Manager
-      //     this.props.addManagerToList(props.list.managers[0].id)
-      //   }
-      //   else{
-      //     this.setState({ active : null })
-      //   }
-      // }
+      // Update Active Manager 
+      if(props.list.managers.length != 0){
 
+        if(!this.state.active){
+          // Have to Get Full Manager to Display Full Manager Returns
+          this.props.getManager(props.list.managers[0].id)
+        }
+        else{
+          const exists = _.findWhere(props.list.managers, { id : this.state.active.id })
+          if(!exists){
+            // Have to Get Full Manager to Display Full Manager Returns
+            this.props.getManager(props.list.managers[0].id)
+          }
+        }
+      }
+      // If No List Active, Remove Active Manager
+      else{
+        this.setState({ active : null })
+      }
+
+      // Update Active Manager on Click -> Clicked Manager from Table -> Make Sure Manager is In List
+      if(props.manager){
+        var exists = _.findWhere(props.list.managers, { id : props.manager.id })
+        if(exists){
+          this.setState({ active : props.manager })
+        }
+      }
+
+      // Update Manager Returns if Dates Changed
       const startDiff = Dates.different(props.dates, this.props.dates, 'start')
       const endDiff = Dates.different(props.dates, this.props.dates, 'end')
       if(startDiff || endDiff){
@@ -101,47 +120,38 @@ export class ManagerComparison extends React.Component {
         })
       }
 
-      // Clicked Manager from Table -> Make Sure Manager is In List
-      if(props.manager){
-        var exists = _.findWhere(props.list.managers, { id : props.manager.id })
-        if(exists){
-          this.setState({ active : props.manager })
-        }
-      }
-
       if(props.selected){
         if(!this.props.selected || this.props.selected.id != props.selected.id){
-          // Get Full Manager Model to Set to New Active Manager
-          console.log('Getting Manager')
-          this.props.getManager(props.selected.id)
-        }
-      }
-      if(props.manager){
-        if(!this.props.manager || this.props.manager.id != props.manager.id){
-          this.props.addManagerToList(props.manager, {
+          // Gets Full Manager with Returns
+          this.props.addManagerToList(props.selected.id, {
             start_date : this.props.dates.start,
             end_date : this.props.dates.end,
           })
         }
       }
     }
+    // If No List Active, Remove Active Manager
+    else{
+      this.setState({ active : null })
+    }
   }
-  removeManager(id){
-    if(this.state.active){
-      if(this.state.active.id == id){
-        this.setState({ active : null })
-
-        if(this.props.list){ // List Should be Present
-          var others = _.filter(this.props.list.managers, function(mgr){
-            return mgr.id != id
-          })
-          if(others.length != 0){
-            this.props.getManager(others[0].id)
-          }
+  // When Manager is Removed, This Method Will Set Active Manager to Another Manager if Available
+  findAnotherActiveManager(id){
+      if(!this.props.list){
+        throw new Error('List Should be Available if Manager Removed')
+      }
+      if(this.state.active && this.state.active.id == id){
+        var others = _.filter(this.props.list.managers, function(mgr){
+          return mgr.id != id 
+        })
+        // We Might Need to Refetch Manager Here for Total Return Stream
+        if(others.length != 0){
+          this.setState({ active : others[0] })
+        }
+        else{
+          this.setState({ active : null })
         }
       }
-    }
-    this.props.removeManagerFromList(id)
   }
   onStatChange(id){
     var stats = this.state.stats 
@@ -167,51 +177,54 @@ export class ManagerComparison extends React.Component {
     dimensions[dim] = stat 
     this.setState({ dimensions : dimensions })
   }
-  // Active Manager Selected from Comparison Table Has Sliced Returns, Want to Get Main Manager with All Returns
-  // Have to Get Full Manager from API
-  setActiveManager(manager){
-    this.props.getManager(manager.id)
-  }
   render() {
     return (
-      <PageContent 
-        manager={this.state.active}
+      <Page 
         white={true}
+        padded={true}
+        error={this.state.error}
         className="content white-content"
+        notificationTypes={[  
+          'ADD_MANAGER_TO_LIST'
+        ]}
+        {...this.props}
       >
-        <div className='content-under-header'>
-            <div className="blank-panel comparison-top-container">
-              <div className="left">
+          <div className="blank-panel comparison-top-container">
+            <div className="left">
+              <ManagerHeader 
+                manager={this.state.active}
+                placeholderText="Select a manager from the table to view returns."
+              />
+              <div style={{marginTop: 15}}>
                 <ReturnsTable 
                   dates={this.props.dates}
                   manager={this.state.active}
                 />
               </div>
-              <div className="right">
-                <ListSelection />
-              </div>
             </div>
-            <div className="blank-panel comparison-bottom-container">
-                <ManagerResults 
-                  stats={this.state.stats}
-                  rowClicked={this.setActiveManager.bind(this)}
-                  onStatChange={this.onStatChange.bind(this)}
-                  removeManager={this.removeManager.bind(this)}
-                  {...this.props}
-                />
+            <div className="right">
+              <ListSelection />
             </div>
-        </div>
-      </PageContent>
+          </div>
+
+          <div className="blank-panel comparison-bottom-container">
+              <ManagerResults 
+                stats={this.state.stats}
+                active={this.state.active}
+                findAnotherActiveManager={this.findAnotherActiveManager.bind(this)}
+                onStatChange={this.onStatChange.bind(this)}
+              />
+          </div>
+      </Page>
     )
   }
 }
 
 const StateToProps = (state, ownProps) => {  
   return {
+    errors : state.errors,
     lists : state.lists.lists, 
     list : state.lists.list,
-    successes : state.successes.list,
-    errors : state.errors.list,
     selected : state.managers.selected,
     manager : state.managers.manager,
     returns : state.managers.returns,
@@ -222,17 +235,12 @@ const StateToProps = (state, ownProps) => {
 
 const DispatchToProps = (dispatch, ownProps) => {
   return {
-    clearErrors: () => dispatch(Actions.errors.list.clear()),
-    clearSuccesses: () => dispatch(Actions.successes.list.clear()),
-
-    createTempManagerList: () =>  dispatch(Actions.list.temp()),
-    saveNewManagerList: (name) =>  dispatch(Actions.list.saveNew(name)),
-    saveManagerList: () =>  dispatch(Actions.list.save()),
+    dispatch: (action) => dispatch(action),
+    createNewManagerList: () =>  dispatch(Actions.list.new()),
     getManagerList: (id, options) =>  dispatch(Actions.list.get(id, options)),
     updateManagerListDates: (dates) => dispatch(Actions.list.updateDates(dates)),
     clearManagerList: () =>  dispatch(Actions.list.clear()),
     addManagerToList: (id, options) => dispatch(Actions.list.managers.add(id, options)),
-    removeManagerFromList: (id) => dispatch(Actions.list.managers.remove(id)),
 
     getManagerLists: () =>  dispatch(Actions.lists.get()),
     changeDate: (changes) => dispatch(Actions.changeDate(changes)),

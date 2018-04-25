@@ -15,9 +15,9 @@ class ManagerSidebarSubItem extends React.Component {
         }
         return (
             <li className='sidebar-item child'>
-                <Link className={linkClass} to={this.props.item.link} >
+                <Link className={linkClass} to={this.props.app.path} >
                     <span className='sidebar-label'>
-                        {this.props.item.label} 
+                        {this.props.app.label} 
                     </span>
                 </Link>
             </li>
@@ -27,7 +27,7 @@ class ManagerSidebarSubItem extends React.Component {
 
 export class ManagerSidebarItem extends React.Component {
     static propTypes = {
-        item: PropTypes.object.isRequired,
+        app: PropTypes.object.isRequired,
         toggle: PropTypes.func.isRequired,
     };
     isActive(child){
@@ -46,35 +46,35 @@ export class ManagerSidebarItem extends React.Component {
         return (
             <div className="sidebar-item-container">
                 <li className='sidebar-item parent'>
-                    {this.props.item.children &&
-                        <a className={linkClass} onClick={(e) => this.props.toggle(e, this.props.item)} >
-                            <span className='sidebar-caret'>
+                    {this.props.app.isParent &&
+                        <a className={linkClass} onClick={(e) => this.props.toggle(e, this.props.app)} >
+                            <span className='font-awesome-caret-left'>
                                 <FontAwesomeIcon icon={caret}/> 
                             </span>
                             <span className='sidebar-label'>
-                                {this.props.item.label} 
+                                {this.props.app.label} 
                             </span>
                             <span className='sidebar-icon'>
-                                <FontAwesomeIcon icon={this.props.item.icon}/> 
+                                <FontAwesomeIcon icon={this.props.app.icon}/> 
                             </span>
                         </a>
                     }
-                    {!this.props.item.children &&
-                        <Link to={this.props.item.link} className={linkClass}>
+                    {!this.props.app.isParent &&
+                        <Link to={this.props.app.path} className={linkClass}>
                             <span className='sidebar-label'>
-                                {this.props.item.label} 
+                                {this.props.app.label} 
                             </span>
                             <span className='sidebar-icon'>
-                                <FontAwesomeIcon icon={this.props.item.icon}/> 
+                                <FontAwesomeIcon icon={this.props.app.icon}/> 
                             </span>
                         </Link>
                     }
                 </li>
                 {this.props.opened && 
-                    this.props.item.children && this.props.item.children.map((child) => {
+                    this.props.app.children && this.props.app.children.map((child) => {
                         return(
                             <ManagerSidebarSubItem 
-                                item={child} 
+                                app={child} 
                                 key={child.id} 
                                 active={this.isActive(child)}
                             />

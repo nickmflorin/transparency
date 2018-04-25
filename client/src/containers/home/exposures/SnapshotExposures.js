@@ -3,17 +3,17 @@ import PropTypes from 'prop-types';
 import _ from 'underscore'
 
 import { Utilities, Dates } from '../../../utilities'
-import { DateInput } from '../../../components/inputs'
+import { DateInput } from '../../../components/elements'
 import { SnapshotExposurePieChart } from '../../../components/charts'
-import { Panel, HomeContent } from '../../../components/layout'
-
-import '../home.css'
+import { Panel, Page, ManagerHeader } from '../../../components/layout'
 
 class SnapshotExposures extends React.Component {
   constructor(props, context){
     super(props, context)
     this.state = {
       tiers : ['gross','long','short'],
+      error : null,
+      warning : null,
     }
   }
   static propTypes = {
@@ -69,12 +69,15 @@ class SnapshotExposures extends React.Component {
     }
 
     return (
-        <HomeContent
-          date={this.props.dates.date}
+        <Page
           manager={this.props.selected}
-          changeDate={this.props.changeDate}
-          warning={this.props.warnings.category}
-          error={this.props.errors.category}
+          notificationTypes={[
+            'GET_MANAGER_CATEGORY_EXPOSURE'
+          ]}
+          header={(
+            <ManagerHeader snapshot={true} {...this.props} />
+          )}
+          {...this.props}
         > 
           {categories.map( (category) => {
             return(
@@ -86,7 +89,7 @@ class SnapshotExposures extends React.Component {
               />
             )
           })}
-        </HomeContent>
+        </Page>
     )
   }
 }

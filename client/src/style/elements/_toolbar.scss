@@ -1,0 +1,98 @@
+.btn-toolbar {
+    display: flex;
+    margin-left: 0px;
+    margin-right: 0px;
+    // width: 100%;
+
+    max-height: $toolbar-height;
+    min-height: $toolbar-height;
+
+    &:not(:first-child){
+        margin-left: $toolbar-sep;
+    }
+    &:not(:last-child){
+        margin-right: $toolbar-sep;
+    }
+    &.base-toolbar{
+        margin-left: 0px;
+        margin-right: 0px;
+    }
+    &.panel-toolbar {
+        position: absolute;
+        z-index: 10000;
+        width: calc(100% - 10px);
+        padding-left: 5px;
+        padding-right: 5px;
+        padding-top: 5px;
+
+        max-height: $toolbar-height + 5px;
+        min-height: $toolbar-height + 5px;
+    }
+
+    &.date-toolbar {
+        width: 100%;
+    }
+
+    &.btn-toolbar-extra{
+        &:not(:first-child){
+            margin-left: $toolbar-extra-sep !important;
+        }
+        &:not(:last-child){
+            margin-right: $toolbar-extra-sep !important;
+        }
+    }
+    .toolbar-item-group {
+        display: flex;
+        &:not(:first-child){
+            margin-left: $toolbar-item-sep;
+        }
+        &:not(:last-child){
+            margin-right: $toolbar-item-sep;
+        }
+    }
+    .toolbar-item-group-extra {
+        display: flex;
+        &:not(:first-child){
+            margin-left: $toolbar-item-extra-sep;
+        }
+        &:not(:last-child){
+            margin-right: $toolbar-item-extra-sep;
+        }
+    }
+    .toolbar-form-group{
+        margin-bottom: 0px !important;
+        margin-top: 0px !important;
+        max-height: $toolbar-height;
+        min-height: $toolbar-height;
+
+        &.toolbar-checkbox-form-group{
+            padding-top: 6.5px;
+            padding-bottom: 6.5px;
+        }
+    }
+    
+    .toolbar-text-container{
+        padding-top: 6px;
+        padding-bottom: 6px;
+        margin-left: 20px;
+        margin-right: 20px;
+        display: flex;
+
+        .toolbar-label{
+            font-size: 12px;
+            color: #2f2f2f;
+            font-weight: 300 !important;
+            line-height: 16px;
+            margin-right: 10px;
+        }
+        .toolbar-text{
+            font-size: 12px;
+            color: #2f2f2f;
+            font-weight: 400 !important;
+            line-height: 16px;
+        }
+    }   
+
+}
+
+

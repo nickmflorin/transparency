@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import _ from 'underscore'
 
 import { Form, Alert, ButtonToolbar, Dropdown, SplitButton, MenuItem, Button, FormControl } from 'react-bootstrap'
-import { TextInput } from '../inputs'
-import { ErrorMessage } from '../alerts'
+import { TextInput } from '../elements'
+import { AlertMessage } from '../Alerts'
 
 // TO DO: Redirect if Logged In Already? Might be Handled by Router
 export class LoginForm extends React.Component {
@@ -13,17 +13,17 @@ export class LoginForm extends React.Component {
     this.state = {
       username : '',
       password : '',
-      messages : [],
-      errors : { username : null, password : null },
+      error : null,
     }
   }
   static propTypes = {
     auth: PropTypes.object.isRequired,
+    errors: PropTypes.array.isRequired,
     isAuthenticated: PropTypes.bool.isRequired,
     login: PropTypes.func.isRequired,
   };
   clear(){
-    this.setState({ messages : [], errors : { username : null, password : null } })
+    this.setState({ error : null })
   }
   onSubmit(event){
     event.preventDefault()
@@ -31,18 +31,10 @@ export class LoginForm extends React.Component {
     this.props.login(this.state.username, this.state.password)
   }
   componentWillReceiveProps(props){
-    // Clear Errors and Messages on Submit
-    if(props.auth.errors.login){
-      const error = props.auth.errors.login
-      var err = { username : null, password : null }
-      if(error.field){
-        err[error.field] = error.message
-        this.setState({ errors : err, messages : [error.message] })
-      }
-      else{
-        console.log('Invalid Error Returned')
-        console.log(error)
-        //throw new Error('Invalid Error Returned')
+    if(props.errors){
+      const error = _.findWhere(props.errors, { reference : 'LOGIN' })
+      if(error){
+        this.setState({ error : error })
       }
     }
   }
@@ -55,13 +47,12 @@ export class LoginForm extends React.Component {
     });
   }
   render() {
-    const show_messages = this.state.messages.length != 0
     return (
 			<Form onSubmit={this.onSubmit.bind(this)} className='login-form'>
 				<TextInput 
 					name="username" 
 					label="Username" 
-         	error={this.state.errors.username}
+         	error={(this.state.error && this.state.error.message)}
          	onChange={this.handleInputChange}
           style={{marginTop:"10px"}}
         />
@@ -69,16 +60,16 @@ export class LoginForm extends React.Component {
   				name="password" 
   				label="Password" 
           type="password"  
-         	error={this.state.errors.password}
+         	error={(this.state.error && this.state.error.message)}
          	onChange={this.handleInputChange}
           style={{marginTop:"10px"}}
         />
-        {show_messages && this.state.messages.map((message, i) => {
-            return <ErrorMessage key={i} message={message} />
-        })}
+        {this.state.error &&
+           <AlertMessage type="error"> {this.state.error.message} </AlertMessage>
+        }
         
         <div className="login-button-container">
-	  	    <button className="login-button-submit">Sign In</button>
+	  	    <button className="btn btn-primary">Sign In</button>
         </div>
 	    </Form>
     )

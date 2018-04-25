@@ -1,28 +1,8 @@
 import { toggleSidebar, StartRequest, StopRequest, changeDate, HttpRequest } from './utility'
-import { clearErrors, clearSuccesses } from './state'
 import * as managerActions_ from './managers'
 import *  as dbActions_ from './db'
 import * as listsActions_ from './lists'
 import { login, logout } from './auth'
-
-export const stateActions = {
-    errors : {
-        list : {
-            clear : clearErrors('list'),
-        },
-        query : {
-            clear : clearErrors('query'),
-        },
-    },
-    successes : {
-        list : {
-            clear : clearSuccesses('list'),
-        },
-        query : {
-            clear : clearErrors('query'),
-        },
-    }
-}
 
 export const managerActions = {
     manager : {
@@ -47,12 +27,14 @@ export const managerActions = {
 // Dont Need Update Manager List Action -> Updates Performed by Adding Manager or Removing Manager
 export const listsActions = {
     list : {
-        temp : listsActions_.createTempManagerList,
+        new : listsActions_.createNewManagerList,
         save : listsActions_.saveManagerList,
+        save_Async : listsActions_.saveManagerList_Async,
         saveNew : listsActions_.saveNewManagerList,
+        saveNew_Async : listsActions_.saveNewManagerList_Async,
         clear : listsActions_.clearManagerList,
         get : listsActions_.getManagerList,
-        save : listsActions_.saveManagerList, 
+        remove : listsActions_.removeManagerList,
         updateDates : listsActions_.updateManagerListDates,
         managers : {
             remove : listsActions_.removeManagerFromList,
@@ -75,7 +57,9 @@ export const dbActions = {
         get : dbActions_.getQuery,
         temp : dbActions_.createTempQuery,
         saveNew : dbActions_.saveNewQuery,
+        saveNew_Async : dbActions_.saveNewQuery_Async,
         save : dbActions_.saveQuery,
+        save_Async : dbActions_.saveQuery_Async,
         remove : dbActions_.removeQuery,
         update : dbActions_.updateQuery,
         run : dbActions_.runQuery,
@@ -99,7 +83,6 @@ export const Actions = {
     StopRequest : StopRequest,
     changeDate : changeDate,
     HttpRequest : HttpRequest,
-    ...stateActions,
     ...authActions,
     ...listsActions,
     ...dbActions,

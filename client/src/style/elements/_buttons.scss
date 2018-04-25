@@ -1,171 +1,268 @@
-@import './helpers/variables';
-@import './helpers/mixins';
-@import './helpers/extend';
-@import './helpers/functions';
-@import './button_functions';
+@mixin button-hover {
+  background-image: $button-hover-image !important;
+}
 
-.btn{
-    @extend .no-select;
-    @extend .no-shadow;
-    @extend .zero-margin;
+@mixin button($radius:.2rem, $content:null){
+  @include zero-margin();
+  @include no-select();
+  @include no-shadow(!important);
 
+  @if $radius { border-radius: $radius $content };
+  cursor: pointer !important;
+  text-align: center !important;
+}
+
+@mixin button-primary($radius:null, $content:null) {
+  @include button($radius : $radius, $content : $content)
+
+  background-color: $button-primary-background-color $content;
+  color: $button-primary-color $content;
+  border: $button-primary-border $content;
+
+  &:hover, &:focus, &.active, &:active{
+      @include button-hover();
+  }
+}
+
+@mixin button-empty($radius:2px, $content:null) {
+  @include button($radius : $radius, $content : $content)
+
+  border: 1px solid $light-border-color $content;
+  color: $primary-color $content;
+  background: $white $content;
+
+  &:hover, &:focus{
+      background: $light-gray !important;
+      border-color: $border-color !important;
+  }
+}
+
+@mixin button-default($radius:null, $content:null) {
+  @include button($radius : $radius, $content : $content)
+
+  background-color: $button-default-background-color $content;
+  color: $button-default-color $content;
+  border: $button-default-border $content;
+
+  &:hover, &:focus, &.active, &:active{
+      @include button-hover();
+  }
+}
+
+button {
+  &.swal2-confirm{
+    @include button($radius : null, $content : !important)
+
+    // Have to Manually Set Colors to Not Set Hover Colors on Active and Focus for Swal Buttons
+    background-color: $button-primary-background-color !important;
+    color: $button-primary-color !important;
+    border: $button-primary-border !important;
+
+    &:hover {
+      @include button-hover();
+    }
+  }
+  &.swal2-cancel{
+    @include button($radius : null, $content : !important)
+
+    // Have to Manually Set Colors to Not Set Hover Colors on Active and Focus for Swal Buttons
+    background-color: $button-default-background-color !important;
+    color: $button-default-color !important;
+    border: $button-default-border !important;
+
+    &:hover {
+      @include button-hover();
+    }
+  }
+  &.close {
+    float: right;
+    border: none !important;
+    background: none !important;
+    color: #FFF !important;
+    font-size: 20px;
+    line-height: 1;
+    text-shadow: none !important;
+
+    font-weight: bold;
+    filter: alpha(opacity=80);
+    opacity: .8;
+
+    &:hover, &:focus {
+      color: #000;
+      text-decoration: none;
+      cursor: pointer;
+      filter: alpha(opacity=50);
+      opacity: .5;
+    }
+  }
+}
+
+.btn {
+    @include button();
     @include padding($horizontal: 12px, $vertical: 7px)
     @include font($font-size: 12px, $line-height: 12px, $font-weight: 400, $font-family: $styled)
-  
-    color: button_text(def);
-    cursor: pointer;
-
+    
+    color: $primary-color;
+    
     position: relative;
     display: inline-block;
-    text-align: center;
     white-space: nowrap;
     border: 1px solid transparent;
-    border-radius: .2rem;
-}
 
-.flush {
-  border-bottom: 1px solid transparent !important;
-  border-bottom-left-radius: 0px !important;
-  border-bottom-right-radius: 0px !important;
-}
-.straight {
-  border-top-left-radius: 0px !important;
-  border-top-right-radius: 0px !important;
-  border-bottom-left-radius: 0px !important;
-  border-bottom-right-radius: 0px !important;
-}
-.separated:not(:first-child){
-  margin-left: 5px !important;
-}
-.separated:not(:last-child){
-  margin-right: 5px !important;
-}
-
-.btn-primary{
-  @extend .btn;
-  background-color: button_color(primary);
-  color: button_text(primary);
-  &:hover, &:focus, &.active{
-    background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1));
-  }
-}
-.btn-primary:hover{
-  background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1));
-}
-
-.btn-default{
-    @extend .btn;
-    background-color: button_color(def);
-    color: button_text(def);
-    border: 1px solid $border-color;
-
-    &:hover, &:focus, &.active{
-      background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1));
+    &:hover, &:focus, &.active, &:active{
+      @include button-hover();
     }
-}
+    &.btn-primary{
+      @include button-primary(!important);
+    }
+    &.btn-default{
+        @include button-default(!important);
+    }
+    &.btn-cancel {
+      @include button-default(!important);
+    }
+    &.toolbar-btn {
+        @include button-default();
+        @include padding($left: 10px, $right: 10px, $top: 7px, $bottom: 6px, $content: !important)
+        font-family: $plain !important;
+        font-size: 11px;
+        border-radius: 2px;
+    }
+    &.chart-toolbar-btn{
+        margin: 0px 5px !important;
+        &:first-child{
+            margin-left: 0px !important;
+        }
+        &:last-child{
+            margin-right: 0px !important;
+        }
+        &.active, &:active{
+          color: $light-gray;
+          background-color: lighten($blue, 5%);
+          border: 1px solid transparent !important;
+        }
+    }
+    &.modal-btn{
+      font-family: $plain !important;
+    }
+    &.nav-bar-btn {
+        @include button-default($radius: 1px);
+        border: none !important;
+        color: $blue !important;
+        line-height: 12px !important;
+        height: 28px !important;
+    }
+    &.action-button{
+        width: 100%;
+        &:not(:last-child){
+          margin-bottom: 8px;
+        }
+    }
+    &.btn-admin {
+      @include button-empty(2px, !important);
+      @include padding($horizontal: 12px, $vertical: 2px, $content: !important)
+      line-height: 14px !important;
+      height: auto !important;
+      font-size: 12px !important;
+    }
+    &.close {
+      -webkit-appearance: none;
+      float: right;
+      font-size: 21px;
+      font-weight: bold;
+      line-height: 1;
+      color: #000;
+      text-shadow: 0 1px 0 #fff;
+      filter: alpha(opacity=20);
+      opacity: .2;
 
-.toolbar-btn {
-    @extend .btn;
-    padding-left: 10px;
-    padding-right: 10px;
-    padding-top: 7px;
-    padding-bottom: 6px;
+      &:hover, &:focus {
+        color: #000;
+        text-decoration: none;
+        cursor: pointer;
+        filter: alpha(opacity=50);
+        opacity: .5;
+      }
+    }
+    &.separated{
+      &:not(:first-child){
+        margin-left: 5px !important;
+      }
+      &:not(:last-child){
+        margin-right: 5px !important;
+      }
+    }
+    &.flush {
+      border-bottom: 1px solid transparent !important;
+      border-bottom-left-radius: 0px !important;
+      border-bottom-right-radius: 0px !important;
+    }
+    &.straight {
+      border-top-left-radius: 0px !important;
+      border-top-right-radius: 0px !important;
+      border-bottom-left-radius: 0px !important;
+      border-bottom-right-radius: 0px !important;
+    }
+    &.btn-back {
+      @include padding($vertical: 5px, $horizontal: 8px);
 
-    font-family: $plain !important;
-    font-size: 11px;
+      color: $primary-color;
+      background-color: $accent-gray !important;
+      border: 1px solid $border-color !important;
 
-    border: $basic-border;
-    border-radius: 2px;
-    background-color: #f2f2f2;
-    color: button_text(empty, base);
+      height: $search-height;
+      border: 1px solid $border-color;
+      border-right: none !important;
+      border-radius: 0px !important;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      .back-button-icon{
+        font-size: 12px;
+      }
+    }
+    &.toolbar-dropdown-btn {
+        font-family: $plain !important;
+        display: flex;
+        font-size: 11px;
+        position: relative;
+        top: 2px;
+        
+        .caret {
+          display: block !important;
+          margin-top: 4px !important;
+          margin-left: 6px !important;
+        }
+    }
     
-    &:hover, &:focus{
-      background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1));
+}
+
+.submit-row{
+    background: $white !important;
+    @include padding($horizontal: 12px, $vertical: 12px, $content:!important);
+    
+    input[type="submit"]{
+        @include button-primary(4px, !important);
+        @include padding($horizontal: 12px, $vertical: 7px, $content:!important);
+        line-height: 14px !important;
+        height: auto !important;
+        font-size: 12px !important;
+    }
+    a.deletelink {
+        @include button(4px, !important)
+        @include padding($horizontal: 12px, $vertical: 7px, $content:!important);
+        line-height: 14px !important;
+        height: auto !important;
+        font-size: 12px !important;
+        color: #fff;
+
+        display: block;
+        background: $red !important;
+        
+        &:hover, &:focus {
+          background-image: $button-hover-image !important;
+        }
     }
 }
 
-.chart-toolbar-btn{
-    @extend .btn;
-    margin: 0px 5px !important;
-
-    &.active, &:active{
-      color: $offwhite;
-      background-color: lighten($blue, 5%);
-      border: 1px solid transparent !important;
-    }
-}
-.chart-toolbar-btn:first-child{
-    margin-left: 0px !important;
-}
-.chart-toolbar-btn:last-child{
-    margin-right: 0px !important;
-}
-
-.toolbar-dropdown-btn {
-    @extend .btn;
-    font-family: $plain !important;
-    font-size: 11px;
-    border-radius: 1px;
-}
-.toolbar-btn-icon{
-    margin-right: 10px;
-}
-.nav-bar-btn {
-    @extend .btn;
-    border: none !important;
-    line-height: 12px !important;
-    border-radius: 1px !important;
-    height: 28px !important;
-}
-.nav-bar-btn-caret {
-    margin-left: 8px !important;
-    position:relative;
-    top: -1.5px
-}
-.nav-login-btn {
-    @extend .btn;
-    border: none !important;
-    background-color: set_color(def, base) !important;
-    color: $blue !important;
-    &:hover, &:focus, &.active{
-      background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1));
-    }
-}
-
-.btn-cancel {
-  background-color: button_color(def);
-  color: button_text(def);
-  &:hover, &:focus, &.active{
-    background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1));
-  }
-}
-
-.back-button {
-  @extend .btn;
-  @include padding($vertical: 5px, $horizontal: 8px);
-
-  background: button_color(def, light);
-  color: button_text(def);
-
-  height: $search-height;
-  border: $basic-border !important;
-  border-right: none !important;
-  border-radius: 0px !important;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  &:hover, &:focus, &.active{
-    background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1));
-  }
-}
-.back-button-icon{
-  font-size: 12px;
-}
-.login-button-submit {
-    @extend .btn-primary;
-}
-.logout-button-submit{
-    @extend .btn-primary;
-    width: 100%;
-}

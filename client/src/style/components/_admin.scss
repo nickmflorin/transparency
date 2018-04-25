@@ -1,0 +1,179 @@
+@mixin module-content-header($border:true){
+    background: $accent-gray !important;
+    background-color: $accent-gray !important;
+    color: $primary-color !important;
+    margin: 0 !important;
+    padding: 8px !important;
+    font-weight: 400 !important;
+    font-size: 13px !important;
+
+    @if $border {border: 1px solid $border-color !important};
+}
+
+.inline-group h2 {
+    @include module-content-header();
+}
+
+.module {
+    margin-bottom: 0px !important;
+    -webkit-box-sizing: content-box !important;
+    box-sizing: content-box !important;
+
+    &:not(:last-child){
+        margin-bottom: 20px !important;
+    }
+    h2 {
+        @include module-content-header();
+    }
+    &.bordered{
+        @include panel(0px, !important);
+        h2 {
+            @include module-content-header($border:false);
+            border: none !important;
+            border-bottom: 1px solid $border-color !important;
+        }
+    }
+    
+    caption {
+        @include module-content-header();
+        a {
+          color: $primary-color !important;
+        }
+    }
+    table tbody tr th a {
+        color: $blue-alternate !important;
+        &:hover, &:focus {
+            color: $medium-gray !important;
+            text-decoration: none !important;
+            cursor: pointer !important;
+        }
+    }
+}
+
+#content-related {
+    background: $white !important;
+    h2 {
+        @include module-content-header();
+        font-size: 14px !important;
+        border-bottom: 1px solid #eaeaea;
+    }
+}
+
+ul.actionlist{
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+    li {
+        padding-left: 22px !important;
+    }
+}
+.results {
+    width: 100% !important;
+    .results-table{
+        tbody th a {
+            color: $blue-alternate !important;
+            &:hover, &:focus {
+                color: $medium-gray !important;
+                text-decoration: none !important;
+                cursor: pointer !important;
+            }
+        }
+    }
+}
+.page {
+    h1 {
+        font-size: 16px !important;
+        line-height: 16px !important;
+        color: $primary-color !important;
+    }
+    .admin-top{
+        display: flex;
+        flex-direction: row;
+        max-height: 100%;
+
+        #content-main {
+            max-width: 80%;
+            flex-grow: 100;
+            margin-right: 20px !important;
+        }
+        #content-related {
+            min-width: 260px !important;
+            width: auto !important;
+            margin-left: 20px !important;
+            margin-right: 0px !important;
+        }
+    }
+}
+.module-content{
+    display: flex;
+    h2 {
+        @include module-content-header($border:false);
+        border: 1px solid $border-color !important
+    }
+    .sub-module-content{
+        @include panel(0px, !important);
+        &.search-module {
+            @include panel(8px 10px, !important);
+        }
+        &.form-module {
+            margin-top: 20px;
+            width: 100% !important;
+            
+            .actions {
+                width: 100% !important;
+                display: flex !important;
+                padding: 10px;
+                background: #fff;
+                border-top: none;
+                border-bottom: none;
+                line-height: 24px;
+                color: $secondary-color !important;
+
+                label {
+                    display: flex !important;
+                    margin-right: 15px;
+                    select {
+                        min-width: 320px !important;
+                    }
+                }
+                .action-counter{
+                    font-size: 12px !important;
+                    line-height: 28px !important;
+                    color: $primary-color !important;
+                    font-weight: 400 !important;
+                    margin: 0 !important;
+                    margin-left: 10px !important;
+                }
+            }
+            .paginator {
+                font-size: 12px !important;
+                line-height: 14px !important;
+                color: $primary-color !important;
+                font-weight: 400 !important;
+                border: none !important;
+                width: 100% !important;
+                padding-left: 10px !important;
+                padding-right: 10px !important;
+                padding-bottom: 10px !important;
+                padding-top: 10px !important;
+
+                background: #fff;
+                overflow: hidden;
+            }
+        }
+    }
+    .module-content-main{
+        flex-grow: 100;
+        margin-right: 10px;
+        max-width: 100%;
+    }
+    .module-content-filter{
+        margin-left: 10px;
+        .changelist-filter{
+            position: relative !important;
+            width: 240px;
+            background: $white !important;
+            border-left: none;
+            margin: 0;
+        }
+    }
+}

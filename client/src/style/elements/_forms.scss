@@ -1,30 +1,117 @@
 form {
-	display: inline;
+    display: block;
+    .form-row {
+        overflow: hidden;
+        padding: 10px;
+        font-size: 13px;
+        &:not(:last-child){
+            border-bottom: 1px solid $light-border-color !important;
+        }
+        &:last-child{
+            border-bottom: none !important;
+        }
+    }
 }
-label {
-    @extend .smooth-font;
-    font-weight: 400;
-    font-family: $styled;
-    color: $primary-color;
-    font-size: 12px;
-    margin-bottom: 0px !important;
-}
-.label {
-    color: $primary-color;
-    text-align: center;
-    display: inline-block;
-    white-space: nowrap;
-    vertical-align: middle !important;
-    border-radius: .25em;
-    padding: .1em .6em .1em .6em;
+
+small, .help {
+    // Override Django Admin
+    margin-left: 0px !important;
+    padding-left: 2px !important;
+    margin-top: 0px;
+    margin-bottom: 0px;
+
+    font-family: $styled !important;
+    color: $blue-alternate-fade !important;
     font-size: 10px;
-    margin-bottom: 5px;
-    background-color: rgb(236, 236, 236) !important;
-    font-weight: bold !important;
+    font-weight: 400 !important;
 }
+
 .form-vertical-label {
-	margin-top: 10px !important;
+    margin-top: 10px !important;
 }
+
 .form-vertical-input-group {
-	margin-bottom: 15px;
+    margin-bottom: 15px;
+}
+
+.search-form {
+    label {
+        line-height: 14px !important;
+        padding-top: 6px !important;
+        padding-bottom: 6px !important;
+        margin-right: 15px !important;
+    }
+    .search-input {
+        height: 30px !important;
+        border: $light-border !important;
+    }
+    input[type="submit"] {
+        margin-left: 15px !important;
+    }
+    .search-notification-container{
+        margin-left: 10px;
+        margin-right: 10px;
+        min-width: 100px;
+        padding-top: 3px;
+        padding-bottom: 3px;
+    }
+}
+
+.user-form {
+    @include zero-spacing();
+
+    .form-colored-title {
+        background: $blue !important;
+        font-family: $styled;
+        color: $white;
+
+        padding: 10px 8px 10px 8px !important;
+        font-weight: 400 !important;
+        font-size: 12px;
+        line-height: 12px !important;
+        display: flex;
+    }
+    .form-body {
+        padding: 10px;
+
+        .image-container {
+            width: 50px;
+            height: 50px;
+            min-width: 50px;
+
+            .image {
+                width: 100%;
+                height: 100%;
+                border-radius: 999px;
+                opacity: 1;
+                backface-visibility: hidden;
+            }
+        }
+
+        .info-container {
+            flex-grow: 100;
+            padding-left: 12px;
+            padding-top: 2px;
+            overflow-wrap: break-word;
+
+            .user {
+                color: $primary-color;
+                font-weight: 400;
+                word-wrap: break-word;
+                max-width: 120px;
+                font-size: 12px;
+            }
+            .email {
+                color: $secondary-color !important;
+                font-weight: 300;
+                word-wrap: break-word;
+                max-width: 120px;
+                font-size: 11px;
+            }
+        }
+    }
+    .actions-container {
+        padding: 10px;
+        margin-top: 0 !important;
+    }
 }

@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome'
 
 import {Checkbox, Dropdown, DropdownButton, MenuItem} from 'react-bootstrap';
-import { LogoutForm } from '../forms'
+import { UserForm } from '../forms'
 
 export class UserDropdown extends React.Component {
   constructor(props, context) {
@@ -23,16 +23,16 @@ export class UserDropdown extends React.Component {
   render() {
     return (
         <Dropdown id={this.props.id}>
-            <Dropdown.Toggle className="nav-bar-btn nav-login-btn">
+            <Dropdown.Toggle className="btn nav-bar-btn">
                 {this.props.icon && 
-                    <span className='menu-icon'>
+                    <span className='link-icon'>
                       <FontAwesomeIcon icon={this.props.item.icon}/> 
                     </span>
                 }
                 {this.props.label}
             </Dropdown.Toggle>
-            <Dropdown.Menu className="dropdown-menu-right user-menu">
-                <LogoutForm
+            <Dropdown.Menu className="dropdown-menu dropdown-menu-right user-dropdown-menu">
+                <UserForm
                   user={this.props.user} 
                   onLogOut={this.props.onLogOut} 
                   authErrors={this.props.authErrors} 

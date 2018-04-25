@@ -7,7 +7,37 @@ import faSortUp from '@fortawesome/fontawesome-free-solid/faSortUp'
 
 var classNames = require('classnames');
 
-// To Do: Not Currently Implementing the Collapsable Panel Feature, Ideally, Button Would Allow Panel Body to Collapse/Hide
+// Panel Options Not Currently Implemented
+export class PanelOptions extends React.Component {
+	static propTypes = {
+		buttons : PropTypes.array.isRequired,
+	};
+	render(){
+		console.log(this.props.buttons)
+		return (
+		   <div className='panel-options'>
+		   		{this.props.buttons.map((button) => {
+		   			return(
+		   				<a className='panel-link' key={button.id} onClick={button.onClick}> 
+		   				{button.iconLeft && 
+		   					(<span className='panel-icon-left'>
+		                      <FontAwesomeIcon icon={button.iconLeft}/> 
+		                    </span>)
+		   				}
+		   				{button.label} 
+		   				{button.iconRight && 
+		   					(<span className='panel-icon-right'>
+		                      <FontAwesomeIcon icon={button.iconRight}/> 
+		                    </span>)
+		   				}
+		   				</a>
+		   			)
+		   		})}
+		   </div>
+		)
+	}
+}
+
 const PanelHeader = function(props){
 	return (
 	    <div className="panel-header flex">
@@ -17,13 +47,7 @@ const PanelHeader = function(props){
 		    		<h2 className="subtitle"> {props.subtitle} </h2>
 		    	}
 		    </div>
-		    {props.canCollapse && 
-		    	<a className="panel-collapse-link" onClick={props.onCollapse}>
-		    		<span className="panel-collapse-link-icon">
-		    			<FontAwesomeIcon icon={faSortUp}/> 
-		    		</span>
-		    	</a>
-		    }
+		    {props.options}
 	    </div>
 	)
 }
@@ -37,12 +61,13 @@ export class Panel extends React.Component {
 		}
       	classes = Object.assign({}, classes, this.props.classNames);
 		var panelClass = classNames(classes)
-
+	
 		return (
 		   <div className='panel' style={{marginTop:10}}>
 		   		{this.props.title && 
 		   			<PanelHeader 
 		   				title={this.props.title} 
+		   				// options={this.props.options}
 		   			/>
 		   		}
 		   		<div className={panelClass}>

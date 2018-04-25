@@ -1,6 +1,3 @@
-@import '../helpers/variables';
-@import '../helpers/mixins';
-
 .search-container{
   width: 100%;
 }
@@ -33,8 +30,8 @@
 }
 
 .search-item{
-  @extend .zero-padding;
-  @extend .white-background;
+  @include white-background();
+  @include zero-padding();
 
   height: 28px !important;
   display: flex;
@@ -57,7 +54,7 @@
 }
 
 .search-link{
-  @extend .white-background;
+  @include white-background();
   @include padding($horizontal:5px)
 
   display: flex;
@@ -101,7 +98,6 @@
 .search-link-add-on{
   @include padding($horizontal:10px)
   color: $blue !important;
-
   border-left: none !important;
   text-align: center;
 

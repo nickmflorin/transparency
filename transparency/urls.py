@@ -11,10 +11,12 @@ from rest_framework.authtoken import views
 
 urlpatterns = [
 	url(r'^$', TemplateView.as_view(template_name="index.html")),
-	url(r'^admin/', admin.site.urls),
-	url(r'^accounts/', include('transparency.accounts.urls')),
-    url(r'^api/managers/', include('transparency.managers.urls')),
-    url(r'^api/db/', include('transparency.db.urls')),
+
+	url(r'^admin', admin.site.urls),
+	url(r'^accounts/', include('accounts.urls')),
+	url(r'^api/accounts/', include('accounts.urls')),
+    url(r'^api/managers/', include('managers.urls')),
+    url(r'^api/db/', include('db.urls')),
 
     # If We Include $, Everytime Server Reboots the URL After / Will Not be Found Unless We Duplicate API Routes Above This Route
     url('.*', TemplateView.as_view(template_name='index.html')),

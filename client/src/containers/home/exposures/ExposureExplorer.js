@@ -5,9 +5,7 @@ import moment from 'moment'
 
 import { ExposurChartExplorer } from '../../../components/charts'
 import { ChartToolbar } from '../../../components/toolbars'
-import { Panel, HomeContent } from '../../../components/layout'
-
-import '../home.css'
+import { Panel, Page, ManagerHeader } from '../../../components/layout'
 
 const findChange = function(exposures, config){
   const __attrs__ = ['id', 'level','category','tier']
@@ -30,6 +28,8 @@ class ExposureExplorer extends React.Component {
       tier : 'gross',
       id : (props.selected && props.selected.id) || null,
       exposures : null,
+      error : null,
+      warning : null,
     }
     if(this.state.id){
       if(props.categorized_exposures && props.categorized_exposures.id == this.state.id){
@@ -108,10 +108,15 @@ class ExposureExplorer extends React.Component {
   }
   render() {
     return (
-       <HomeContent
-        warning={this.props.warnings.categories}
-        error={this.props.errors.categories}
+       <Page
         manager={this.props.selected}
+        header={(
+          <ManagerHeader {...this.props} />
+        )}
+        notificationTypes={[
+          'GET_MANAGER_CATEGORY_EXPOSURES'
+        ]}
+        {...this.props}
        >
         <Panel title="Exposure Explorer" classNames={{"chart-panel-body":true}}>
           <ChartToolbar 
@@ -162,7 +167,7 @@ class ExposureExplorer extends React.Component {
             />
           </div>
       </Panel>
-    </HomeContent>
+    </Page>
     )
   }
 }

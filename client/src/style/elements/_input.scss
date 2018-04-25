@@ -1,12 +1,8 @@
-@import './helpers/variables';
-@import './helpers/mixins';
-
 input{
-    @extend .zero-margin;
-    @extend .white-background;
-    @extend .smooth-font;
-    @extend .no-shadow;
-
+    @include zero-margin();
+    @include white-background();
+    @include smooth-font();
+    @include no-shadow();
     @include padding($vertical: 6px, $horizontal: 10px)
 
     border: $thin-border;
@@ -70,10 +66,12 @@ input[type='checkbox'] {
   font-size: 12px;
   font-weight: normal;
   line-height: 1;
-  color: $input-group-addon-icon-color;
   text-align: center;
-  background-color: $input-group-addon-background;
-  border: 1px solid $border-color;
+
+  color: $primary-color;
+  background-color: $accent-gray !important;
+  border: 1px solid $border-color !important;
+  border-right: none !important;
   border-radius: 0px;
 }
 

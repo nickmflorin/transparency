@@ -1,22 +1,23 @@
-import React from 'react';
-import MenuContainer from '../Menu'
+import React from 'react';  
+import PropTypes from 'prop-types';
+import { Panel, Page, ManagerHeader } from '../../components/layout'
 
-export class Indices extends React.Component {
-	constructor(props){
-	    super(props)
-	    this.state = {
-	      'loading' : false
-	    }
-  	}
-  	render(){
-	    return (
-	      <div className="menu-content">
-	    	<MenuContainer />
-
-	        <div className="content"></div>
-	     </div>
+class Indices extends React.Component {
+  static propTypes = {
+    manager: PropTypes.object,
+    dates: PropTypes.object,
+  };
+  render() {
+    return (
+        <Page
+          header={(
+            <ManagerHeader {...this.props} />
+          )}
+          manager={this.props.selected}
+          {...this.props}
+        > </Page>
     )
   }
 }
 
-export default Indices
+export default Indices;

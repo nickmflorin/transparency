@@ -6,21 +6,17 @@ import Actions from '../../actions'
 import { ManagerSidebar } from '../../components/sidebar/'
 
 class Sidebar extends React.Component {
-  static propTypes = {
-    manager_apps : PropTypes.array.isRequired
-  }
 	render(){
 		return (
 		   <ManagerSidebar 
-            manager_apps={this.props.manager_apps}
             searches={this.props.searches}
             history={this.props.history}
+            apps={this.props.apps}
             selectManager={this.props.selectManager}
           />
 		)
 	}
 }
-
 
 const StateToProps = (state, ownProps) => {  
   return {

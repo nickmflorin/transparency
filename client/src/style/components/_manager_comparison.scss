@@ -1,0 +1,23 @@
+.comparison-top-container{
+	display:flex; 
+	min-height: 40%;
+	margin-bottom: 10px !important;
+}
+.comparison-top-container .left {
+	width: 40%;
+	margin-right: 10px;
+}
+.comparison-top-container .right{
+	width: 60%;
+	margin-left: 10px; 
+	display: flex;
+}
+.comparison-bottom-container {
+	margin-top: 10px !important;
+	width: 100%;
+}
+.list-table-container{
+	display: flex;
+	width: 100%;
+	flex-direction: column;
+}

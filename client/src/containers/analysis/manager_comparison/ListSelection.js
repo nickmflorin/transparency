@@ -59,6 +59,9 @@ class ListSelection extends React.Component {
           display="lists"
           selectedLabel="Opened List"
           selected={this.props.list}
+          active={(this.props.list && this.props.list.id)}
+          defaultPageSize={10}
+          minRows={13}
           selections = {[
             {
               id : 'queries',

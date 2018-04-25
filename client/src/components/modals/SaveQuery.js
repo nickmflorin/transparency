@@ -8,21 +8,20 @@ export class SaveQueryModal extends React.Component {
 	}
 	static propTypes = {
 	     query: PropTypes.object,
-	     saveNewQuery: PropTypes.func.isRequired,
+	     error: PropTypes.string,
+	     onSubmit: PropTypes.func.isRequired,
 	     onClose: PropTypes.func.isRequired,
 	     show: PropTypes.bool.isRequired,
-	     afterSave: PropTypes.func.isRequired,
 	     user: PropTypes.object.isRequired,
-	     errors: PropTypes.object.isRequired,
 	};
-	finish(){
+	onSubmit(){
 		var name = this.refs.queryname.value 
-		var sql = this.props.query.sql 
-		this.props.saveNewQuery(name)
+		this.props.onSubmit({name : name})		
 	}
 	render(){
+
 		var notification = null, subnotification = null;
-		if(this.props.query && this.props.overwrite === false){
+		if(this.props.query){
 			if(this.props.user.id != this.props.query.user.id){
 				notification = "Cannot overwrite query created by " + this.props.query.user.username + "..."
 				subnotification = "Must save the query as another name."
@@ -33,18 +32,18 @@ export class SaveQueryModal extends React.Component {
 		    <CustomModal
 		      title={this.props.overwrite ? "Save As Query" : "Save Query"}
 	          show={this.props.show}
-	          error={this.props.errors.create}
+	          error={this.props.error}
 	          notification={notification}
 	          subnotification={subnotification}
 	          onClose={this.props.onClose}
 	          finishButtonName={this.props.overwrite ? "Save As" : "Save"}
-	          finish={this.finish.bind(this)}
+	          onSubmit={this.onSubmit.bind(this)}
 	        >
 	          	<form>
 	              <div className="modal-input-group">
 	                  <label>Query Name:</label>
 	                  <input name="name" type="text" ref="queryname" placeholder="Create a name for your query"></input>
-	                  <p className='detail'>e.g. Recent Manager Performance</p>
+	                  <p className='help'>e.g. Recent Manager Performance</p>
 	              </div>
 	            </form>
 	        </CustomModal>

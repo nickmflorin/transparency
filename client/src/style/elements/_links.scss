@@ -2,27 +2,50 @@ a {
     text-decoration: none;
     text-shadow: none !important;
     font-family: $styled;
+    color: $blue-alternate;
     font-weight: 400;
-}
-a:hover,
-a:focus {
-    text-decoration: none !important;
-    cursor: pointer !important;
-}
-a.disabled, a:disabled {
-  pointer-events: none !important;
-  cursor: default !important;
-  color: rgba(0, 0, 0, 0.2) !important;
-}
-a.table-link {
-    color: opacify($blue, 1.0);
-    font-weight: 300;
-    font-family: var(--plain) !important;
     font-size: 12px; 
-    line-height: 19px;
+
+    &:hover, &:focus {
+        color: $medium-gray;
+        text-decoration: none !important;
+        cursor: pointer !important;
+    }
+    // Django Admin Link Style
+    &.addlink, &.changelink {
+        color: $blue !important;
+        &:hover, &:focus {
+            color: $medium-gray !important;
+            text-decoration: none !important;
+            cursor: pointer !important;
+        }
+    }
+    &.disabled, &:disabled {
+        pointer-events: none !important;
+        cursor: default !important;
+        color: rgba(0, 0, 0, 0.2) !important;
+    }
+    &.table-link {
+        line-height: 19px;
+        font-weight: 300 !important;
+    }
+    &.deletelink {
+        color: #FFF !important;
+    }
+    &.nav-bar-link{
+        color: #FFF !important;
+        &:visited{
+            color: #FFF !important;
+        }
+        &:hover, &:focus {
+            color: #cacaca !important;
+        }
+    }
+    &.gray-link{
+        color: #999 !important;
+        &:hover, &:focus {
+            color: $blue-alternate;
+        }
+    }
 }
-a.table-link:hover,
-a.table-link:focus {
-    color: opacify($red, 0.8);
-    cursor: pointer !important;
-}
+

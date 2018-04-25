@@ -19,7 +19,7 @@ export class ManagerSidebar extends React.Component {
         this.state = { opened : opened }
     }
     static propTypes = {
-        manager_apps: PropTypes.array.isRequired,
+        apps: PropTypes.array.isRequired,
         selectManager: PropTypes.func.isRequired,
         history: PropTypes.object.isRequired,
     };
@@ -52,10 +52,12 @@ export class ManagerSidebar extends React.Component {
         return false 
     }
     render(){
-    
-        var actives = {}
+        var app = _.findWhere(this.props.apps, { id : 'managers' })
+
         var self = this 
-        _.each(this.props.manager_apps, function(item){
+
+        var actives = {}
+        _.each(app.children, function(item){
             actives[item.id] = {}
             if(item.children){
                 _.each(item.children, function(child){
@@ -69,14 +71,14 @@ export class ManagerSidebar extends React.Component {
                 <div className='sidebar-panel'>
                     <div className="sidebar">
                         <ul className="sidebar-item-panel">
-                            {this.props.manager_apps.map((item) => {
+                            {app && app.children && app.children.map((app) => {
                                 return (
                                     <ManagerSidebarItem 
-                                        item={item} 
-                                        key={item.id} 
+                                        key={app.id} 
+                                        app={app} 
                                         toggle={this.toggle.bind(this)}
-                                        actives={actives[item.id]}
-                                        opened={this.isOpened(item)} // Default for Now
+                                        actives={actives[app.id]}
+                                        opened={this.isOpened(app)} // Default for Now
                                     />
                                 )
                             })}

@@ -16,79 +16,71 @@ import ProxyPositions from './positions/ProxyPositions'
 import ManagerQuant from './Quant'
 
 import Sidebar from './Sidebar'
-import PrivateRoute from '../../PrivateRoute'
-
 import Actions from '../../actions'
-import './home.css'
 
 class Home extends React.Component {
-  static propTypes = {
-    manager_apps : PropTypes.array.isRequired
-  }
   onAdd(e, manager){
   }
   render() {
     return (
-      <div className="content-with-sidebar">
+      <div className="with-sidebar">
+        {this.props.sidebarShowing && 
+          <Sidebar 
+            {...this.props}
+          />
+        }
 
-      {this.props.sidebarShowing && 
-        <Sidebar 
-          manager_apps={this.props.manager_apps} 
-          {...this.props}
-        />
-      }
+          {<Route exact path='/managers' render={(props) => (
+            <Redirect to={{ pathname : '/managers/perf', state : { from : '/managers'}}} />
+          )} /> }
 
-        {<Route exact path='/managers' render={(props) => (
-          <Redirect to={{ pathname : '/managers/perf', state : { from : '/managers'}}} />
-        )} /> }
+          <Switch>
+            <Route exact path='/managers/perf/attr' render={() => (
+              <PerformanceAttribution {...this.props}/>
+            )}/>
+            <Route exact path='/managers/perf/hist' render={() => (
+              <HistoricalPerformance 
+                  {...this.props} 
+              />
+            )}/>
+            <Route path='/managers/perf' render={() => (
+              <HistoricalPerformance {...this.props}/>
+            )}/>
+          </Switch>
 
-        <Switch>
-          <Route exact path='/managers/perf/attr' render={() => (
-            <PerformanceAttribution {...this.props}/>
-          )}/>
-          <Route exact path='/managers/perf/hist' render={() => (
-            <HistoricalPerformance 
-                {...this.props} 
-            />
-          )}/>
-          <Route path='/managers/perf' render={() => (
-            <HistoricalPerformance {...this.props}/>
-          )}/>
-        </Switch>
+          <Switch>
+            <Route path='/managers/exp/explore/' render={(props) => (
+              <ExposureExplorer {...this.props}/>
+            )}/>
+            <Route path='/managers/exp/snap/' render={(props) => (
+              <SnapshotExposures {...this.props}/>
+            )}/>
+            <Route path='/managers/exp/hist/' render={(props) => (
+              <HistoricalExposures {...this.props}/>
+            )}/>
+            <Route path='/managers/exp/' render={(props) => (
+              <HistoricalExposures {...this.props}/>
+            )}/>
+          </Switch>
 
-        <Switch>
-          <Route exact path='/managers/exp/explore' render={(props) => (
-            <ExposureExplorer {...this.props}/>
-          )}/>
-          <Route exact path='/managers/exp/snap' render={(props) => (
-            <SnapshotExposures {...this.props}/>
-          )}/>
-          <Route exact path='/managers/exp/hist' render={(props) => (
-            <HistoricalExposures {...this.props}/>
-          )}/>
-          <Route path='/managers/exp' render={(props) => (
-            <HistoricalExposures {...this.props}/>
-          )}/>
-        </Switch>
+          <Switch>
+            <Route exact path='/managers/pos/proxy' render={(props) => (
+              <ProxyPositions {...this.props}/>
+            )}/>
+            <Route exact path='/managers/pos/top' render={(props) => (
+              <TopPositions {...this.props}/>
+            )}/>
+             <Route exact path='/managers/pos/hist' render={(props) => (
+              <HistoricalPositions {...this.props}/>
+            )}/>
+            <Route path='/managers/pos/' render={(props) => (
+              <HistoricalPositions {...this.props}/>
+            )}/>
+          </Switch>
 
-        <Switch>
-          <Route exact path='/managers/pos/proxy' render={(props) => (
-            <ProxyPositions {...this.props}/>
-          )}/>
-          <Route exact path='/managers/pos/top' render={(props) => (
-            <TopPositions {...this.props}/>
-          )}/>
-           <Route exact path='/managers/pos/hist' render={(props) => (
-            <HistoricalPositions {...this.props}/>
-          )}/>
-          <Route path='/managers/pos' render={(props) => (
-            <HistoricalPositions {...this.props}/>
-          )}/>
-        </Switch>
-
-        {<Route exact path='/managers/quant' render={(props) => (
-            <ManagerQuant {...this.props}/>
-        )} /> }
+          {<Route exact path='/managers/quant' render={(props) => (
+              <ManagerQuant {...this.props}/>
+          )} /> }
       </div>
     )
   }
@@ -97,8 +89,6 @@ class Home extends React.Component {
 const HomeStateToProps = (state, ownProps) => {  
   return {
     selected : state.managers.selected,
-    warnings : state.warnings.manager,
-    errors : state.errors.manager,
     manager : state.managers.manager,
     returns : state.managers.returns,
     exposure : state.managers.exposure,

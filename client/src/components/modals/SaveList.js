@@ -4,49 +4,17 @@ import PropTypes from 'prop-types';
 import _ from 'underscore'
 
 export class SaveListModal extends React.Component {
-	constructor(props, context){
-		super(props, context)
-		this.state = {
-			warning : null
-		}
-	}
 	static propTypes = {
 		 onClose: PropTypes.func.isRequired,
-		 errors: PropTypes.object.isRequired,
-		 successes: PropTypes.object.isRequired,
+		 onSubmit: PropTypes.func.isRequired,
+		 error: PropTypes.string,
 		 show: PropTypes.bool.isRequired,
 		 list: PropTypes.object,
 		 user: PropTypes.object.isRequired,
-		 saveNewManagerList: PropTypes.func.isRequired,
 	};
-	validate(){
+	onSubmit(){
 		var name = this.refs.listname.value 
-		if(!name || String(name).trim() == ""){
-			this.setState({ error : 'Must Enter a Name to Save' })
-			return false 
-		}
-		var list = this.props.list 
-		if(!this.props.list || this.props.list.managers.length == 0){
-			this.setState({ error : 'Cannot Save Empty or Missing List' })
-			return false 
-		}
-		return true 
-	}
-	finish(){
-		this.setState({ error : null })
-		const valid = this.validate()
-		if(valid){
-			var name = this.refs.listname.value 
-			this.props.saveNewManagerList(name)			
-			// this.props.saveNewManagerList(name).then((action) => {
-			// 	if (action.type != Types.list.new.success) {
-			// 		self.setState({ error : action.error })
-			// 	}
-	  //           else{
-	  //           	self.props.onClose()
-	  //           }
-			// })
-		}
+		this.props.onSubmit({ name : name })			
 	}
 	render(){
 		var notification = null, subnotification = null;
@@ -57,28 +25,22 @@ export class SaveListModal extends React.Component {
 			}
 		}
 		
-		var error = null;
-		if(this.props.errors && this.props.errors.save){
-			error = this.props.errors.save
-		}
-
 		return (
 			<CustomModal
 			  title="Save Manager List"
 			  show={this.props.show}
-			  error={error}
+			  error={this.props.error}
 			  notification={notification}
 			  subnotification={subnotification}
-			  warning={this.state.warning}
 			  onClose={this.props.onClose}
 			  finishButtonName="Save"
-			  finish={this.finish.bind(this)}
+			  onSubmit={this.onSubmit.bind(this)}
 			>
 				<form>
 				  <div className="modal-input-group">
 					  <label>List Name:</label>
 					  <input name="name" type="text" ref="listname" placeholder="Create a name for this list"></input>
-					  <p className='detail'>e.g. My New Manager List</p>
+					  <p className='help'>e.g. My New Manager List</p>
 				  </div>
 				</form>
 			</CustomModal>

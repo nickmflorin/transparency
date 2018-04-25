@@ -1,0 +1,191 @@
+@mixin alert(){
+  font-weight: 400 !important;
+  font-size: 11px !important;
+  font-family: $styled !important;
+}
+
+@mixin red-alert($content, $color:$red){
+    color: $color $content;
+    background-color: $red-tint;
+    border: 1px solid $red;
+    @include alert();
+}
+
+@mixin yellow-alert($content, $color:$primary-color){
+    color: $color $content;
+    background: $yellow-tint !important;
+    border: 1px solid $yellow;
+    @include alert();
+}
+
+@mixin green-alert($content, $color:$primary-color){
+    color: $color $content;
+    background: $green-tint !important;
+    border: 1px solid $green;
+    @include alert();
+}
+
+// Custom Message Alerts
+.alert-message {
+  @include alert();
+  &.error{
+    @include red-alert(!important);
+  }
+  &.warning{
+    @include yellow-alert(!important);
+  }
+  &.success{
+    @include green-alert(!important);
+  }
+}
+
+.modal-notification{
+  @include yellow-alert(!important);
+  @include margin($top: 5px, $bottom: 15px);
+  padding: 7px;
+  border-radius: 1px;
+
+  .notification {
+    font-weight: 400 !important;
+    font-size: 11px !important;
+    font-family: $styled;
+    color: black;
+  }
+  .sub-notification {
+    margin-top: 2px;
+    font-weight: 300 !important;
+    font-size: 11px !important;
+    font-family: $styled;
+    color: $primary-color;
+  }
+}
+
+// Django Admin Message Alerts
+ul.messagelist{
+    margin-bottom: 20px !important;
+    li {
+        @include alert();
+        display: block;
+        padding: 8px !important;
+        margin: 0 !important;
+        &.warning {
+            @include yellow-alert(!important);
+        }
+        &.error {
+            @include red-alert(!important);
+        }
+        &.success {
+            @include green-alert(!important);
+        }
+    }
+}
+
+// Custom Message Alerts
+.alert-container {
+  @include padding($top: 6px, $bottom: 10px, $horizontal: 7px, $content: !important);
+  margin-bottom: 10px;
+  margin-top: 10px;
+  line-height: 12px;
+  border-radius: 3px !important;
+
+  &.warning{
+    @include yellow-alert(!important);
+    .alert-message {
+      @extend .alert-message; 
+    }
+  }
+  &.error{
+    @include red-alert(!important);
+    .alert-message {
+      @extend .alert-message; 
+    }
+  }
+}
+
+.swal2-title {
+    color: $primary-color !important;
+    font-size: 16px !important;
+    font-weight: 600 !important;
+}
+.swal2-content {
+    color: $secondary-color !important;
+    font-size: 12px !important;
+    font-weight: 400 !important;
+}
+.swal2-popup .swal2-styled:focus {
+    outline: none;
+    -webkit-box-shadow: none !important;
+    box-shadow: none !important;
+}
+
+/*Bootstrap Alerts*/
+.alert h4 {
+  margin-top: 0;
+  color: inherit;
+}
+.alert .alert-link {
+  font-weight: bold;
+}
+.alert > p,
+.alert > ul {
+  margin-bottom: 0;
+}
+.alert > p + p {
+  margin-top: 5px;
+}
+.alert-dismissable,
+.alert-dismissible {
+  padding-right: 35px;
+}
+.alert-dismissable .close,
+.alert-dismissible .close {
+  position: relative;
+  top: -2px;
+  right: -21px;
+  color: inherit;
+}
+.alert-success {
+  color: #3c763d;
+  background-color: #dff0d8;
+  border-color: #d6e9c6;
+}
+.alert-success hr {
+  border-top-color: #c9e2b3;
+}
+.alert-success .alert-link {
+  color: #2b542c;
+}
+.alert-info {
+  color: #31708f;
+  background-color: #d9edf7;
+  border-color: #bce8f1;
+}
+.alert-info hr {
+  border-top-color: #a6e1ec;
+}
+.alert-info .alert-link {
+  color: #245269;
+}
+.alert-warning {
+  color: #8a6d3b;
+  background-color: #fcf8e3;
+  border-color: #faebcc;
+}
+.alert-warning hr {
+  border-top-color: #f7e1b5;
+}
+.alert-warning .alert-link {
+  color: #66512c;
+}
+.alert-danger {
+  color: #a94442;
+  background-color: #f2dede;
+  border-color: #ebccd1;
+}
+.alert-danger hr {
+  border-top-color: #e4b9c0;
+}
+.alert-danger .alert-link {
+  color: #843534;
+}
+

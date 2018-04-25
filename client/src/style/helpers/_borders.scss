@@ -1,0 +1,21 @@
+// Borders
+$basic-border:						1px solid $border-color;
+$thin-border: 						0.1rem solid $border-color;
+$light-border: 						1px solid $light-border-color;
+$table-border: 						0.1rem solid $table-border-color;
+
+$dropdown-item-border:				1px solid $dropdown-item-border-color;
+
+// Buttons
+$button-primary-border-color:		$button-primary-background-color;
+$button-default-border-color:		$light-border-color;
+$button-primary-border:  			1px solid $button-primary-border-color;
+$button-default-border:  			1px solid $button-default-border-color;
+
+// Sidebar
+$sidebar-border:                    1px solid #EFEFEF;
+$child-emphasize-border:            0.05rem solid #efefef;
+
+// Modals
+$modal-border:            	  1px solid rgba(0, 0, 0, .2);
+$modal-shadow:			  	  1.5px 1.5px 1px 0px rgba(0, 0, 0, .2);

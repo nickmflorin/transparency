@@ -24,6 +24,21 @@ export const ListTableColumns = function(props){
 	    		}
 	  		}
 	  	},
+	  	{ Header: "Num Managers", id: "numManagers", 
+			accessor: function(datum){
+	    		if(datum.managers){
+	    			return datum.managers.length
+	    		}
+	  		}
+	  	},
+	  	{ Header: "Last Updated", id: "updatedAt", 
+			accessor: function(datum){
+	    		if(datum.updatedAt){
+	    			var mmt = new moment(datum.updatedAt)
+	    			return mmt.format('YYYY-MM-DD h:mm a')
+	    		}
+	  		}
+	  	},
 	  	{ Header : "Open", id: "open", 
 	    	Cell: row => (
 	    	  <a className='table-link' onClick={

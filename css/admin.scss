@@ -1,0 +1,32 @@
+/* HEADER */
+@import 'client/src/style/App.scss';
+
+#header {
+    width: auto;
+    height: 60px !important;
+    padding: 0px 40px;
+    background: rgba(0, 76, 151, 0.90) !important;
+    line-height: 60px !important;
+    color: #F2F2F2 !important;
+    overflow: hidden;
+}
+
+#header a:link, #header a:visited {
+    color: #F2F2F2 !important;
+}
+
+#header a:focus , #header a:hover {
+    text-decoration: underline;
+}
+
+.nav-bar {
+    @include zero-spacing();
+    background-color: $nav-background;
+    min-height: $header-height;
+    max-height: $header-height;
+    color: $offwhite;
+
+    display: flex;
+    width: 100%;
+    z-index: 10000;
+}

@@ -3,31 +3,30 @@
 }
 
 @mixin font($font-family: $styled, $font-weight: 400, $font-size: 12px, $line-height: 12px){
-
   @if $font-family { font-family:  $font-family};
   @if $font-weight { font-weight:  $font-weight};
   @if $font-size { font-size:  $font-size};
   @if $line-height { line-height:  $line-height};
 }
 
-@mixin padding($top : null, $right : null, $bottom : null, $left : null, $horizontal : null, $vertical : null) {
-  @if $top {padding-top : $top};
-  @if $bottom {padding-bottom : $bottom};
-  @if $left {padding-left : $left};
-  @if $right {padding-right : $right};
+@mixin padding($top : null, $right : null, $bottom : null, $left : null, $horizontal : null, $vertical : null, $content:null) {
+  @if $top {padding-top : $top $content};
+  @if $bottom {padding-bottom : $bottom $content};
+  @if $left {padding-left : $left $content};
+  @if $right {padding-right : $right $content};
 
-  @if $vertical {padding-top : $vertical; padding-bottom : $vertical};
-  @if $horizontal {padding-left : $horizontal; padding-right : $horizontal};
+  @if $vertical {padding-top : $vertical $content; padding-bottom : $vertical $content};
+  @if $horizontal {padding-left : $horizontal $content; padding-right : $horizontal $content};
 }
 
-@mixin margin($top : null, $right : null, $bottom : null, $left : null, $horizontal : null, $vertical : null) {
-  @if $top {margin-top : $top};
-  @if $bottom {margin-bottom : $bottom};
-  @if $left {margin-left : $left};
-  @if $right {margin-right : $right};
+@mixin margin($top : null, $right : null, $bottom : null, $left : null, $horizontal : null, $vertical : null, $content:null) {
+  @if $top {margin-top : $top $content};
+  @if $bottom {margin-bottom : $bottom $content};
+  @if $left {margin-left : $left $content};
+  @if $right {margin-right : $right $content};
 
-  @if $vertical {margin-top : $vertical; padding-bottom : $vertical};
-  @if $horizontal {margin-left : $horizontal; padding-right : $horizontal};
+  @if $vertical {margin-top : $vertical $content; padding-bottom : $vertical $content};
+  @if $horizontal {margin-left : $horizontal $content; padding-right : $horizontal $content};
 }
 
 @mixin linear-transition($duration:0.1s){
@@ -37,3 +36,46 @@
   transition: 0.1s linear;
 }
 
+@mixin white-background(){
+  background-color: #FFF !important;
+}
+
+@mixin smooth-font(){
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+
+  -webkit-text-size-adjust: 100%;
+      -ms-text-size-adjust: 100%;
+  text-shadow: none !important;
+}
+
+@mixin no-select() {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -webkit-appearance: none;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+@mixin no-shadow($content:null){
+  -webkit-box-shadow: none $content;
+  box-shadow: none $content;
+  text-shadow: none $content;
+}
+@mixin zero-margin(){
+  margin: 0;
+}
+@mixin zero-spacing(){
+  padding: 0;
+  margin: 0;
+}
+@mixin zero-padding(){
+  padding: 0;
+}
+@mixin elllipsis-overflow(){
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

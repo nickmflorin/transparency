@@ -4,7 +4,7 @@ import { call, put, takeEvery, takeLatest } from 'redux-saga/effects'
 
 import { UserQuery } from '../reducers/models'
 import request from 'superagent'
-import { getApiGenerator } from '../services/data-service'
+import { getApiRequest, postApiRequest, putApiRequest, dispatchRequest } from '../services/api'
 
 export const createTempQuery = function() {
     return function(dispatch, getState) {
@@ -74,19 +74,20 @@ export const saveNewQuery = function(name){
         if(!getState().auth.user){
             throw new Error('User Must be Present to Update Queries')
         }
-        dispatch({type : 'CLEAR_ERRORS', error_type : 'create'})
-        dispatch({type : 'CLEAR_SUCCESSES', success_type : 'create'})
+        dispatch({type : 'CLEAR_ERRORS'})
 
         const query = getState().db.query
         if(name == "" || name.trim() == ""){
             dispatch({
-                type : 'SAVE_NEW_QUERY_ERROR',
+                type : 'ERROR',
+                reference : 'SAVE_NEW_QUERY',
                 error : 'Must provide a valid query name.'
             })
         }
         else if(!query || !query.sql || query.sql.trim() == ""){
             dispatch({
-                type : 'SAVE_NEW_QUERY_ERROR',
+                type : 'ERROR',
+                reference : 'SAVE_NEW_QUERY',
                 error : 'Cannot save an empty or invalid query.'
             })
         }
@@ -102,7 +103,7 @@ export const saveNewQuery = function(name){
     };
 }
 
-export const saveQuery = function(){
+export const saveNewQuery_Async = function(name) {
     return function(dispatch, getState) {
         const state = getState()
         const query = state.db.query
@@ -113,16 +114,112 @@ export const saveQuery = function(){
         if(!query || !query.sql || query.sql.trim() == ""){
             throw new Error('Query Must be Valid to Save')
         }
+
+        return new Promise(function(resolve, reject) {
+            if(name == "" || name.trim() == ""){
+                resolve({
+                    type : 'ERROR',
+                    reference : 'SAVE_NEW_QUERY',
+                    error : 'Must provide a valid query name.'
+                })
+            }
+            if(!query.sql || query.sql.trim() == ""){
+                resolve({
+                    type : 'ERROR',
+                    reference : 'SAVE_NEW_QUERY',
+                    error : 'Query SQL must be valid in order to save.'
+                })
+            }
+
+            const saveRequest = postApiRequest({
+                type : 'SAVE_NEW_QUERY',
+                data : {
+                    sql : query.sql,
+                    name : name,
+                }
+            })
+            // Have to Dispatch Action Result as Well So Reducers Can Properly Handle
+            saveRequest(function(action){
+                dispatch(action)
+                resolve(action)
+            })
+        })
+    };
+}
+
+export const saveQuery = function(){
+    return function(dispatch, getState) {
+        const state = getState()
+        const query = state.db.query
+
+        // These Errors Should be Prevented by Front End, No Handling Necessary Just Checking
+        if(!query){
+            throw new Error('No Query Object Stored to State')
+        }
+        if(!state.auth.user){
+            throw new Error('User Must be Present to Update Queries')
+        }
         if(state.auth.user.id != query.user.id){
             throw new Error('Can Only Update Queries Belonging to Logged In User')
         }
-        dispatch({
+
+        if(query.sql == "" || query.sql.trim() == ""){
+            dispatch({
+                type : 'ERROR',
+                reference : 'SAVE_NEW_QUERY',
+                error : 'Must provide a valid query name.'
+            })
+        }
+        else{
+            dispatch({
+                type : 'SAVE_QUERY',
+                id : query.id,
+                data : {
+                    sql : query.sql,
+                }
+            })
+        }
+    };
+}
+
+export const saveQuery_Async = function(){
+    return function(dispatch, getState) {
+        const state = getState()
+        const query = state.db.query
+
+        // These Errors Should be Prevented by Front End, No Handling Necessary Just Checking
+        if(!query){
+            throw new Error('No Query Object Stored to State')
+        }
+        if(!state.auth.user){
+            throw new Error('User Must be Present to Update Queries')
+        }
+        if(state.auth.user.id != query.user.id){
+            throw new Error('Can Only Update Queries Belonging to Logged In User')
+        }
+
+        const saveRequest = putApiRequest({
             type : 'SAVE_QUERY',
             id : query.id,
             data : {
                 sql : query.sql,
             }
         })
+
+        return new Promise(function(resolve, reject) {
+            if(!query.sql || query.sql.trim() == ""){
+                resolve({
+                    type : 'ERROR',
+                    reference : 'SAVE_QUERY',
+                    error : 'Query SQL must be valid in order to save.'
+                })
+            }
+            // Have to Dispatch Action Result as Well So Reducers Can Properly Handle
+            saveRequest(function(action){
+                dispatch(action)
+                resolve(action)
+            })
+        })  
     };
 }
 
@@ -162,7 +259,8 @@ export const exportQuery = function(limit = null, query = null) {
         }
         if(!query.sql || query.sql.trim() == ""){
             dispatch({
-                type : 'EXPORT_QUERY_ERROR',
+                type : 'ERROR',
+                reference : 'EXPORT_QUERY',
                 error : 'Cannot export empty query.'
             })
         }
@@ -235,7 +333,8 @@ export function openQuery(id, options = { run : false, limit : 200}){
             }
             else{
                 dispatch({
-                    type : 'GET_QUERY_ERROR',
+                    type : 'ERROR',
+                    reference : 'GET_QUERY',
                     data : data.error,
                 })
             }

@@ -25,9 +25,11 @@ const Series = (tier, exposures) => {
 export class HistoricalExposureBarChart extends React.Component{
     constructor(props, context) {
         super(props, context)    
-            
-        var title = props.title || 'Historical Exposures' 
-        var config = new ColumnChartConfig({ height: 400, title : title})
+        // Title Shown in Chart Panel
+        var config = new ColumnChartConfig()
+        config.chart.marginTop = 10;
+        config.chart.marginBottom = 60;
+
         config.xAxis.dated()
 
         config.yAxis.setTitle("Exposure")

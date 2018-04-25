@@ -26,7 +26,7 @@ export class LoginDropdown extends React.Component {
   render() {
     return (
         <Dropdown id={this.props.id}>
-            <Dropdown.Toggle className="nav-bar-btn nav-login-btn">
+            <Dropdown.Toggle className="btn nav-bar-btn">
                 {this.props.icon && 
                     <span className='menu-icon'>
                       <FontAwesomeIcon icon={this.props.item.icon}/> 
@@ -35,10 +35,11 @@ export class LoginDropdown extends React.Component {
                 {this.props.label || "Login"}
             </Dropdown.Toggle>
 
-            <Dropdown.Menu className="dropdown-menu-right login-menu">
+            <Dropdown.Menu className="dropdown-menu dropdown-menu-right login-dropdown-menu">
                 <LoginForm 
                   login={this.login.bind(this)} 
                   auth={this.props.auth} 
+                  errors={this.props.errors}
                   isAuthenticated={this.props.isAuthenticated}
                 />
             </Dropdown.Menu>

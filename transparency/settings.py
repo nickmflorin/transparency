@@ -1,14 +1,23 @@
 import sys
 sys.dont_write_bytecode = True
+
 import os
 import mongoengine
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-PROJECT_PATH = os.path.realpath(os.path.dirname(__file__))
+WSGI_APPLICATION = 'transparency.wsgi.application' 
+ROOT_URLCONF = 'transparency.urls'
 
-SECRET_KEY = '^zq-2!istmlc@0p1m@a$ko6cw4k8ii6%@ey=&-4$8$jeywava%'
 DEBUG = True
 SERVER = False # Set to True When Running on Transparency Server
+
+SECRET_KEY = '^zq-2!istmlc@0p1m@a$ko6cw4k8ii6%@ey=&-4$8$jeywava%'
+LANGUAGE_CODE = 'en-us'
+TIME_ZONE = 'UTC'
+USE_I18N = True
+USE_L10N = True
+USE_TZ = True
+LOGIN_URL = '/login/'
 
 ALLOWED_HOSTS = [
     'transparency', 
@@ -17,24 +26,16 @@ ALLOWED_HOSTS = [
     '127.0.0.1'
 ]
 
-WSGI_APPLICATION = 'transparency.wsgi.application' 
-LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC'
-USE_I18N = True
-USE_L10N = True
-USE_TZ = True
-
-ROOT_URLCONF = 'transparency.urls'
-STATIC_URL = '/static/'
-
 INSTALLED_APPS = [
-
+    'common.apps.CommonConfig',
+    'accounts.apps.AccountsConfig',
+    'managers.apps.ManagersConfig',
+    'db.apps.DBConfig',
     
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
     'django.contrib.auth',
     'django.contrib.admin',
 
@@ -44,12 +45,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'corsheaders',
     'django_filters',
-
-    'transparency.managers',
-    'transparency.db',
-    'transparency.config',
-    'transparency.utility',
-    'transparency.accounts'
+    'sass_processor',
 ]
 
 # For Message Communication -> Right Now, No Method for Serializing Messages to Front End Instead of Using Template Variables
@@ -107,12 +103,10 @@ CORS_ALLOW_HEADERS = (
     'x-requested-with',
 )
 
-
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [PROJECT_PATH + '/templates/'],
-        #'DIRS': [BASE_DIR + '/client/public/'],
+        'DIRS': [BASE_DIR + '/templates/'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -125,14 +119,23 @@ TEMPLATES = [
     },
 ]
 
+STATIC_ROOT = BASE_DIR
+SASS_PROCESSOR_ROOT = BASE_DIR
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+]
+STATICFILES_FINDERS = (
+   'django.contrib.staticfiles.finders.FileSystemFinder',
+   'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+   'sass_processor.finders.CssFinder',
+)
+SASS_PROCESSOR_INCLUDE_DIRS = [
+    os.path.join(BASE_DIR, '/client/src/style'),
+]
+
 REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': ('rest_framework.filters.DjangoFilterBackend',),
-    # 'DEFAULT_AUTHENTICATION_CLASSES': (
-    #     'rest_framework.authentication.SessionAuthentication',
-    # ),
-    # 'DEFAULT_PERMISSION_CLASSES': (
-    #    'rest_framework.permissions.IsAuthenticated',
-    # )
 }
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -141,5 +144,4 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
-
 

@@ -1,7 +1,7 @@
 .tooltip-name{
 	font-size: 10px;
-	font-family: var(--styled);
-	color: var(--blue) !important;
+	font-family: $styled;
+	color: $blue !important;
 	font-weight: 300 !important;
 	position:relative;
 	bottom: 1px;
@@ -9,7 +9,7 @@
 
 .tooltip-value{
 	font-size: 10px;
-	font-family: var(--styled);
+	font-family: $styled;
 	color: black;
 	font-weight: 400 !important;
 }

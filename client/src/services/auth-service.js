@@ -1,18 +1,17 @@
 import request from 'superagent'
-import { postApiGenerator, postApiRequestAction } from './post-service'
-import { getApiGenerator, getApiRequestAction } from './data-service'
+import { createGetApiRequest, createPostApiRequest, dispatchRequest } from './api'
 
 export const logoutService = store => next => action => {
     next(action)
-    const getApi = getApiGenerator(next)
-    const requestAction = getApiRequestAction(next)
+    const requestAction = dispatchRequest(next)
 
     switch (action.type) {
         case 'LOGOUT':
-            var url = '/accounts/logout/'
             requestAction('LOGOUT')
-            getApi(url, 'LOGOUT')
-
+            var url = '/accounts/logout/'
+            var req = createGetApiRequest(url, 'LOGOUT', action.options)
+            req(next)
+            
         default:
             break
     }
@@ -20,15 +19,14 @@ export const logoutService = store => next => action => {
 
 export const loginService = store => next => action => {
     next(action)
-    const postApi = postApiGenerator(next)
-    const requestAction = postApiRequestAction(next)
+    const requestAction = dispatchRequest(next)
 
     switch (action.type) {
         case 'LOGIN':
-            var url = '/accounts/login/'
             requestAction('LOGIN')
-            postApi(url, 'LOGIN', action.data)
-
+            var url = '/accounts/login/'
+            var req = createPostApiRequest(url, 'LOGIN', action.data)
+            req(next)
         default:
             break
     }

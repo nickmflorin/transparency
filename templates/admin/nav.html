@@ -1,0 +1,70 @@
+{% load i18n static %}
+
+<script>
+    function delete_cookie( name ) {
+      document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+    }
+    $('document').ready(function(){
+        // In Order to Sync Logout with React Redux Logout... Have to Remove CSRF Token Cookie
+        // React Redux Store Reducer Will Notice When CSRF Token Removed and Unauthenticate User
+        $('#admin-logout').on('click',function(){
+            $.ajax({
+                type : 'GET',
+                url : '/accounts/logout/',
+                success : function(response){
+                    if(response.success){
+                        delete_cookie('csrftoken')
+                        window.location.href = '/login'
+                    }
+                    else{
+                        console.log('Unknown Error Logging Out')
+                    }
+                },
+                error : function(err){
+                    console.log('Error Logging Out')
+                    throw err 
+                }
+            })
+        })
+    });
+</script>
+
+<header>
+    <div class='nav-bar'>
+        <div class='nav-bar-left-container'>
+            <a class="nav-bar-logo admin-logo" href="/admin">Transparency Admin</a>
+        </div>
+        <div class="nav-bar-separator-container"></div>
+        <div class="nav-bar-right-container">
+            {% block usertools %}
+                {% if has_permission %}
+                    <div class="user-tools">
+                        {% block welcome-msg %}
+                            {% trans 'Welcome,' %}
+                            <strong class="user-tools-name">{% firstof user.get_short_name user.get_username %}</strong>.
+                        {% endblock %}
+                        {% block userlinks %}
+                            <div class="user-tools-link-container">
+                                {% if site_url %}
+                                    <a class='nav-bar-link' href="{{ site_url }}">{% trans 'Back to Transparency' %}</a> /
+                                {% endif %}
+                                {% if user.is_active and user.is_staff %}
+                                    {% url 'django-admindocs-docroot' as docsroot %}
+                                    {% if docsroot %}
+                                        <a class='nav-bar-link' href="{{ docsroot }}">{% trans 'Documentation' %}</a> /
+                                    {% endif %}
+                                {% endif %}
+                                {% if user.has_usable_password %}
+                                    <a class='nav-bar-link' href="{% url 'admin:password_change' %}">{% trans 'Change password' %}</a> /
+                                {% endif %}
+                                <!-- <a class='nav-bar-link' href="{% url 'admin:logout' %}">{% trans 'Log out' %}</a> -->
+                                <a class='nav-bar-link' id="admin-logout" href='javascript:;'>{% trans 'Log out' %}</a>
+                            </div>
+                        {% endblock %}
+                    </div>
+                {% endif %}
+            {% endblock %}
+            {% block nav-global %}{% endblock %}
+        </div>
+    </div>
+</header>

@@ -18,6 +18,7 @@ export function StopRequest(){
 }
 
 export function changeDate(dates = { date : null, start : null, end : null }) {
+	console.log('changing date')
 	var changes = {}
 	if(dates.date){
 		changes['date'] = dates.date

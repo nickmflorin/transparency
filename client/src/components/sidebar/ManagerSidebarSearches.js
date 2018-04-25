@@ -40,11 +40,11 @@ export class ManagerSidebarSearches extends React.Component {
         var linkClass = 'sidebar-link'
         var caret = this.state.opened ? faCaretDown : faCaretUp
         return (
-            <ul className="sidebar-search-panel">
+            <ul className="sidebar-item-panel sidebar-search-panel">
                 <div className="sidebar-search-container">
                     <li className='sidebar-item parent'>
                         <a className={linkClass} onClick={this.toggle.bind(this)} >
-                            <span className='sidebar-caret'>
+                            <span className='font-awesome-caret-left'>
                                 <FontAwesomeIcon icon={caret}/> 
                             </span>
                             <span className='sidebar-label'>

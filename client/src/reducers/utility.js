@@ -32,6 +32,8 @@ export function requesting(state = false, action) {
 	switch(action.type){
 		case 'LOGIN':
 			return true
+		case 'LOGIN_REQUEST':
+			return true
 		case 'LOGIN_SUCCESS':
 			return false
 		case 'LOGIN_ERROR':
@@ -72,21 +74,22 @@ export function requesting(state = false, action) {
 		case 'LOGOUT_ERROR':
 			return false
 
-		case 'GET_MANAGER_LISTS':
+		case 'GET_MANAGER_LISTS_REQUEST':
 			return true
 		case 'GET_MANAGER_LISTS_RECEIVED':
 			return false
 		case 'GET_MANAGER_LISTS_ERROR':
 			return false
 
-		case 'GET_MANAGER':
+		case 'GET_MANAGER_REQUEST':
 			return true
 		case 'GET_MANAGER_RECEIVED':
 			return false
 		case 'GET_MANAGER_ERROR':
 			return false
 
-		case 'GET_MANAGER_EXPOSURE':
+
+		case 'GET_MANAGER_EXPOSURE_REQUEST':
 			return true 
 		case 'GET_MANAGER_EXPOSURE_RECEIVED':
 			return false
@@ -100,49 +103,49 @@ export function requesting(state = false, action) {
 		case 'GET_MANAGER_EXPOSURES_ERROR':
 			return false
 
-		case 'GET_MANAGER_CATEGORY_EXPOSURE':
+		case 'GET_MANAGER_CATEGORY_EXPOSURE_REQUEST':
 			return true 
 		case 'GET_MANAGER_CATEGORY_EXPOSURE_RECEIVED':
 			return false
 		case 'GET_MANAGER_CATEGORY_EXPOSURE_ERROR':
 			return false
 
-		case 'GET_MANAGER_CATEGORY_EXPOSURES':
+		case 'GET_MANAGER_CATEGORY_EXPOSURES_REQUEST':
 			return true 
 		case 'GET_MANAGER_CATEGORY_EXPOSURES_RECEIVED':
 			return false
 		case 'GET_MANAGER_CATEGORY_EXPOSURES_ERROR':
 			return false
 
-		case 'GET_MANAGER_BETAS':
+		case 'GET_MANAGER_BETAS_REQUEST':
 			return true 
 		case 'GET_MANAGER_BETAS_RECEIVED':
 			return false
 		case 'GET_MANAGER_BETAS_ERROR':
 			return false
 
-		case 'GET_MANAGER_LIST':
+		case 'GET_MANAGER_LIST_REQUEST':
 			return true
 		case 'GET_MANAGER_LIST_RECEIVED':
 			return false
 		case 'GET_MANAGER_LIST_ERROR':
 			return false
 
-		case 'GET_MANAGER_RETURNS':
+		case 'GET_MANAGER_RETURNS_REQUEST':
 			return true
 		case 'GET_MANAGER_RETURNS_RECEIVED':
 			return false
 		case 'GET_MANAGER_RETURNS_ERROR':
 			return false
 
-		case 'SAVE_MANAGER_LIST':
+		case 'SAVE_MANAGER_LIST_REQUEST':
 			return true
 		case 'SAVE_MANAGER_LIST_SUCCESS':
 			return false 
 		case 'SAVE_MANAGER_LIST_ERROR':
 			return false 
 
-		case 'SAVE_NEW_MANAGER_LIST':
+		case 'SAVE_NEW_MANAGER_LIST_REQUEST':
 			return true
 		case 'SAVE_NEW_MANAGER_LIST_SUCCESS':
 			return false 

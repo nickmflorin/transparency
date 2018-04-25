@@ -3,11 +3,8 @@ import PropTypes from 'prop-types';
 import moment from 'moment'
 import _ from 'underscore'
 
-import ReactTable from "react-table";
-import "react-table/react-table.css";
-
 import { SelectionTableToolbar } from '../toolbars'
-import './selection_table.css'
+import { CustomReactTable } from './CustomReactTable'
 
 export class SelectionTable extends React.Component {
 	constructor(props, context){
@@ -62,21 +59,22 @@ export class SelectionTable extends React.Component {
   		if(this.state.filtered){
   			data = this.state.filtered 
   		}
+
 	    return (
 	         <div className="selection-table-container">
 			    <SelectionTableToolbar 
 			    	onSelect={this.onSelect.bind(this)}
 		            {...this.props}
 		        />
-				<ReactTable
-			          data={data}
-			          columns={active.columns}
-			          minRows={25}
-			          loadingText={active.loadingText || 'Loading Results...'}
-					  noDataText={active.noDataText || "No Data Found"}
-			          defaultPageSize={15}
-			          className="-striped -highlight react-table-condensed"
-			          defaultPageSize={20}
+				<CustomReactTable
+		          data={data}
+		          active={this.props.active}
+		          columns={active.columns}
+		          minRows={this.props.minRows || 25}
+		          loadingText={active.loadingText || 'Loading Results...'}
+				  noDataText={active.noDataText || "No Data Found"}
+		          defaultPageSize={this.props.defaultPageSize || 20}
+		          className="-striped -highlight react-table-condensed"
 				/>
 			</div>
 	   )

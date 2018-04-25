@@ -25,26 +25,27 @@ export class ToolbarDropdown extends React.Component {
   };
   render(){
     var btnClass = classNames({
-      'toolbar-dropdown-btn' : true,
+      'btn dropdown-btn toolbar-dropdown-btn' : true,
       'flush': (this.props.flush && this.props.flush === true),
     });
     return(
         <Dropdown id={this.props.id}>
           <Dropdown.Toggle className={btnClass} bsStyle={this.props.style}>
               {this.props.icon && 
-                  <span className='menu-icon'>
-                  <FontAwesomeIcon icon={this.props.item.icon}/> 
-                </span>
+                  <span className='link-icon'>
+                      <FontAwesomeIcon icon={this.props.item.icon}/> 
+                  </span>
               }
               {this.props.label}
           </Dropdown.Toggle>
 
-          <Dropdown.Menu className="toolbar-dropdown-menu">
+          <Dropdown.Menu className="dropdown-menu toolbar-dropdown-menu">
             {this.props.items.map((item) => {
               return(
                 <MenuItem 
                   id={item.id}
                   key={item.id} 
+                  className="dropdown-item"
                   eventKey={item.id}
                   active={this.isActive(item)}
                   onSelect={ (e) => this.props.onSelect(e, this.props.id, item) }

@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 
 import Actions from '../actions'
 import { isAuthenticated } from '../reducers'
-import { NavBar } from '../components/nav'
+import { NavBar } from '../components/NavBar'
 
 class Nav extends React.Component {
   render(){
@@ -18,6 +18,7 @@ const StateToProps = (state, ownProps) => {
     sidebarShowing : state.sidebarShowing,
     isAuthenticated: isAuthenticated(state),
     auth : state.auth,
+    errors : state.errors,
   };
 };
 

@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 import {Modal, Button, closeButton} from 'react-bootstrap';
-import { AlertControl } from '../alerts'
+import { AlertControl } from '../Alerts'
 import React from 'react';
 
 class CustomModal extends React.Component{
@@ -16,7 +16,7 @@ class CustomModal extends React.Component{
 		subnotification : PropTypes.string,
 		show : PropTypes.bool.isRequired,
 		onClose : PropTypes.func.isRequired,
-		finish : PropTypes.func.isRequired,
+		onSubmit : PropTypes.func.isRequired,
 		finishButtonName : PropTypes.string.isRequired,
 	}
 	static defaultProps = {
@@ -52,8 +52,8 @@ class CustomModal extends React.Component{
 		        </Modal.Body>
 
 		        <Modal.Footer>
-	            	<button className="btn btn-default" onClick={this.props.onClose}>Close</button>
-	            	<button className="btn btn-primary" onClick={this.props.finish}>{this.props.finishButtonName}</button>
+	            	<button className="btn btn-default modal-btn" onClick={this.props.onClose}>Close</button>
+	            	<button className="btn btn-primary modal-btn" onClick={this.props.onSubmit}>{this.props.finishButtonName}</button>
 	          	</Modal.Footer>
 	        </Modal>
 		)

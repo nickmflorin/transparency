@@ -35,6 +35,11 @@ export function queries(state = [], action) {
             return action.data.map((datum) => {
                 return new UserQuery(datum)
             })
+        case 'SAVE_NEW_QUERY_SUCCESS':
+            return [
+                ...state,
+                new UserQuery(action.data)
+            ]
         case 'REMOVE_QUERY_SUCCESS':
             if(!action.id){
                 throw new Error('Delete Action Must Include ID')
@@ -65,6 +70,15 @@ export function query(state = null, action) {
         case 'CREATE_TEMP_QUERY_SUCCESS':
             return UserQuery.create_temp(action.user)
 
+        case 'REMOVE_QUERY_SUCCESS':
+            if(!action.id){
+                throw new Error('Delete Action Must Include ID')
+            }
+            if(state && action.id == state.id){
+                return null;
+            }
+            return state;
+
         // Only Allowing Direct Update of SQL For Now
         case 'UPDATE_QUERY_SUCCESS':
             if(state){
@@ -72,6 +86,17 @@ export function query(state = null, action) {
                     ...state, 
                     sql: action.update.sql || state.sql,
                 }
+            }
+            return state;
+
+        case 'SAVE_NEW_QUERY_SUCCESS':
+            return {
+                ...state,
+                id : action.data.id,
+                name : action.data.name,
+                user : action.data.user,
+                isNew : false,
+                createdAt : action.data.createdAt,
             }
 
         case 'SAVE_QUERY_SUCCESS':
@@ -90,6 +115,7 @@ export function query(state = null, action) {
                     error: action.error
                 }
             }
+            return state;
 
         case 'RUN_QUERY_SUCCESS':
             if(state){
@@ -102,6 +128,7 @@ export function query(state = null, action) {
                     columns: action.result.columns
                 }
             }
+            return state;
 
         default:
             return state;

@@ -4,15 +4,14 @@ import _ from 'underscore'
 import { connect } from 'react-redux'
 
 import { CSVDownload } from 'react-csv';
-import { AlertControl } from '../../components/alerts'
+import { AlertControl } from '../../components/Alerts'
 import { Table } from '../../utilities'
+import { Page } from '../../components/layout'
 
 import QueryField from './QueryField'
 import QuerySelection from './QuerySelection'
 import QueryResults from './QueryResults'
 import Actions from '../../actions'
-
-import './data.css'
 
 const defaultSQL = 'SELECT TOP 20 * FROM Research.dbo.vDailyTrades';
 
@@ -53,7 +52,10 @@ export class Data extends React.Component {
   }
   render(){
     return (
-        <div className="content white-content">
+        <Page
+          padded={true}
+          {...this.props}
+        >
           {this.state.to_download && 
             <CSVDownload data={this.state.to_download} target="data" />
           }
@@ -79,7 +81,7 @@ export class Data extends React.Component {
                 query={this.props.query}
               />
           </div>
-      </div>
+      </Page>
     )
   }
 }

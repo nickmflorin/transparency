@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import _ from 'underscore'
 
 import { QueryResultsTableToolbar } from '../../components/toolbars'
-import { DownloadTable } from '../../components/tables'
+import { CustomReactTable } from '../../components/tables'
 
 class Column {
   constructor(name){
@@ -83,7 +83,7 @@ class QueryResults extends React.Component {
           onDownload={this.onDownload.bind(this)}
         />
 
-        <DownloadTable
+        <CustomReactTable
           ref="results-table"
           data={this.state.results}
           target="results"

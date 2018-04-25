@@ -27,12 +27,12 @@ const options = {
 class QueryField extends React.Component {
   constructor(props, context){
     super(props, context)
-    this.overwrite = false // Dont Want to Trigger Rerender When Toggled
     this.state = {
-      modalIsOpen : false,
-      saveDisabled : true,
       confirm_save : false,
-      error_save : false,
+      save_error : null,
+      save_as_error : null,
+      modalIsOpen : false,
+      saveDisabled : false,
     }
   }
   componentWillMount(){
@@ -41,19 +41,6 @@ class QueryField extends React.Component {
     }
   }
   componentWillReceiveProps(props){
-    if(props.errors){
-      if(props.errors.save){
-        this.setState({error_save : true})
-      }
-    }
-    if(props.successes){
-      if(props.successes.save){
-        this.setState({confirm_save : true})
-      }
-      if(props.successes.create){
-        this.toggleModal()
-      }
-    }
     if(props.query){
       this.setQuery(props.query.sql)
     }
@@ -91,42 +78,59 @@ class QueryField extends React.Component {
     }
     return null
   }
-  onSaveAs(){
-      const user = this.props.user
-      const query = this.props.query
-      if(user && query){
-        const value = this.getQuery()
-        if (value) {
-          this.props.updateQuery({ sql: value })
-          this.setState({ modalIsOpen: true })
-        }
-      }
-  }
   onSave(){
-      const user = this.props.user
-      const query = this.props.query
-      if(user && query){
-        const value = this.getQuery()
-        if (value) {
-            if(query.id == 'new'){
-              this.setState({ modalIsOpen: true })
-            }
-            else if(query.user.id == user.id){
-              this.props.updateQuery({ sql: value }, { save : true })
+    var self = this 
+    const user = this.props.user
+    if (!user){
+      throw new Error('User Must be Present')
+    }
+
+    const value = this.getQuery()
+    if(this.props.query && value){
+      this.props.updateQuery({ sql: value })
+
+      if (this.props.query.id == 'new') {
+        this.setState({ modalIsOpen: true })
+      }
+      else{
+        if (this.props.query.user.id == user.id) {
+          this.props.dispatch(Actions.query.save_Async()).then(function(action, error){
+            if(action.error){
+              self.setState({ save_error : action.error })
             }
             else{
-              this.setState({ modalIsOpen: true })
+              self.setState({ confirm_save : true })
             }
+          })
+        }
+        else{
+          self.setState({ modalIsOpen: true })
         }
       }
+    }
+    return
   }
-  successConfirmed(){
-    this.props.clearSuccesses('save')
-    this.setState({ confirm_save : false })
+  onSaveAs(){
+      const user = this.props.user
+      const value = this.getQuery()
+      if(!user){
+        throw new Error('User Must be Present')
+      }
+      if(this.props.query){
+        this.props.updateQuery({ sql: value })
+        this.setState({ modalIsOpen: true })
+      }
   }
-  errorConfirmed(){
-    this.props.clearErrors('save')
-    this.setState({ error_save : false })
+  onModalSubmit(data){
+    var self = this 
+    this.props.dispatch(Actions.query.saveNew_Async(data.name)).then(function(action, error){
+      if(action.error){
+        self.setState({save_as_error : action.error})
+      }
+      else{
+        self.setState({ modalIsOpen: false, save_as_error : null })
+      }
+    })
   }
   toggleModal(){
       this.setState({modalIsOpen: !this.state.modalIsOpen});
@@ -149,6 +153,11 @@ class QueryField extends React.Component {
     }
   }
   render(){
+    var show_error_alert = false;
+    if(this.state.save_error){
+      show_error_alert = true 
+    }
+
     return (  
       <div className="query-field-container">
 
@@ -157,27 +166,24 @@ class QueryField extends React.Component {
           title="Saved"
           type='success'
           text="Your query was saved successfully."
-          onConfirm={this.successConfirmed.bind(this)}
+          onConfirm={() => this.setState({ confirm_save : false })}
         />
 
         <SweetAlert
-          show={this.state.error_save}
+          show={show_error_alert}
           title="Error"
           type='error'
-          text="There was an error saving your query."
-          onConfirm={this.errorConfirmed.bind(this)}
+          text={this.state.save_error}
+          onConfirm={() => this.setState({ error_save : false })}
         />
 
         <SaveQueryModal 
-          saveNewQuery={this.props.saveNewQuery}
-          overwrite={this.overwrite}
+          onSubmit={this.onModalSubmit.bind(this)}
+          onClose={this.toggleModal.bind(this)}
           query={this.props.query}
           user={this.props.user}
           show={this.state.modalIsOpen} 
-          onClose={this.toggleModal.bind(this)}
-          afterSave={this.props.getQueries}
-          errors={this.props.errors}
-          successes={this.props.successes}
+          error={this.state.save_as_error}
         />
 
         <div className="query-field-toolbar-container" style={{marginLeft:28}}>
@@ -208,18 +214,13 @@ const DataStateToProps = (state, ownProps) => {
   return {
     query : state.db.query,
     user : state.auth.user,
-    successes : state.successes.query,
-    errors : state.errors.query,
   };
 };
 
 const DataDispatchToProps = (dispatch, ownProps) => {
   return {
-    clearSuccesses : (type) => dispatch(Actions.successes.query.clear(type)),
-    clearErrors : (type) => dispatch(Actions.errors.query.clear(type)),
+    dispatch : (action) => dispatch(action),
     createTempQuery : () => dispatch(Actions.query.temp()),
-    saveQuery : () => dispatch(Actions.query.save()),
-    saveNewQuery : (name, sql) => dispatch(Actions.query.saveNew(name, sql)),
     runQuery : (options) => dispatch(Actions.query.run(options)),
     updateQuery : (update, options) => dispatch(Actions.query.update(update, options)),
     getQueries : () => dispatch(Actions.queries.get()),

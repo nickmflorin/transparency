@@ -3,34 +3,23 @@ import PropTypes from 'prop-types';
 
 import _ from 'underscore'
 import moment from 'moment'
-import { Panel, HomeContent } from '../../../components/layout'
-
-import '../home.css'
+import { Panel, Page, ManagerHeader } from '../../../components/layout'
 
 class PerformanceAttribution extends React.Component {
-  constructor(props, context){
-    super(props, context)
-    this.state = {
-      manager : null,
-    }
-  }
   static propTypes = {
     manager: PropTypes.object,
-    exposures: PropTypes.array,
     dates: PropTypes.object,
   };
-  onSelect(){
-
-  }
-  handleDateChange(){
-
-  }
   render() {
     return (
-      <HomeContent
+      <Page
         manager={this.props.selected}
+        header={(
+          <ManagerHeader {...this.props} />
+        )}
+        {...this.props}
       > 
-      </HomeContent>
+      </Page>
     )
   }
 }

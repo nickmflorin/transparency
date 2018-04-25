@@ -1,0 +1,81 @@
+@mixin panel($padding : 0px, $content:null) {
+  	background-color: $panel-background $content;
+	border: 1px solid $border-color $content;
+	border-radius: 1px $content;
+	width: 100% $content;
+	margin-top: 0px $content;
+	margin-bottom: 10px $content;
+	padding: $padding $content;
+}
+
+.panel {
+	@include panel(0px);
+	.panel-body{
+		padding: 5px;
+		position: relative;
+		&.chart-panel-body {
+		    padding: 15px;
+		}
+	}
+
+	&.chart-panel {
+		padding: 15px;
+	}
+
+	.panel-header{
+		width: 100%;
+	    background-color: $accent-gray !important;
+	    border-bottom: 1px solid $border-color !important;
+
+		.title{
+			font-size: 12px;
+			line-height: 14px;
+			font-family: $styled !important;
+	    	color: $primary-color;
+
+			font-weight: 400;
+			padding-left: 8px;
+			padding-right: 8px;
+			padding-top: 6px;
+			padding-bottom: 7px;
+	    }
+		.subtitle{
+			font-family: $plain;
+		    color: $blue;
+		    font-size: 11px;
+		    line-height: 14px;
+		    font-weight: 300 !important;
+		    padding-left: 8px;
+			padding-right: 8px;
+			padding-top: 6px;
+			padding-bottom: 7px;
+		}
+		.panel-options {
+			margin-left: 10px;
+			margin-right: 10px;
+			display: flex;
+
+			.panel-link {
+				display: block;
+				font-size: 11px;
+			    line-height: 14px;
+			    padding-top: 5px;
+				padding-bottom: 8px;
+
+				&:not(:first-child){
+					margin-left: 8px;
+				}
+				&:not(:last-child){
+					margin-right: 8px;
+				}
+				.panel-icon-left{
+					margin-right: 8px;
+				}
+				.panel-icon-right{
+					margin-left: 8px;
+				}
+			}
+		}
+	}
+}
+

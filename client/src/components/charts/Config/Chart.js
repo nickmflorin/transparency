@@ -20,7 +20,7 @@ class ChartConfig{
 
         const zoomType = options.zoomType || 'xy'
         this.chart = {
-            height : options.height || 400,
+            height : options.height || undefined,
             type : type,
             zoomType: zoomType, 
             backgroundColor: null

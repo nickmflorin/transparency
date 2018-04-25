@@ -1,11 +1,39 @@
 import React from 'react';  
 import PropTypes from 'prop-types';
+import _ from 'underscore'
+import moment from 'moment'
+
+import FontAwesomeIcon from '@fortawesome/react-fontawesome'
+import faCaretRight from '@fortawesome/fontawesome-free-solid/faCaretRight'
+import faDownload from '@fortawesome/fontawesome-free-solid/faDownload'
+
+import { ButtonToolbar } from 'react-bootstrap';
 
 import { HistoricalExposureBarChart, ExposurChartExplorer } from '../../../components/charts'
-import { ExposureExploreChartToolbar } from '../../../components/toolbars'
-import { Panel, HomeContent } from '../../../components/layout'
+import { PanelToolbar, TableToolbar } from '../../../components/toolbars'
+import { CustomReactTable } from '../../../components/tables'
+import { Panel, Page, PanelOptions, ManagerHeader } from '../../../components/layout'
 
-import '../home.css'
+function parseTableData(exposures){
+  var points = []
+  _.each(exposures, function(exposure){
+    var dt = new moment(exposure.date)
+    if(dt.isValid()){
+      var date = dt.format('YYYY-MM-DD')
+
+      var pt = _.findWhere(points, { date : date })
+      if(!pt){
+        pt = { 'date' : date }
+        points.push(pt)
+      }
+      pt[exposure.tier] = exposure.value 
+    }
+    else{
+      console.log('Warning: Found Invalid Date in Exposure Data...')
+    }
+  })
+  return points 
+}
 
 export class HistoricalExposures extends React.Component {
   constructor(props, context){
@@ -52,30 +80,82 @@ export class HistoricalExposures extends React.Component {
     }
     return false 
   }
-
+  download(){
+    console.log('download')
+  }
+  toggleTable(){
+    console.log('toggling table')
+  }
+  downloadTableData(){
+    this.refs['all-exposure-data'].download()
+  }
   render() {
+    var data = parseTableData(this.props.exposures.exposures)
     return (
-       <HomeContent
-        warning={this.props.warnings.exposures}
-        error={this.props.errors.exposures}
+       <Page
+        notificationTypes={[
+          'GET_MANAGER_EXPOSURES'
+        ]}
+        header={(
+          <ManagerHeader {...this.props} />
+        )}
         manager={this.props.selected}
+        {...this.props}
        >
-
           <Panel title="Long/Short Historical Exposures">
-              <HistoricalExposureBarChart 
-                tiers={['long','short']}
-                exposures={this.state.exposures}
-                title="Long/Short Historical Exposures"
-              />
+            <PanelToolbar 
+              pushRight={true}
+              buttons={[
+                { id : 'long-short', label : 'Download', icon : faDownload, onClick: this.downloadTableData.bind(this) }
+              ]}
+            />
+            <HistoricalExposureBarChart 
+              tiers={['long','short']}
+              exposures={this.state.exposures}
+              title="Long/Short Historical Exposures"
+            />
           </Panel>
+
           <Panel title="Gross/Net Historical Exposures">
+            <PanelToolbar 
+              pushRight={true}
+              buttons={[
+                { id : 'long-short', label : 'Download', icon : faDownload, onClick: this.downloadTableData.bind(this) }
+              ]}
+            />
             <HistoricalExposureBarChart 
               tiers={['gross','net']}
               exposures={this.state.exposures}
               title="Gross/Net Historical Exposures"
             />
           </Panel>
-        </HomeContent>
+
+          <TableToolbar 
+            className="margin bottom ten"
+            pushRight={true}
+            buttons={[
+              { id : 'long-short', label : 'Download', icon : faDownload, onClick: this.downloadTableData.bind(this) }
+            ]}
+          />
+
+          <CustomReactTable
+            data={data}
+            target={"historical-exposures"}
+            ref='all-exposure-data'
+            height="400px"
+            minRows={data.length}
+            defaultPageSize={data.length}
+            showPaginationBottom={false}
+            columns={[
+              { Header: "Date", id : "date", accessor : 'date' },
+              { Header: "% Gross", id : "pct_gross", accessor : 'pct_gross' },
+              { Header: "Gross", id : "gross", accessor : 'gross' },
+              { Header: "Net", id : "net", accessor : 'net' },
+              { Header: "Long", id : "long", accessor : 'long' },
+              { Header: "Short", id : "short", accessor : 'short' }
+            ]}
+          />
+        </Page>
     )
   }
 }

@@ -1,46 +1,42 @@
-@import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500,700');
-@import url('https://fonts.googleapis.com/css?family=Catamaran:300,400,500,700');
-@import url('https://fonts.googleapis.com/css?family=Muli:300,400,600');
+@import './helpers/typography';
+@import './helpers/colors';
+@import './helpers/borders';
+@import './helpers/dimensions';
+@import './helpers/reset';
+@import './helpers/bootstrap';
+@import './helpers/mixins';
+@import './helpers/utility';
 
-@import './base/reset';
-@import './base/bootstrap';
-@import './base/typography';
-@import './base/animation';
-
-@import './components/alert';
-@import './components/loading';
+@import './components/chart';
+@import './components/data';
+@import './components/manager_comparison';
+@import './components/selection_table';
+@import './components/home';
+@import './components/login';
+@import './components/modal';
+@import './components/sidebar';
+@import './components/search';
+@import './components/panel';
 @import './components/nav';
 @import './components/menu';
-@import './components/modal';
-@import './components/search';
-@import './components/CodeMirror';
-@import './components/sidebar';
-@import './components/tables';
-@import './components/logout';
-@import './components/login';
-@import './components/toolbar';
-@import './components/chart';
+@import './components/admin';
 
-@import './elements/tooltip';
-@import './elements/links';
-@import './elements/dropdown';
+@import './elements/alert';
+@import './elements/icons';
+@import './elements/animation';
 @import './elements/buttons';
+@import './elements/CodeMirror';
+@import './elements/dropdown';
 @import './elements/forms';
 @import './elements/input';
-
-@import './layout/footer';
-@import './layout/header';
-@import './layout/panel';
-@import './layout/layout';
-
-@import './helpers/extend';
-@import './helpers/variables';
-@import './helpers/mixins';
+@import './elements/links';
+@import './elements/tables';
+@import './elements/toolbar';
+@import './elements/typography';
 
 html, body {
-    @extend .zero-padding;
-    @extend .zero-margin;
-    @extend .smooth-font;
+    @include zero-spacing();
+    @include smooth-font();
 
     font-family: $plain;
     min-height: 100%;
@@ -50,6 +46,171 @@ html, body {
     outline: 0;
 }
 
+.loading {
+    position: fixed;
+    z-index: -10000;
+    left: 50%;
+    top: 50%;
 
+    height: $loading-height;
+    width: $loading-width;
+    margin-left: -$loading-width/2;
+    margin-top: -$loading-height/2 + $header-height;
+
+    &.visible {
+      z-index: 1000 !important;
+    }
+}
+
+.base{
+    display: flex;
+    flex-direction: column;
+
+    header {
+        position: fixed;
+        z-index: 900;
+        top: 0;
+        width: 100%;
+        height: $header-height;
+    }
+
+    footer {
+        @include zero-margin();
+        @include padding($top:5px, $bottom:5px, $left:10px, $right:10px);
+
+        background-color: $footer-background;
+        max-height: $footer-height;
+        width: 100%;
+        position: fixed;
+        bottom: 0;
+        z-index: 10000;
+
+        .footer-content {
+          @include zero-spacing();
+          @include font($font-family: $styled, $font-weight: 400, $font-size: 12px, $line-height: 25px);
+          color: $white;
+        }
+    }
+
+    
+    .App {
+       	@include zero-padding();
+        margin-bottom: $footer-height;
+        margin-top: $header-height;
+        height: calc(100% - #{$footer-height} - #{$header-height}) !important;
+        width: 100% !important;
+        overflow-x: hidden;
+        overflow-y: hidden;
+        position: absolute;
+
+        .outer-content {
+            @include zero-spacing();
+            @extend .full-size;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+
+            // Need to Include Transitions for Sidebar
+            .content {
+                flex-grow: 100;
+                display: flex;
+                position: relative;
+                max-height: 100%;
+                overflow-y: hidden;
+                overflow-x: hidden;
+
+                .page {
+                    position: relative;
+                    background-color: $background !important;
+                    object-fit: cover;
+                    background-repeat: no-repeat;
+                    padding: 10px;
+                    flex-grow: 100;
+                    max-height: 100%;
+                    overflow-y: scroll;
+                    overflow-x: hidden;
+
+                    &.padded {
+                        padding: 20px !important;
+                    }
+                    &.margin-top {
+                        margin-top: 10px !important;
+                    }
+                }
+                .with-sidebar {
+                    @include zero-spacing();
+                    position: relative;
+                    display: flex;
+                    flex-direction: row;
+                    max-height: 100%;
+                }
+            }
+        }
+    }
+}
+
+.page-header {
+    display: flex;
+
+    .page-header-item:not(:first-child){
+        margin-left: 10px;
+    }
+    .page-header-item:not(:last-child){
+        margin-right: 10px;
+    }
+}
+
+.header-box{
+    border: 1px solid $border-color;
+    height: $input-height-lg;
+    display: flex;
+    background-color: #FFF;
+    
+    .title{
+        font-size: 13px;
+        line-height: 16px;
+        font-family: $styled !important;
+        color: lighten($primary-color, 5%);
+        font-weight: 400;
+        padding-left: 8px;
+        padding-top: 6px;
+        padding-bottom: 6px;
+
+        &.placeholder{
+            font-weight: 300 !important;
+            color: lighten($primary-color, 25%);
+        }
+    }
+    .subtitle{
+        font-family: $plain;
+        color: $blue;
+        font-size: 12px;
+        line-height: 16px;
+        font-weight: 300 !important;
+        margin-left: 10px;
+        padding-top: 6px;
+        padding-bottom: 6px;
+    }
+}
+.subtitle::before{
+    content:"(";
+}
+.subtitle::after{
+    content:")";
+}
+
+.header-container{
+    width: 100%;
+    margin-bottom: 10px;
+}
+.manager-header-panel {
+    @extend .panel;
+    margin-top: 0px !important;
+    display: flex;
+    padding-bottom: 6px !important;
+}
+.header-title-container{
+   padding: 2px;
+}
 
 

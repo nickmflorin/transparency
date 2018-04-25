@@ -100,7 +100,7 @@ export class SearchBar extends React.Component{
     return (
       <div className="search-container">
         <div className="search-bar-container">
-          <a className="btn btn-default back-button" onClick={this.back.bind(this)}>
+          <a className="btn btn-back" onClick={this.back.bind(this)}>
               <span className="back-button-icon">
                 <FontAwesomeIcon icon={faArrowLeft}/> 
               </span>

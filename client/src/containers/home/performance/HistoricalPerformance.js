@@ -6,14 +6,9 @@ import moment from 'moment'
 
 import { ReturnsTable } from '../../../components/tables'
 import { BetaBarChart } from '../../../components/charts'
-import { Panel, HomeContent } from '../../../components/layout'
-
-import '../home.css'
+import { Panel, Page, ManagerHeader } from '../../../components/layout'
 
 class HistoricalPerformance extends React.Component {
-  constructor(props, context){
-    super(props, context)
-  }
   static propTypes = {
     selected: PropTypes.object,
     manager: PropTypes.object,
@@ -33,10 +28,16 @@ class HistoricalPerformance extends React.Component {
   }
   render() {
     return (
-       <HomeContent
+       <Page
         manager={this.props.selected}
-        warning={this.props.warnings.returns}
-        error={this.props.errors.returns}
+        notificationTypes={[
+          'GET_MANAGER_RETURNS',
+          'GET_MANAGER_BETAS'
+        ]}
+        header={(
+          <ManagerHeader {...this.props} />
+        )}
+        {...this.props}
        >
           <div className="panel chart-panel manager-home-top" style={{marginTop:10}}>
               <ManagerReturns 
@@ -53,7 +54,7 @@ class HistoricalPerformance extends React.Component {
                 />
           </div>
           <div className="manager-home-bottom"></div>
-     </HomeContent> 
+     </Page> 
     )
   } 
 }
