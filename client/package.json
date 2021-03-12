@@ -65,7 +65,7 @@
     "react-codemirror": "^1.0.0",
     "react-csv": "^1.0.12",
     "react-d3": "^0.4.0",
-    "react-dev-utils": "^5.0.0",
+    "react-dev-utils": "^11.0.4",
     "react-dom": "^16.2.0",
     "react-flux": "^1.0.1",
     "react-highcharts": "^16.0.2",
